@@ -329,6 +329,13 @@ class TuoiTreCrawler:
         Crawl articles given the limit.
         Return a list of Article objects.
         """
+        
+        print("Starting to crawl articles.")
+        print("Limit: ", limit)
+        print("Category ID:", self.category)
+        print("Crawl comments:", self.crawl_comment)
+        print("Delay:", self.delay)
+        print("Newer only:", self.newer_only, end="\n\n")
 
         articles = []
         article_urls = self.crawl_article_urls(limit)
