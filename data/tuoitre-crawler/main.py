@@ -130,13 +130,15 @@ if __name__ == "__main__":
       duplication_test(file_path=args.file)
 
   else:
+    if args.file is None:
+      parser.error("Please specify the file to load the crawled data with --file")
+
     if args.preview:
-      if args.file is None:
-        parser.error("Please specify the file to load the crawled data with --file")
       preview_data(file_path=args.file)
       
     if args.sort:
-      if args.file is None:
-        parser.error("Please specify the file to load the crawled data with --file")
       sort_data(file_path=args.file)
+      
+    if args.test:
+      duplication_test(file_path=args.file)
   
