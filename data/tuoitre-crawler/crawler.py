@@ -8,6 +8,7 @@ from datetime import datetime
 import unicodedata
 import threading
 from article import Article, Comment
+import telegram
 
 
 class TuoiTreCrawler:
@@ -324,18 +325,25 @@ class TuoiTreCrawler:
 
         return comments
 
-    def crawl_articles(self, limit):
+    def crawl_articles(self, limit, telegram_key=None):
         """
         Crawl articles given the limit.
         Return a list of Article objects.
         """
-        
-        print("Starting to crawl articles.")
-        print("Limit: ", limit)
-        print("Category ID:", self.category)
-        print("Crawl comments:", self.crawl_comment)
-        print("Delay:", self.delay)
-        print("Newer only:", self.newer_only, end="\n\n")
+
+        t_start = time.time()
+
+        start_string = (
+            "Starting to crawl articles...\nLimit: {}\nCategory ID: {}\n"
+            + "Crawl comments: {}\nDelay: {}\nNewer only: {}\n\n"
+        ).format(
+            limit, self.category, self.crawl_comment, self.delay, self.newer_only
+        )
+
+        if telegram_key:
+            telegram.send_message(start_string, telegram_key)
+
+        print(start_string)
 
         articles = []
         article_urls = self.crawl_article_urls(limit)
@@ -373,6 +381,21 @@ class TuoiTreCrawler:
         except Exception as e:
             print("Error while getting articles:", e)
 
+        time_taken = time.time() - t_start
+        time_taken_string = "Time taken: {}m{:.2f}s".format(
+            time_taken // 60, time_taken % 60
+        )
+
         print("\nSuccess:", len(articles), "/", limit, "\tLoss:", loss)
+        print(time_taken_string)
+
+        if telegram_key:
+            message = (
+                "Crawling finished.\nSuccess: {}/{}\nLoss: {}".format(
+                    len(articles), limit, loss
+                ),
+            )
+            telegram.send_message(message, telegram_key)
+            telegram.send_message(time_taken_string, telegram_key)
 
         return articles
