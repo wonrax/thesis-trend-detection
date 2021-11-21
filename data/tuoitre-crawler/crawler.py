@@ -19,7 +19,7 @@ class TuoiTreCrawler:
 
     BASE_URL = "https://tuoitre.vn"
     API_URL = "https://id.tuoitre.vn/api"
-    LIKE_COUNT_URL = "https://s1.tuoitre.vn/count-object.htm"
+    LIKE_COUNT_URL = "https://s5.tuoitre.vn/count-object.htm"
     SOURCE_NAME = "Tuổi Trẻ"
 
     class Category:
@@ -48,6 +48,7 @@ class TuoiTreCrawler:
         delay=0.5,
         skip_these=set(),
         newer_only=False,
+        telegram_key=None,
     ):
 
         self.category = category
@@ -66,6 +67,8 @@ class TuoiTreCrawler:
         self.delay = delay
 
         self.timeout = 10
+
+        self.telegram_key = telegram_key
 
     def get_page_url(self, cursor: int):
         """
@@ -243,9 +246,16 @@ class TuoiTreCrawler:
                 lambda value, p: value + p.get_text().strip() + "\n", paragraphs, ""
             )
             content = self.normalize_unicode(content)
+
         except Exception as e:
             print("\nError while getting article with id", id, ":", e)
             print("The article could be an unexpected format (Infographic, video...).")
+
+            if self.telegram_key:
+                telegram.send_message(
+                    "Error while getting article with id {}: {}".format(id, e),
+                    self.telegram_key,
+                )
             return None
 
         get_like_thread.join()
@@ -353,7 +363,7 @@ class TuoiTreCrawler:
 
         return comments
 
-    def crawl_articles(self, limit, telegram_key=None):
+    def crawl_articles(self, limit):
         """
         Crawl articles given the limit.
         Return a list of Article objects.
@@ -366,8 +376,8 @@ class TuoiTreCrawler:
             + "Crawl comments: {}\nDelay: {}\nNewer only: {}\n\n"
         ).format(limit, self.category, self.crawl_comment, self.delay, self.newer_only)
 
-        if telegram_key:
-            telegram.send_message(start_string, telegram_key)
+        if self.telegram_key:
+            telegram.send_message(start_string, self.telegram_key)
 
         print(start_string)
 
@@ -405,6 +415,16 @@ class TuoiTreCrawler:
 
                 time.sleep(self.delay)
 
+                if self.telegram_key:
+                    freq = limit // 10 if limit > 10 else 1
+                    if len(articles) % freq == 0:
+                        telegram_notify_string = (
+                            "Crawling {}%...\nSuccess: {}/{}\nLoss: {}".format(
+                                len(articles) / limit * 100, len(articles), limit, loss
+                            )
+                        )
+                        telegram.send_message(telegram_notify_string, self.telegram_key)
+
         except Exception as e:
             print("Error while getting articles:", e)
 
@@ -416,13 +436,13 @@ class TuoiTreCrawler:
         print("\nSuccess:", len(articles), "/", limit, "\tLoss:", loss)
         print(time_taken_string)
 
-        if telegram_key:
+        if self.telegram_key:
             message = (
                 "Crawling finished.\nSuccess: {}/{}\nLoss: {}".format(
                     len(articles), limit, loss
                 ),
             )
-            telegram.send_message(message, telegram_key)
-            telegram.send_message(time_taken_string, telegram_key)
+            telegram.send_message(message, self.telegram_key)
+            telegram.send_message(time_taken_string, self.telegram_key)
 
         return articles

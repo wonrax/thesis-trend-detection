@@ -31,9 +31,10 @@ def crawl(
         crawl_comment=crawl_comment,
         skip_these=crawled_ids,
         newer_only=newer_only,
+        telegram_key=telegram_key,
     )
 
-    articles = crawler.crawl_articles(limit=limit, telegram_key=telegram_key)
+    articles = crawler.crawl_articles(limit=limit)
 
     FileStorage.store(articles, file_path=file_path, mode=write_mode)
 
