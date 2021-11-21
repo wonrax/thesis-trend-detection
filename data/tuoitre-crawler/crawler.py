@@ -65,6 +65,8 @@ class TuoiTreCrawler:
         # (to avoid overloading the server).
         self.delay = delay
 
+        self.timeout = 10
+
     def get_page_url(self, cursor: int):
         """
         Return the URL of the newspaper indexes given the cursor.
@@ -96,7 +98,13 @@ class TuoiTreCrawler:
         """
 
         print("Getting article URLs from", url)
-        response = requests.get(url)
+
+        try:
+            response = requests.get(url, timeout=self.timeout)
+        except requests.exceptions.ConnectionError:
+            print("\nConnection timed out for url {}.\n".format(url))
+            return set(), False
+
         response_soup = BeautifulSoup(response.text, "html.parser")
 
         news_items = response_soup.find_all("li", class_="news-item")
@@ -165,14 +173,22 @@ class TuoiTreCrawler:
 
             url = TuoiTreCrawler.LIKE_COUNT_URL + "?newsId=" + id
 
-            like_count = requests.get(url, headers={"Origin": "https://tuoitre.vn"})
+            like_count = 0
 
-            likes[0] = int(like_count.text)
+            try:
+                like_count = requests.get(
+                    url, headers={"Origin": "https://tuoitre.vn"}, timeout=self.timeout
+                )
+                like_count = int(like_count.text)
+            except requests.exceptions.ConnectionError:
+                print("\nConnection timed out for like count {}.\n".format(id))
+
+            likes[0] = like_count
 
         except Exception as e:
             print("\nError while getting likes for article with id", id, ":", e, "\n")
 
-        return int(like_count.text)
+        return like_count
 
     def get_article(self, url: str):
         """
@@ -185,11 +201,18 @@ class TuoiTreCrawler:
         likes = [None]  # A list makes it easier to pass data across threads
 
         get_like_thread = threading.Thread(
-            target=self.get_likes_count, args=[id, likes]
+            target=self.get_likes_count,
+            args=[id, likes],
+            name="Crawler_Get_like_thread",
         )
         get_like_thread.start()
 
-        response = requests.get(url)
+        try:
+            response = requests.get(url, timeout=self.timeout)
+        except requests.exceptions.ConnectionError:
+            print("\nConnection timed out while getting article {}.\n".format(id))
+            return None
+
         response_soup = BeautifulSoup(response.text, "html.parser")
 
         source = TuoiTreCrawler.SOURCE_NAME
@@ -275,7 +298,12 @@ class TuoiTreCrawler:
             id, cursor, limit
         )
 
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+        except requests.exceptions.ConnectionError:
+            print("\nConnection timed out while getting comments.\n")
+            return []
+
         response_json = response.json()
 
         assert response_json["Success"] == True
@@ -336,9 +364,7 @@ class TuoiTreCrawler:
         start_string = (
             "Starting to crawl articles...\nLimit: {}\nCategory ID: {}\n"
             + "Crawl comments: {}\nDelay: {}\nNewer only: {}\n\n"
-        ).format(
-            limit, self.category, self.crawl_comment, self.delay, self.newer_only
-        )
+        ).format(limit, self.category, self.crawl_comment, self.delay, self.newer_only)
 
         if telegram_key:
             telegram.send_message(start_string, telegram_key)
@@ -362,6 +388,7 @@ class TuoiTreCrawler:
                     get_comments_thread = threading.Thread(
                         target=self.crawl_comments,
                         kwargs={"id": id, "thread_return": comments},
+                        name="Crawler_Get_comments_thread",
                     )
                     get_comments_thread.start()
 
