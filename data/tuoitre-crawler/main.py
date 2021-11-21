@@ -180,11 +180,11 @@ if __name__ == "__main__":
         if args.file is None:
             parser.error("Please specify the file to load the crawled data with --file")
 
-        if args.preview:
-            preview_data(file_path=args.file)
-
         if args.sort:
             sort_data(file_path=args.file)
+
+        if args.preview:
+            preview_data(file_path=args.file)
 
         if args.test:
             duplication_test(file_path=args.file)
