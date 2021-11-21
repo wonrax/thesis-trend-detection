@@ -108,6 +108,8 @@ class TuoiTreCrawler:
         except requests.exceptions.ConnectionError:
             print("\nConnection timed out for url {}.\n".format(url))
             return set(), False
+        except:
+            return set(), False
 
         response_soup = BeautifulSoup(response.text, "html.parser")
 
@@ -186,6 +188,8 @@ class TuoiTreCrawler:
                 like_count = int(like_count.text)
             except requests.exceptions.ConnectionError:
                 print("\nConnection timed out for like count {}.\n".format(id))
+            except:
+                pass
 
             likes[0] = like_count
 
@@ -215,6 +219,8 @@ class TuoiTreCrawler:
             response = requests.get(url, timeout=self.timeout)
         except requests.exceptions.ConnectionError:
             print("\nConnection timed out while getting article {}.\n".format(id))
+            return None
+        except:
             return None
 
         response_soup = BeautifulSoup(response.text, "html.parser")
@@ -313,6 +319,8 @@ class TuoiTreCrawler:
             response = requests.get(url)
         except requests.exceptions.ConnectionError:
             print("\nConnection timed out while getting comments.\n")
+            return []
+        except:
             return []
 
         response_json = response.json()
