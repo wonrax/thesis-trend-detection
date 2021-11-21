@@ -9,6 +9,7 @@ import unicodedata
 import threading
 from article import Article, Comment
 import telegram
+import pytz
 
 
 class TuoiTreCrawler:
@@ -377,12 +378,30 @@ class TuoiTreCrawler:
         ).format(limit, self.category, self.crawl_comment, self.delay, self.newer_only)
 
         if self.telegram_key:
+            telegram.send_message(
+                "🔥🔥🔥\nNew crawl session started at {}".format(
+                    datetime.datetime.now(pytz.timezone("Asia/Ho_Chi_Minh")).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+                ),
+                self.telegram_key,
+            )
             telegram.send_message(start_string, self.telegram_key)
 
         print(start_string)
 
-        articles = []
         article_urls = self.crawl_article_urls(limit)
+
+        if self.telegram_key:
+            message = (
+                "Found {}/{} urls, starting to crawl articles...".format(
+                    len(article_urls),
+                    limit,
+                ),
+            )
+            telegram.send_message(message, self.telegram_key)
+
+        articles = []
         loss = 0
 
         print("Getting", len(article_urls), "articles...")
