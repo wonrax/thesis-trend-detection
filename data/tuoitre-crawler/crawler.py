@@ -380,7 +380,7 @@ class TuoiTreCrawler:
         if self.telegram_key:
             telegram.send_message(
                 "🔥🔥🔥\nNew crawl session started at {}".format(
-                    datetime.datetime.now(pytz.timezone("Asia/Ho_Chi_Minh")).strftime(
+                    datetime.now(pytz.timezone("Asia/Ho_Chi_Minh")).strftime(
                         "%Y-%m-%d %H:%M:%S"
                     )
                 ),
