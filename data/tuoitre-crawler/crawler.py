@@ -47,7 +47,7 @@ class TuoiTreCrawler:
         category: Category = None,
         crawl_comment=True,
         delay=0.5,
-        skip_these=set(),
+        skip_these=None,
         newer_only=False,
         telegram_key=None,
     ):
@@ -58,7 +58,7 @@ class TuoiTreCrawler:
         # A set of article ids to skip crawling.
         # Can be used to enlarge the existing data (skip the ones that already
         # crawled)
-        self.skip_these = skip_these
+        self.skip_these = skip_these if skip_these else set()
         # Only get the articles newer than the existing ones in self.skip_these
         # regardless the limit.
         self.newer_only = newer_only
@@ -170,7 +170,7 @@ class TuoiTreCrawler:
 
         return article_urls
 
-    def get_likes_count(self, id, likes=[None]):
+    def get_likes_count(self, id, likes=None):
         """
         Get the number of likes an article has received given its id.
         """
@@ -191,7 +191,8 @@ class TuoiTreCrawler:
             except:
                 pass
 
-            likes[0] = like_count
+            if likes is not None:
+                likes[0] = like_count
 
         except Exception as e:
             print("\nError while getting likes for article with id", id, ":", e, "\n")
@@ -336,7 +337,7 @@ class TuoiTreCrawler:
 
         return comments
 
-    def crawl_comments(self, id, limit=float("inf"), thread_return=[None]):
+    def crawl_comments(self, id, limit=float("inf"), thread_return=None):
         """
         Get comments of an article given its ID.
         Return a set of Comment objects.
@@ -368,7 +369,8 @@ class TuoiTreCrawler:
             )
             pass
 
-        thread_return[0] = comments
+        if thread_return is not None:
+            thread_return[0] = comments
 
         return comments
 
