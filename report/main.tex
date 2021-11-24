@@ -1,0 +1,153 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[a4paper, total={6in, 9in}]{geometry}
+\usepackage{iftex}
+% package for including graphics with figure-environment
+\usepackage{graphicx}
+\usepackage[unicode]{hyperref}  
+
+% For subfigure
+\usepackage{subcaption}
+% colors for hyperlinks
+% colored borders (false) colored text (true)
+\hypersetup{colorlinks=true, citecolor=black, filecolor=black, linkcolor=black, urlcolor=black}
+
+% package for bibliography
+\usepackage[authoryear,round]{natbib}
+
+% package for header
+% \usepackage[automark,headsepline]{scrlayer-scrpage}
+% \pagestyle{scrheadings}
+% \ihead[]{Name of students}
+% \ohead[]{\today}
+% \cfoot[]{\pagemark} 
+
+\ifxetex
+	% Remove hyphenation warning.
+	\usepackage[vietnamese=nohyphenation]{hyphsubst}
+
+	\usepackage[vietnamese]{babel}
+	\usepackage{fontspec}
+	\usepackage{unicode-math}
+	\setmonofont{Inconsolatazi4}
+	\setmainfont{texgyrepagella-regular}[
+		Path			= ./qpl2_501otf/,
+		Extension		= .otf,
+		BoldFont		= texgyrepagella-bold,
+		ItalicFont		= texgyrepagella-italic,
+		BoldItalicFont	= texgyrepagella-bolditalic
+		]
+	\setmathfont{texgyrepagella-math}[
+		Path			= ./qpl2_501otf/,
+		Extension		= .otf
+		]
+\else
+	\usepackage[utf8]{inputenc}
+	\usepackage[vietnamese]{babel}
+\fi
+
+% Table of content verticle spacing
+\usepackage{tocloft}
+\renewcommand\cftparskip{0.2cm}
+
+\newcommand{\image}[3][1]{
+\begin{figure}[ht]
+	\includegraphics[width=#1\textwidth,keepaspectratio]{#2}
+	\centering
+	\caption{#3}
+\end{figure}
+} 
+
+\newcommand{\doubleimage}[7][0.4]{ 
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=#1\linewidth]{#2}
+		\caption{#3}
+	\end{subfigure}%
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=#1\linewidth]{#4}
+		\caption{#5}
+	\end{subfigure}
+	\caption{#6}
+\end{figure} 
+}
+
+\setlength{\parindent}{4em}
+
+\setlength{\parskip}{0.7em}
+
+% Line spacing
+\renewcommand{\baselinestretch}{1.3}
+
+\begin{document}
+
+	\title{
+	\begin{figure}[!ht]
+		\centering
+			\includegraphics[width=0.26\textwidth]{img/logo/LogoBKChinhThuc.png}
+	\end{figure}
+    \vspace{0.1cm}
+	\Large {Báo cáo Đề cương luận văn} \\
+	\vspace{0.3cm}
+	\Huge {Phát hiện chủ đề và phân tích\\xu hướng} \\
+    \vspace{0.3cm}
+    }
+    \author{}
+	
+	% if you are the only author, you might use the following
+	% \author{Name of student}	
+	
+	% Insert here your name and correct mail address
+	
+	% name of the course and module
+	\date{
+	{\Large Ngành: Khoa học Máy tính\\}
+	\vspace{1.8cm}
+	\textbf{\large GVHD\\} \smallskip
+	Lê Thanh Vân\\
+	\vspace{0.4cm}
+	\textbf{\large Sinh viên\\} \smallskip
+	Hà Huy Long Hải\hspace{0.5cm}1812064\\
+	\vspace{5cm}
+	\normalsize{\today}
+    }
+    
+    \vspace{1cm}
+
+	\maketitle
+	\thispagestyle{empty}
+	\setlength{\parindent}{0pt}
+
+\vspace{2cm}
+
+\begin{abstract}
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi in dictum mauris, vel maximus enim. Nulla ultrices dui id mi luctus suscipit. Pellentesque nec dignissim arcu, id commodo eros. Nullam non rutrum risus. Donec viverra finibus velit. In convallis, massa eget suscipit feugiat, urna magna cursus ligula, eu pretium neque risus eget lectus. Duis sed dui quis nibh ullamcorper molestie ac in felis.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% Enable paragraph indentation
+\parindent2em
+	
+\section{Giới thiệu về đề tài} % (fold)
+\label{sec:introduction}
+	Viết chương trình sử dụng hàm băm Skein (Skein Hash Function Family) trên Hadoop để so trùng ảnh trên các tập dữ liệu lớn, sau đó so sánh hiệu suất của chương trình trên các tập đó. \cite{web:hadoop_introduction}
+	
+	Viết chương trình sử dụng hàm băm Skein (Skein Hash Function Family) trên Hadoop để so trùng ảnh trên các tập dữ liệu lớn, sau đó so sánh hiệu suất của chương trình trên các tập đó. \cite{web:hadoop_introduction}
+
+\subsection{Mục tiêu}
+	Viết chương trình sử dụng hàm băm Skein (Skein Hash Function Family) trên Hadoop để so trùng ảnh trên các tập dữ liệu lớn, sau đó so sánh hiệu suất của chương trình trên các tập đó. \cite{web:hadoop_introduction}
+	
+	Viết chương trình sử dụng hàm băm Skein (Skein Hash Function Family) trên Hadoop để so trùng ảnh trên các tập dữ liệu lớn, sau đó so sánh hiệu suất của chương trình trên các tập đó. \cite{web:hadoop_introduction}
+\subsection{Mục tiêu}
+
+\clearpage
+
+\bibliographystyle{natdin}
+	\bibliography{references} % expects file "references.bib"
+	\addcontentsline{toc}{section}{Tham khảo}
+\end{document}
