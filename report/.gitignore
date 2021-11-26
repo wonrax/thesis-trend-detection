@@ -1,3 +1,6 @@
+# Ignore compiled pdf for now
+*.pdf
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
