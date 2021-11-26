@@ -1,212 +1,27 @@
-\documentclass[11pt, a4paper]{article}
-\usepackage[a4paper, total={6in, 9in}]{geometry}
-\usepackage{iftex}
-% package for including graphics with figure-environment
-\usepackage{graphicx}
-\usepackage[unicode]{hyperref}  
+% Common packages and page config
+\input{util/common-packages.tex}
 
-% For subfigure
-\usepackage{subcaption}
-% colors for hyperlinks
-% colored borders (false) colored text (true)
-\hypersetup{colorlinks=true,
-			citecolor=black,
-			filecolor=black,
-			linkcolor=black,
-			urlcolor=black}
+% Vietnamese encode and typefaces
+\input{util/vietnamese.tex}
 
-% package for bibliography
-\usepackage[numbers,sort&compress]{natbib}
+% Line, paragraph spacing
+\input{util/typography.tex}
 
-% package for header
-% \usepackage[automark,headsepline]{scrlayer-scrpage}
-% \pagestyle{scrheadings}
-% \ihead[]{Name of students}
-% \ohead[]{\today}
-% \cfoot[]{\pagemark} 
-
-% Remove hyphenation warning.
-\usepackage[vietnamese=nohyphenation]{hyphsubst}
-
-\ifPDFTeX
-	\usepackage[utf8]{inputenc}
-	\usepackage[vietnamese]{babel}
-\else
-	% Other engines (e.g. XeTeX or LuaTeX)
-
-	\usepackage[vietnamese]{babel}
-	\usepackage{fontspec}
-	\usepackage{unicode-math}
-	\setmonofont{Inconsolatazi4}
-	\setmainfont{texgyrepagella-regular}[
-		Path			= ./qpl2_501otf/,
-		Extension		= .otf,
-		BoldFont		= texgyrepagella-bold,
-		ItalicFont		= texgyrepagella-italic,
-		BoldItalicFont	= texgyrepagella-bolditalic
-		]
-	\setmathfont{texgyrepagella-math}[
-		Path			= ./qpl2_501otf/,
-		Extension		= .otf
-		]
-\fi
-
-% Table of content verticle spacing
-\usepackage{tocloft}
-\renewcommand\cftparskip{0.2cm}
-
-\newcommand{\image}[3][1]{
-\begin{figure}[ht]
-	\includegraphics[width=#1\textwidth,keepaspectratio]{#2}
-	\centering
-	\caption{#3}
-\end{figure}
-} 
-
-\newcommand{\doubleimage}[7][0.4]{ 
-\begin{figure}[ht]
-	\centering
-	\begin{subfigure}{.5\textwidth}
-		\centering
-		\includegraphics[width=#1\linewidth]{#2}
-		\caption{#3}
-	\end{subfigure}%
-	\begin{subfigure}{.5\textwidth}
-		\centering
-		\includegraphics[width=#1\linewidth]{#4}
-		\caption{#5}
-	\end{subfigure}
-	\caption{#6}
-\end{figure} 
-}
-
-\setlength{\parindent}{2em}
-
-\setlength{\parskip}{0.7em}
-
-% Line spacing
-\renewcommand{\baselinestretch}{1.3}
+% \input{util/command-utils.tex}
 
 \begin{document}
 
-\title{
-	{\parskip=0.4em\normalsize
-			Đại học Quốc gia Thành phố Hồ Chí Minh\\
-			Trường Đại học Bách Khoa\\
-			Khoa Khoa học \& Kỹ thuật Máy tính\\
-		}
-	\vspace{0.5cm}
-	\begin{figure}[!ht]
-		\centering
-		\includegraphics[width=0.26\textwidth]{img/logo/LogoBKChinhThuc.png}
-	\end{figure}
-	\vspace{0.1cm}
-	\Large {Báo cáo Đề cương luận văn} \\
-	\vspace{0.3cm}
+\include{pages/1-title.tex}
 
-	\Huge {\renewcommand{\baselinestretch}{0.1}
-		Phát hiện chủ đề và phân tích\\[-0.2em]xu hướng}
+\include{pages/2-abstract.tex}
 
-	\vspace{0.3cm}
-}
-\author{}
-
-% if you are the only author, you might use the following
-% \author{Name of student}	
-
-% Insert here your name and correct mail address
-
-% name of the course and module
-\date{
-	\textbf{\large GVHD}\\[0.3em]
-	Lê Thanh Vân\\[2em]
-	\textbf{\large SVTH}\\[0.3em]
-	Hà Huy Long Hải - 1812064\\
-	\vspace{4cm}
-	\normalsize{\today}
-}
-
-\maketitle
-\thispagestyle{empty}
-
-\vspace{2cm}
-
-\begin{abstract}
-	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi in dictum
-	mauris, vel maximus enim. Nulla ultrices dui id mi luctus suscipit.
-	Pellentesque nec dignissim arcu, id commodo eros. Nullam non rutrum risus.
-	Donec viverra finibus velit. In convallis, massa eget suscipit feugiat,
-	urna magna cursus ligula, eu pretium neque risus eget lectus. Duis sed dui
-	quis nibh ullamcorper molestie ac in felis.
-\end{abstract}
-
-\newpage
 \tableofcontents
-\newpage
-
-\section{Giới thiệu về đề tài}
-\label{sec:introduction}
-
-\subsection{Đặt vấn đề}
-Với sự bùng nổ của dữ liệu điện tử, đặc biệt là dữ liệu dạng văn bản trong thời
-đại internet, chúng đem lại nhiều cơ hội và thách thức cho việc nghiên cứu và
-phân tích dữ liệu. Liệu con người có bị chìm trong lượng thông tin khổng lồ như
-vậy không? Liệu chúng ta có cách nào đó sử dụng sức mạnh tính toán của máy
-tính, tự động hoá công việc phân tích các dữ liệu để đưa ra các thông tin cần
-thiết và hữu ích?
-
-Bên cạnh đó, sự phát triển của mạng xã hội trong thập kỷ 21 đã dần hình thành
-nên các hành vi tâm lý của người dùng. Đặc biệt trong số đó là hội chứng sợ bỏ
-lỡ (fear of missing out, hay FOMO), là cảm giác bứt rứt hoặc ám ảnh rằng bản
-thân đang bỏ lỡ những việc mà những người cùng trang lứa có thể làm được hoặc
-làm tốt hơn \cite{jwtintelligence_fear_2015}. Chính vì các hành vi tâm lý này,
-các mạng xã hội, cụ thể là các nhà khoa học dữ liệu đã tận dụng dữ liệu để giúp
-người dùng có thể tìm kiếm thông tin một cách nhanh chóng và hiệu quả. Đơn cử
-là mạng xã hội Twitter với tính năng phát hiện Xu hướng (Trending now), hay
-Đang xảy ra (What's Happening) giúp họ trở thành mạng xã hội phổ biến để cập
-nhật tin tức từ chính trị, xã hội đến đời sống cá nhân của những người nổi
-tiếng.
-
-Để phát hiện sự thay đổi của các đề tài đang nổi bật trong đại chúng, về cơ bản
-ta phải phát hiện được chủ đề của các văn bản, tức là phân tích xem họ đang
-viết về nội dung gì.  Tiếp theo ta cần phân tích mức độ phổ biến của các chủ đề
-đó, hay phạm vi mà chủ đề đó đang được phát triển để quyết định xem các chủ đề
-đó có đáng được quan tâm hay không.
-
-\subsection{Mục tiêu}
-\begin{itemize}
-	\item Tìm hiểu các cách thức phát hiện xu hướng dựa trên các mô hình xác
-		suất hoặc mô hình hướng dữ liệu, đơn cử là mô hình phân phối Poisson.
-
-	\item Tìm hiểu các mô hình phát hiện chủ đề (Latent Dirichlet Allocation
-		hay LDA,...).
-
-	\item Tìm hiểu các mô hình phát hiện chủ đề dựa trên ngữ nghĩa (BERT,
-		PhoBERT,...)
-\end{itemize}
-
-\section{Các mô hình}
-\label{sec:models}
-
-\subsection{Phát hiện xu hướng}
-
-\subsection{Phát hiện chủ đề}
-
-\subsection{Phân tích ngữ nghĩa}
-
-\subsection{VnCoreNLP}
-
-\section{Thử nghiệm}
-\label{sec:experiments}
-
 \clearpage
 
-% Requires git submodule defined in .gitmodules in project root
-\bibliographystyle{./external/vietnamese-bibtex/vietnumeric}
+\input{pages/3-main-content.tex}
 
-\bibliography{references} % expects file "references.bib"
+\nocite{*} % IMPORTANT Comment this when publishing
 
-\addcontentsline{toc}{section}{Tham khảo}
-
+\include{pages/4-bibliography.tex}
 
 \end{document}

@@ -1,0 +1,27 @@
+\usepackage{iftex}
+
+% Remove hyphenation warning.
+\usepackage[vietnamese=nohyphenation]{hyphsubst}
+
+\ifPDFTeX
+	\usepackage[utf8]{inputenc}
+	\usepackage[vietnamese]{babel}
+\else
+	% Other engines (e.g. XeTeX or LuaTeX)
+
+	\usepackage[vietnamese]{babel}
+	\usepackage{fontspec}
+	\usepackage{unicode-math}
+	\setmonofont{Inconsolatazi4}
+	\setmainfont{texgyrepagella-regular}[
+		Path			= ./qpl2_501otf/,
+		Extension		= .otf,
+		BoldFont		= texgyrepagella-bold,
+		ItalicFont		= texgyrepagella-italic,
+		BoldItalicFont	= texgyrepagella-bolditalic
+		]
+	\setmathfont{texgyrepagella-math}[
+		Path			= ./qpl2_501otf/,
+		Extension		= .otf
+		]
+\fi
