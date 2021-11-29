@@ -11,17 +11,24 @@
 
 \begin{document}
 
+% ========= TITLE ========= %
+
 \include{pages/1-title.tex}
+
+% ========= ABSTRACT ========= %
 
 \include{pages/2-abstract.tex}
 
 \tableofcontents
 \clearpage
 
-\input{pages/3-main-content.tex}
+% ========= MAIN CONTENT ========= %
+
+\include{pages/3-main/main.tex}
+
+% ========= BIBLIOGRAPHY ========= %
 
 \nocite{*} % IMPORTANT Comment this when publishing
-
 \include{pages/4-bibliography.tex}
 
 \end{document}
