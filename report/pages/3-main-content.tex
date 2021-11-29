@@ -13,20 +13,31 @@ Bên cạnh đó, sự phát triển của mạng xã hội trong thập kỷ 21
 nên các hành vi tâm lý của người dùng. Đặc biệt trong số đó là hội chứng sợ bỏ
 lỡ (fear of missing out, hay FOMO), là cảm giác bứt rứt hoặc ám ảnh rằng bản
 thân đang bỏ lỡ những việc mà những người cùng trang lứa có thể làm được hoặc
-làm tốt hơn \cite{jwtintelligence_fear_2015}. Chính vì các hành vi tâm lý này,
-các mạng xã hội, cụ thể là các nhà khoa học dữ liệu đã tận dụng dữ liệu để giúp
-người dùng có thể tìm kiếm thông tin một cách nhanh chóng và hiệu quả. Đơn cử
-là mạng xã hội Twitter với tính năng phát hiện Xu hướng (Trending now), hay
-Đang xảy ra (What's Happening) giúp họ trở thành mạng xã hội phổ biến để cập
-nhật tin tức từ chính trị, xã hội đến đời sống cá nhân của những người nổi
+làm tốt hơn~\cite{jwtintelligenceFearMissingOut2015}. Chính vì các hành vi tâm
+lý này, các mạng xã hội, cụ thể là các nhà khoa học dữ liệu đã tận dụng dữ liệu
+để giúp người dùng có thể tìm kiếm thông tin một cách nhanh chóng và hiệu quả.
+Đơn cử là mạng xã hội Twitter với tính năng phát hiện Xu hướng (Trending now),
+hay Đang xảy ra (What's Happening) giúp họ trở thành mạng xã hội phổ biến để
+cập nhật tin tức từ chính trị, xã hội đến đời sống cá nhân của những người nổi
 tiếng.
 
 Để phát hiện sự thay đổi của các đề tài đang nổi bật trong đại chúng, về cơ bản
-ta phải phát hiện được chủ đề của các văn bản, tức là phân tích xem họ đang
-viết về nội dung gì.  Tiếp theo ta cần phân tích mức độ phổ biến của các chủ đề
-đó, hay phạm vi mà chủ đề đó đang được phát triển để quyết định xem các chủ đề
-đó có đáng được quan tâm hay không.
+ta cần phát hiện được chủ đề của các văn bản và tìm cách biến chúng thành các
+thể hiện con người có thể hiểu được. Tiếp theo ta cần phân tích mức độ phổ biến
+của các chủ đề, hay phạm vi mà chủ đề đó đang được phát triển để quyết định
+xem các chủ đề đó có đáng được quan tâm hay không.
 
+Cho đến hiện tại, đã xuất hiện nhiều mô hình phát hiện chủ đề và phân tích xu
+hướng và có thể chia thành mô hình xác suất và mô hình học máy. Mô hình xác
+suất về cơ bản là đếm các từ khoá và sử dụng phân phối xác suất để xác định bất
+thường trong sự thay đổi về mức độ phổ biến của các từ khoá đó. Về mô hình học
+máy ta có thể chia ra làm hai loại: Mô hình học máy sử dụng tập dữ liệu huấn
+luyện có chứa thông tin về mức độ thay đổi được gán nhãn là trending hoặc không
+trending; Hoặc mô hình phân tích ngữ nghĩa của văn bản dùng để phát hiện chủ đề
+của một tập dữ liệu ta quan tâm.
+
+Cần vận dụng đúng mô hình để phát hiện chủ đề NHANH CHÓNG ,...., không Cần
+tập dữ liệu gán nhãn,...
 \# TODO viet tiep
 
 \subsection{Mục tiêu}
@@ -39,19 +50,87 @@ viết về nội dung gì.  Tiếp theo ta cần phân tích mức độ phổ 
 
 	\item Tìm hiểu các mô hình phát hiện chủ đề dựa trên ngữ nghĩa (BERT,
 		PhoBERT,...)
+	
+	\item Thu thập dữ liệu để phục vụ mục đích nghiên cứu.
+	
+	\item Thử nghiệm các mô hình với các tập dữ liệu đã thu thập.
 \end{itemize}
 
 \section{Các mô hình}
 \label{sec:models}
+Ba mô hình chính được bài báo cáo này nhắc tới bao gồm mô hình phát hiện xu
+hướng, mô hình phát hiện chủ đề và mô hình phát hiện chủ đề dựa trên ngữ nghĩa.
+Mô hình phát hiện xu hướng được nghiên cứu là mô hình được phát triển bởi
+Twitter~\cite{hendricksonTrendDetectionSocial2015}, bao gồm mô hình xác suất và
+mô hình thiên dữ liệu (data-driven). Mô hình phát hiện chủ đề là mô hình khai
+thác sự xuất hiện của các từ khoá trong các tập văn bản để tìm ra sự tương quan
+giữa các từ khoá và sự ảnh hưởng của từ khoá đối với chủ đề của văn bản. Mô
+hình phát hiện chủ đề mà báo cáo này sẽ tập trung nghiên cứu là mô hình Latent
+Dirichlet Allication (LDA). Mô hình phát hiện chủ đề dựa trên ngữ nghĩa là một
+mô hình phát hiện chủ đề nhưng được dựa trên ngữ nghĩa của văn bản, hay ngữ
+cảnh mà văn bản đó biểu hiện để thực hiện gom cụm chủ đề. Mô hình ngữ nghĩa
+BERT và PhoBERT là đối tượng nghiên cứu và là cơ sở cho thực nghiệm, kết hợp
+với LDA để có thể sinh ra kết quả tốt hơn~\cite{lamGomCumVan2021}.
 
-\subsection{Phát hiện xu hướng}
-Mô hình phát hiện xu hướng được....
+\subsection{Mô hình phát hiện xu hướng}
+Tương tác của người dùng trên mạng xã hội luôn có sự liên quan nhất định nào đó
+đến các sự kiện ở ngoài thế giới
+thực~\cite{hendricksonTrendDetectionSocial2015}. Để phát hiện xu hướng, ta cần
+phải trả lời các câu hỏi như: sự kiện đó bắt đầu từ khi nào? Mức độ thay đổi
+phạm vi của sự kiện này là lớn hay nhỏ? Và chúng thay đổi như thế nào đối với
+các sự kiện bình thường (typical) khác? Việc này không chỉ giúp phân biệt giữa
+các sự kiện bình thường và các sự kiện bất thường (atypical) mà còn giúp so
+sánh các sự kiện bất thường với
+nhau~\cite{hendricksonTrendDetectionSocial2015}.
 
-\subsection{Phát hiện chủ đề}
+Twitter là mạng xã hội cho phép người dùng đăng các bài đăng, hay còn được gọi
+là tweet. Trong một tweet, người dùng có thể thêm văn bản (giới hạn 280 ký tự)
+hoặc hình ảnh. Mô hình của Twitter định lượng các hành vi người dùng bằng cách
+đếm hashtag, mention hoặc liên kết (link) trong một khoảng thời gian cố định
+(bucketed count). Khi một định lượng được thể hiện bằng một từ hoặc cụm từ, ta
+có thể gọi từ hoặc cụm từ đó là \textit{chủ
+đề}~\cite{hendricksonTrendDetectionSocial2015}.
 
-\subsection{Phân tích ngữ nghĩa}
+Tuy nhiên, ta không thể biết trước được mức độ của sự thay đổi, hay thời gian
+mà sự thay đổi đó sẽ xảy ra. Có sự kiện chỉ diễn ra trong một vài giây, có sự
+kiện có thể diễn ra trong hàng năm. Hơn nữa, định lượng cho các sự kiện đó có
+thể thay đổi từ một vài tweet cho đến hàng triệu tweet. Để phát triển một giải
+thuật có thể đáp ứng được các kích thước dữ liệu trên phạm vi rộng lớn là việc
+không hề đơn giản~\cite{hendricksonTrendDetectionSocial2015}.
+
+Nhiều kỹ thuật dùng để phát hiện xu hướng đều định nghĩa một mô hình cơ sở
+(background model), là mô hình có thể đại diện cho giả thuyết không (null
+hypothesis), về cơ bản có nghĩa là \textit{không trend} (không là xu hướng).
+Những thay đổi của các định lượng so với mô hình cơ sở (deviation) được tính
+toán thành một hệ số (figure-of-merit) $\eta$. Giá trị $\eta$ càng lớn thì sự
+thay đổi của định lượng so với mô hình cơ sở càng nhiều. Và một giá trị $\eta$
+được định nghĩa trước có thể được sử dụng để chấp nhận hoặc từ chối giả thuyết
+không~\cite{hendricksonTrendDetectionSocial2015}.
+
+Một kỹ thuật khác có thể bao gồm thành phần cơ sở (non-trend, hay \textit{không
+trend}) và thành phần giống trend (trend-like, hay \textit{đang là xu hướng}).
+Khi đó, giá trị $\eta$ sẽ thể hiện cho việc dữ liệu sẽ giống \textit{trend} hơn
+hay dữ liệu sẽ giống \textit{không trend}
+hơn~\cite{hendricksonTrendDetectionSocial2015}.
+
+\subsubsection{Mô hình xác xuất Poisson}
+
+Phân phối Poisson là phân phối xác suất rời rạc, dùng để thể hiện xác suất mà
+một số lượng sự kiện nào đó xảy ra trong một khoảng thời gian nhất
+định~\cite{haightHandbookPoissonDistribution1967}. Vì vậy, phân phối Poisson có
+khả năng áp dụng cho việc định lượng dữ liệu trên mạng xã hội, hay nói cách
+khác, ta có thể mặc định dữ liệu đó tuân theo phân phối
+Poisson~\cite{hendricksonTrendDetectionSocial2015}.
+
+\subsection{Mô hình phát hiện chủ đề}
+
+\subsection{Mô hình phân tích ngữ nghĩa}
 
 \subsection{VnCoreNLP}
 
 \section{Thử nghiệm}
+Bài báo cáo này nghiên cứu về cả hai mô hình xác suất và mô hình học máy, nhưng
+chỉ thực hiện thí nghiệm trên mô hình học máy nửa giám sát (semi-supervised) vì
+mô hình xác suất cần trực tiếp kết quả của mô hình học máy (\#TODO xem lại).
+
 \label{sec:experiments}
