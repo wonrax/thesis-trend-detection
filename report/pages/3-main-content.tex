@@ -58,7 +58,7 @@ tập dữ liệu gán nhãn,...
 
 \section{Các mô hình}
 \label{sec:models}
-Ba mô hình chính được bài báo cáo này nhắc tới bao gồm mô hình phát hiện xu
+Ba mô hình chính được báo cáo này nhắc tới bao gồm mô hình phát hiện xu
 hướng, mô hình phát hiện chủ đề và mô hình phát hiện chủ đề dựa trên ngữ nghĩa.
 Mô hình phát hiện xu hướng được nghiên cứu là mô hình được phát triển bởi
 Twitter~\cite{hendricksonTrendDetectionSocial2015}, bao gồm mô hình xác suất và
@@ -84,7 +84,7 @@ sánh các sự kiện bất thường với
 nhau~\cite{hendricksonTrendDetectionSocial2015}.
 
 Twitter là mạng xã hội cho phép người dùng đăng các bài đăng, hay còn được gọi
-là tweet. Trong một tweet, người dùng có thể thêm văn bản (giới hạn 280 ký tự)
+là Tweet. Trong một Tweet, người dùng có thể thêm văn bản (giới hạn 280 ký tự)
 hoặc hình ảnh. Mô hình của Twitter định lượng các hành vi người dùng bằng cách
 đếm hashtag, mention hoặc liên kết (link) trong một khoảng thời gian cố định
 (bucketed count). Khi một định lượng được thể hiện bằng một từ hoặc cụm từ, ta
@@ -94,7 +94,7 @@ có thể gọi từ hoặc cụm từ đó là \textit{chủ
 Tuy nhiên, ta không thể biết trước được mức độ của sự thay đổi, hay thời gian
 mà sự thay đổi đó sẽ xảy ra. Có sự kiện chỉ diễn ra trong một vài giây, có sự
 kiện có thể diễn ra trong hàng năm. Hơn nữa, định lượng cho các sự kiện đó có
-thể thay đổi từ một vài tweet cho đến hàng triệu tweet. Để phát triển một giải
+thể thay đổi từ một vài Tweet cho đến hàng triệu Tweet. Để phát triển một giải
 thuật có thể đáp ứng được các kích thước dữ liệu trên phạm vi rộng lớn là việc
 không hề đơn giản~\cite{hendricksonTrendDetectionSocial2015}.
 
@@ -115,12 +115,106 @@ hơn~\cite{hendricksonTrendDetectionSocial2015}.
 
 \subsubsection{Mô hình xác xuất Poisson}
 
-Phân phối Poisson là phân phối xác suất rời rạc, dùng để thể hiện xác suất mà
-một số lượng sự kiện nào đó xảy ra trong một khoảng thời gian nhất
+Phân phối Poisson là phân phối xác suất rời rạc, dùng để thể hiện xác suất số
+lần một sự kiện nào đó xảy ra trong một khoảng thời gian nhất
 định~\cite{haightHandbookPoissonDistribution1967}. Vì vậy, phân phối Poisson có
 khả năng áp dụng cho việc định lượng dữ liệu trên mạng xã hội, hay nói cách
 khác, ta có thể mặc định dữ liệu đó tuân theo phân phối
 Poisson~\cite{hendricksonTrendDetectionSocial2015}.
+
+Ví dụ, ta xét số lượng Tweet có chứa hashtag "\#covid19" trong một khoảng thời
+gian nào đó. Số lượng đó có thể thay đổi theo tần suất đăng bài của người dùng
+trong ngày.  Nhưng nếu ta bỏ qua sự thay đổi đó, ta có thể nói, số lượng Tweet
+có chứa hashtag "\#covid19" tuân theo phân phối Poisson:
+\[ P\left(c_{i} ; \nu\right)=\nu^{c_{i}} \cdot e^{-\nu} / c_{i} ! \]
+
+với:
+\begin{itemize}
+	\item $c_{i}$ là số lượng Tweet có chứa hashtag "\#covid19" trong một khoảng
+	thời gian nhất định.
+	\item $P$ là xác suất xuất hiện các Tweet tương tự với số lượng $c_{i}$.
+	\item $\nu$ là số lượng kỳ vọng các Tweet có chứa hashtag "\#covid19".
+\end{itemize}
+
+Vì ta không thể biết chính xác giá trị $\nu$, nên ta có thể lấy số lượng Tweet ở
+khoảng thời gian trước đó (đã biết) là $c_{i - 1}$ để biểu diễn cho $\nu$. Ta có
+hệ số $\eta$ tại một thời điểm nào đó là:
+\[ c_{i}=\eta \cdot \mathrm{CI}(\alpha, \nu)+\nu \]
+
+với:
+\begin{itemize}
+	\item $\nu=c_{i-1}$.
+	\item $CI(\alpha, \nu)$ là khoảng tin cậy (confidence interval) cho phân
+	phối Poisson với mean $\nu$ và độ tin cậy $\alpha$.
+\end{itemize}
+
+Khi đó, một số lượng Tweet $c_{i}$ được định nghĩa để có thể từ chối giả thuyết
+khi:
+\[
+	c_{i}>=\eta_{c} \cdot \operatorname{CI}\left(\alpha, c_{i-1}\right)+c_{i-1}
+\]
+
+với $\eta_{c}$ và $\alpha$ là các tham số để điều chỉnh hiệu suất của thuật
+toán~\cite{hendricksonTrendDetectionSocial2015}.
+
+Mô hình trên khá đơn giản và chỉ yêu cầu một điểm dữ liệu cho mô hình cơ sở.
+Tuy nhiên với lượng dữ liệu thay đổi liên tục và thay đổi trong phạm vi rộng,
+ta không thể tìm được một cặp tham số $\eta$ và $\alpha$ tối ưu cho mọi loại dữ
+liệu. Hơn nữa, dữ liệu thực tế thường không tuân theo phân phối Poisson với
+mean chỉ đơn giản là một điểm dữ liệu. Để giải quyết vấn đề này, ta có thể tính
+mean bằng giá trị trung bình của nhiều điểm dữ liệu trong lịch sử trong cùng
+một sliding window. Tuy nhiên, như đã nói ở trên, việc chọn tham số cho mô hình
+để tối ưu cho dữ liệu với mọi kích thước và hình dạng là không
+thể~\cite{hendricksonTrendDetectionSocial2015}.
+
+\subsubsection{Mô hình thiên dữ liệu (data-driven)}
+Để giải quyết các vấn đề của mô hình Poisson,
+\cite{hendricksonTrendDetectionSocial2015}~đề xuất phương pháp đơn giản hơn đó
+là so sánh dữ liệu cần phân tích với các dữ liệu đã được gán nhãn. Trước tiên,
+ta phải phân loại dữ liệu có sẵn thành \textit{đang trend} hoặc \textit{không
+trend}. Sau đó, ta định nghĩa một hàm tính khoảng cách từ dữ liệu đã gán nhãn
+và dữ liệu ta cần phân tích:
+\[ d(r, s)=\sum_{i}^{N}\left(r_{i}-s_{i}\right)^{2} \]
+
+với:
+\begin{itemize}
+	\item $r$ là dữ liệu dạng time series đã được gán nhãn.
+	\item $s$ là dữ liệu dạng time series đang được phân tích.
+	\item $r_{i}$ và $s_{i}$ là các giá trị của dữ liệu tại thời điểm $i$ trong
+	tập dữ liệu $r$ và $s$ có độ dài $N$.
+\end{itemize}
+
+Nếu $r$ có độ dài lớn hơn $s$, ta lấy giá trị nhỏ nhất trong các khoảng cách
+$d(r_s, s)$, với $r_s$ là tập con (sub-series) của $r$. Với hàm khoảng cách ở
+trên, ta có thể tính trọng lượng (weight) bằng cách:
+\[ W(r,s)=e^{-\lambda \cdot d(r,s)} \]
+
+Tham số $\lambda$ là một hệ số để điều chỉnh mức độ quan trọng giữa các time
+series khác nhau hoặc giống nhau. Ví dụ, giá trị $\lambda$ lớn cho ra $W$ rất
+nhỏ kể cả khi khoảng cách $r$ và $s$ là rất
+lớn~\cite{hendricksonTrendDetectionSocial2015}. Khi đó, $\eta$ sẽ được tính
+bằng tỉ lệ:
+\[
+\eta(s)=\frac{\sum_{r \in R+} W(r, s)}{\sum_{r \in R-} W(r, s)}
+\]
+
+với $R+$ là tập dữ liệu gồm nhiều time series được gán nhãn \textit{trend} và
+$R-$ là dữ liệu được gán nhãn \textit{không trend}. Giá trị $\eta$ càng cao thì
+time series $s$ càng \textit{giống trend} và ngược lại.
+
+Khó khăn chính khi hiện thực mô hình này là việc gán nhãn cho các dữ liệu
+\textit{đang trend} và \textit{không trend}. Bên cạnh đó, để mô hình hoạt động
+trên mọi kích thước dữ liệu, việc thực hiện biến đổi (transformation) trên các
+tập dữ liệu là cần thiết. Các biến đổi có thể là~\cite{nikolovTrendNoTrend2012}:
+
+\begin{itemize}
+	\item \textbf{Baseline Normalization}: 
+\end{itemize}
+
+Hơn nữa, ta phải điều chỉnh các tham số như $\lambda$, độ dài time series $s$
+và $r$, chọn các phương thức biến đổi (transformation) để đạt được kết quả tốt
+nhất, vì nhiều trong số chúng có ảnh hưởng trực tiếp tới các thang đo như
+true-positive và false-positive~\cite{hendricksonTrendDetectionSocial2015}.
 
 \subsection{Mô hình phát hiện chủ đề}
 
@@ -129,7 +223,7 @@ Poisson~\cite{hendricksonTrendDetectionSocial2015}.
 \subsection{VnCoreNLP}
 
 \section{Thử nghiệm}
-Bài báo cáo này nghiên cứu về cả hai mô hình xác suất và mô hình học máy, nhưng
+Báo cáo này nghiên cứu về cả hai mô hình xác suất và mô hình học máy, nhưng
 chỉ thực hiện thí nghiệm trên mô hình học máy nửa giám sát (semi-supervised) vì
 mô hình xác suất cần trực tiếp kết quả của mô hình học máy (\#TODO xem lại).
 
