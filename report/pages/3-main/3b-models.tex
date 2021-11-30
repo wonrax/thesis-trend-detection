@@ -1,8 +1,20 @@
 \section{Các mô hình}
 \label{sec:models}
-Ba mô hình chính được báo cáo này nhắc tới bao gồm mô hình phát hiện xu
-hướng, mô hình phát hiện chủ đề và mô hình phát hiện chủ đề dựa trên ngữ nghĩa.
-Mô hình phát hiện xu hướng được nghiên cứu là mô hình được phát triển bởi
+Ta thường có hai cách để phát hiện các sự kiện hay chủ đề đang nổi bật:
+\textbf{(1)} hồi tưởng (retrospect), sử dụng toàn bộ dữ liệu để làm đầu vào cho
+mô hình, hoặc, \textbf{(2)} online, phát hiện trên thời gian thực bằng cách đưa
+vào (feed) mô hình mỗi khi ta thu thập được dữ liệu
+mới~\cite{lauOnlineTrendAnalysis2012}. Với cách \textbf{(1)}, ta có thể phân
+tích được các chủ đề hay sự kiện trong lịch sử, và thường được hiện thực bằng
+các phương thức như gọm cụm (clustering) hay phát hiện bất thường (anomaly
+detection). Tuy nhiên, nếu ta muốn phát hiện các sự kiện đang xảy ra trong thời
+gian thực, chẳng hạn như phát hiện động đất, thì ta cần dùng đến kỹ thuật thứ
+\textbf{(2)}.
+
+Ba mô hình chính được báo cáo này nhắc tới bao gồm mô hình phát hiện xu hướng
+(được xếp vào kỹ thuật thứ \textbf{2}), mô hình phát hiện chủ đề và mô hình
+phát hiện chủ đề dựa trên ngữ nghĩa (được xếp vào kỹ thuật thứ \textbf{1}).  Mô
+hình phát hiện xu hướng được nghiên cứu là mô hình được phát triển bởi
 Twitter~\cite{hendricksonTrendDetectionSocial2015}, bao gồm mô hình xác suất và
 mô hình thiên dữ liệu (data-driven). Mô hình phát hiện chủ đề là mô hình khai
 thác sự xuất hiện của các từ khoá trong các tập văn bản để tìm ra sự tương quan
@@ -11,8 +23,11 @@ hình phát hiện chủ đề mà báo cáo này sẽ tập trung nghiên cứu
 Dirichlet Allication (LDA). Mô hình phát hiện chủ đề dựa trên ngữ nghĩa là một
 mô hình phát hiện chủ đề nhưng được dựa trên ngữ nghĩa của văn bản, hay ngữ
 cảnh mà văn bản đó biểu hiện để thực hiện gom cụm chủ đề. Mô hình ngữ nghĩa
-BERT và PhoBERT là đối tượng nghiên cứu và là cơ sở cho thực nghiệm, kết hợp
-với LDA để có thể sinh ra kết quả tốt hơn~\cite{lamGomCumVan2021}.
+BERT và PhoBERT là đối tượng nghiên cứu và là cơ sở cho thực nghiệm, được kết
+hợp với LDA và phương pháp gom cụm để có thể sinh ra kết quả tốt
+hơn~\cite{lamGomCumVan2021}.
+
+
 
 \subsection{Mô hình phát hiện xu hướng}
 Tương tác của người dùng trên mạng xã hội luôn có sự liên quan nhất định nào đó
@@ -153,11 +168,11 @@ tập dữ liệu là cần thiết. Các biến đổi có thể là~\cite{niko
 	\item \textbf{Chuẩn hoá đường cơ sở (Baseline Normalization)}: Quan sát cho
 		thấy khá nhiều chủ đề \textit{không trend} có tần suất Tweet rất cao,
 		bên cạnh đó cũng có rất nhiều chủ đề \textit{đang trend} lại có tần
-		suất Tweet rất thấp. Ví dụ, chủ đề "người" có tần suất cơ sở (baseline
-		rate) rất cao vì nó là một âm tiết phổ biến trong tiếng Việt. Ta có thể
-		sử dụng Baseline Normalization để nhấn mạnh (emphasize) các điểm dữ
-		liệu cao hơn đường cơ sở và giảm độ quan trọng của các điểm dữ liệu
-		thấp hơn đường cơ sở.
+		suất Tweet rất thấp. Ví dụ, chủ đề "city" có tần suất cơ sở (baseline
+		rate) rất cao vì nó là một âm tiết phổ biến trong tiếng Anh. Vì vậy nên
+		ta có thể sử dụng Baseline Normalization để nhấn mạnh (emphasize) các
+		điểm dữ liệu cao hơn đường cơ sở và giảm độ quan trọng của các điểm dữ
+		liệu thấp hơn đường cơ sở.
 	
 	\item \textbf{Chuẩn hoá spike (Spike Normalization)}: Các chủ đề
 		\textit{đang trend} và các chủ đề \textit{không trend} còn khác nhau ở
@@ -178,6 +193,11 @@ nhất, vì nhiều trong số chúng có ảnh hưởng trực tiếp tới cá
 true-positive và false-positive~\cite{hendricksonTrendDetectionSocial2015}.
 
 \subsection{Mô hình phát hiện chủ đề}
+Chủ đề là vấn đề cơ bản, là nội dung trọng tâm mà người nói hoặc người viết
+muốn đề cập. Một văn bản (bài báo, Tweet, bài văn, v.v.) có thể chứa nhiều chủ
+đề, nhưng chỉ có một hoặc một vài chủ đề có thể làm chủ đề chính để đại diện
+cho văn bản đó.
+\subsubsection{Mô hình Latent Dirichlet Allocation (LDA)}
 
 \subsection{Mô hình phân tích ngữ nghĩa}
 
