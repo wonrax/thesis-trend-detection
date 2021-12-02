@@ -3,13 +3,20 @@
 % For subfigure
 \usepackage{subcaption}
 
-\newcommand{\image}[3][1]{
+% Add the margin around the caption
+\usepackage[margin=1cm]{caption}
+
+\newcommand{\image}[4][1]{
 \begin{figure}[ht]
-	\includegraphics[width=#1\textwidth,keepaspectratio]{#2}
+	\includegraphics[trim=0 0 0 -2cm,width=#1\textwidth,keepaspectratio]{#2}
 	\centering
 	\caption{#3}
+	\label{#4}
 \end{figure}
 } 
+% Example usage
+% \image[0.7]{img/Skein_permutation.png}{Hoán vị Skein \
+% \citep{wiki:skein_permutation}}
 
 \newcommand{\doubleimage}[7][0.4]{ 
 \begin{figure}[ht]
@@ -27,3 +34,7 @@
 	\caption{#6}
 \end{figure} 
 }
+% Example usage
+% \doubleimage[0.7]{img/code/naiveHashing/circle.jpg}{Hình \
+% tròn}{img/code/naiveHashing/circle-1p.jpg}{Hình tròn bị thay đổi 1 điểm \
+% ảnh}{Hai hình ảnh chỉ khác nhau một điểm ảnh}

@@ -80,16 +80,17 @@ khác, ta có thể mặc định dữ liệu đó tuân theo phân phối
 Poisson~\cite{hendricksonTrendDetectionSocial2015}.
 
 Ví dụ, ta xét số lượng Tweet có chứa hashtag "\#covid19" trong một khoảng thời
-gian nào đó. Số lượng đó có thể thay đổi theo tần suất đăng bài của người dùng
-trong ngày.  Nhưng nếu ta bỏ qua sự thay đổi đó, ta có thể nói, số lượng Tweet
-có chứa hashtag "\#covid19" tuân theo phân phối Poisson:
+gian nhất định. Tần suất đăng bài của người dùng có thể thay đổi theo thời
+gian. Nhưng nếu ta bỏ qua sự thay đổi đó, ta có thể nói, số lượng Tweet có chứa
+hashtag "\#covid19" tuân theo phân phối Poisson:
 \[ P\left(c_{i} ; \nu\right)=\nu^{c_{i}} \cdot e^{-\nu} / c_{i} ! \]
 
 với:
 \begin{itemize}
 	\item $c_{i}$ là số lượng Tweet có chứa hashtag "\#covid19" trong một khoảng
 	thời gian nhất định.
-	\item $P$ là xác suất xuất hiện các Tweet tương tự với số lượng $c_{i}$.
+	\item $P$ là xác suất xuất hiện các Tweet có chứa hashtag "\#covid19" với số
+	lượng $c_{i}$.
 	\item $\nu$ là số lượng kỳ vọng các Tweet có chứa hashtag "\#covid19".
 \end{itemize}
 
@@ -114,15 +115,19 @@ khi:
 với $\eta_{c}$ và $\alpha$ là các tham số để điều chỉnh hiệu suất của thuật
 toán~\cite{hendricksonTrendDetectionSocial2015}.
 
-Mô hình trên khá đơn giản và chỉ yêu cầu một điểm dữ liệu cho mô hình cơ sở.
-Tuy nhiên với lượng dữ liệu thay đổi liên tục và thay đổi trong phạm vi rộng,
-ta không thể tìm được một cặp tham số $\eta$ và $\alpha$ tối ưu cho mọi loại dữ
-liệu. Hơn nữa, dữ liệu thực tế thường không tuân theo phân phối Poisson với
-mean chỉ đơn giản là một điểm dữ liệu. Để giải quyết vấn đề này, ta có thể tính
-mean bằng giá trị trung bình của nhiều điểm dữ liệu trong lịch sử trong cùng
-một sliding window. Tuy nhiên, như đã nói ở trên, việc chọn tham số cho mô hình
-để tối ưu cho dữ liệu với mọi kích thước và hình dạng là không
-thể~\cite{hendricksonTrendDetectionSocial2015}.
+Trên thực tế, dữ liệu thường không tuân theo phân phối Poisson với mean chỉ đơn
+giản là một điểm dữ liệu. Để giải quyết vấn đề này, ta có thể tính mean bằng
+giá trị trung bình của nhiều điểm dữ liệu trong lịch sử trong cùng một sliding
+window. Tuy nhiên, ta không thể bỏ qua tần suất hoạt động của người dùng trong
+ngày, trong tháng hoặc trong năm. Chẳng hạn như, người dùng có xu hướng đăng
+Tweet nhiều nhất trong ngày vào lúc 17h-20h. Cho nên, khi ta bắt gặp sự thay
+đổi đáng kể trong khoảng thời gian đó, ta không thể đơn giản kết luận đó là xu
+hướng.
+
+Mô hình trên khá đơn giản và chỉ yêu cầu một điểm hoặc vài điểm dữ liệu cho mô
+hình cơ sở. Tuy nhiên với lượng dữ liệu thay đổi liên tục và thay đổi trong
+phạm vi rộng, ta không thể tìm được một cặp tham số $\eta$ và $\alpha$ tối ưu
+cho mọi loại dữ liệu.
 
 \subsubsection{Mô hình thiên dữ liệu (data-driven)}
 Để giải quyết các vấn đề của mô hình Poisson,
@@ -148,8 +153,7 @@ trên, ta có thể tính trọng lượng (weight) bằng cách:
 
 Tham số $\lambda$ là một hệ số để điều chỉnh mức độ quan trọng giữa các time
 series khác nhau hoặc giống nhau. Ví dụ, giá trị $\lambda$ lớn cho ra $W$ rất
-nhỏ kể cả khi khoảng cách $r$ và $s$ là rất
-lớn~\cite{hendricksonTrendDetectionSocial2015}. Khi đó, $\eta$ sẽ được tính
+nhỏ kể cả khi khoảng cách $r$ và $s$ là rất lớn. Khi đó, $\eta$ sẽ được tính
 bằng tỉ lệ:
 \[
 \eta(s)=\frac{\sum_{r \in R+} W(r, s)}{\sum_{r \in R-} W(r, s)}
@@ -187,9 +191,10 @@ tập dữ liệu là cần thiết. Các biến đổi có thể là~\cite{niko
 
 \end{itemize}
 
-Hơn nữa, ta phải điều chỉnh các tham số như $\lambda$, độ dài time series $s$
-và $r$, chọn các phương thức biến đổi (transformation) để đạt được kết quả tốt
-nhất, vì nhiều trong số chúng có ảnh hưởng trực tiếp tới các chỉ số như
+Mặc dù dữ liệu được dán nhãn sẽ quyết định kết quả của một time series, nhưng
+ta vấn có thể điều chỉnh mô hình bằng cách thay đổi các tham số như $\lambda$,
+độ dài time series $s$ và $r$, chọn các phương thức biến đổi để đạt được kết
+quả tốt nhất, vì nhiều trong số chúng có ảnh hưởng trực tiếp tới các chỉ số như
 true-positive và false-positive~\cite{hendricksonTrendDetectionSocial2015}.
 
 \subsection{Mô hình phát hiện chủ đề}
@@ -197,8 +202,109 @@ Chủ đề là vấn đề cơ bản, là nội dung trọng tâm mà người 
 muốn đề cập. Một văn bản (bài báo, Tweet, bài văn, v.v.) có thể chứa nhiều chủ
 đề, nhưng chỉ có một hoặc một vài chủ đề có thể làm chủ đề chính để đại diện
 cho văn bản đó.
-\subsubsection{Mô hình Latent Dirichlet Allocation (LDA)}
 
-\subsection{Mô hình phân tích ngữ nghĩa}
+Để tìm ra chủ đề, ta không thể đơn giản chỉ tìm từ phổ biến nhất trong văn bản.
+Mỗi từ tuỳ theo ngữ cảnh có thể thuộc về nhiều chủ đề khác nhau. Ví dụ như âm
+tiết "đường" có thể vừa thuộc chủ đề "gia vị" và vừa có thể thuộc chủ đề "công
+trình". Mô hình phát hiện chủ đề là mô hình túi từ (bag-of-words model) dùng để
+khai thác mối tương quan giữa các từ và các chủ đề ngữ nghĩa tiềm ẩn (latent
+sematic theme) giữa các văn bản~\cite{madaniRealtimeTrendingTopics2015}.
+
+Về cơ bản, mô hình chủ đề thực hiện ba công
+việc~\cite{kapadiaTopicModelingPython2020}:
+
+\begin{itemize}
+	\item \textbf{Giảm chiều (Dimensionality Reduction)}: thay vì biểu diễn từ
+		T ở không gian đặc trưng (feature space) \{Word\_i: count(Word\_i, T)
+		for Word\_i in Vocabulary\}, ta có thể biểu diễn nó thành \{Topic\_i:
+		Weight(Topic\_i, T) for Topic\_i in Topics\}.
+	
+	\item \textbf{Học không giám sát (Unsupervised Learning)}: có thể so sánh
+		với gom cụm, khi số lượng cụm hay số lượng chủ đề là tham số cho đầu ra
+		của mô hình. Khi ta thực hiện mô hình chủ đề, ta gọm cụm các từ thay vì
+		gom cụm các văn bản.
+	
+	\item \textbf{Gán nhãn (Tagging)}: tìm cách biểu diễn các chủ đề mà các văn
+		bản trong một tập văn bản thể hiện.
+\end{itemize}
+
+\subsubsection{Mô hình Latent Dirichlet Allocation (LDA)}
+Mô hình LDA là mô hình tạo sinh xác suất (generative probabilistic model) cho
+các dữ liệu rời rạc như các kho văn bản (text corpora). LDA là mô hình Bayes ba
+lớp, với mỗi văn bản trong một tập văn bản được biểu diễn thông qua một tập các
+chủ đề. Và mỗi chủ đề được biểu diễn bằng một tập các xác suất chủ
+đề~\cite{bleiLatentDirichletAllocation2003}. Nói cách khác, một văn bản có thể
+biểu diễn bằng nhiều chủ đề, và một chủ đề có thể được biểu diễn bằng nhiều từ
+khác nhau.
+
+Giả sử ta có 1000 văn bản, và mỗi văn bản có trung bình 300 từ. Để biết được thể
+loại của mỗi văn bản, ta có thể nối mỗi văn bản với các từ xuất hiện trong văn
+bản đó (Hình \ref{fig:simple_word_doc_model}). Khi đó, một tập các văn bản kết
+nối cùng với một tập các từ thì chúng được gọi là cùng chủ
+đề~\cite{ganegedaraIntuitiveGuideLatent2021}. Tuy nhiên, số kết nối ta phải tính
+toán là quá lớn: $1000 \cdot 300 = 300000$.
+
+\image[0.7]{img/lda/simple_word_doc_model.jpeg}{Mô hình kết nối văn bản - từ đơn
+giản. Ảnh:
+Medium~\cite{ganegedaraIntuitiveGuideLatent2021}}{fig:simple_word_doc_model}
+
+Để giảm số kết nối, LDA thêm một lớp tiềm ẩn (latent), tức là các chủ đề ẩn chứa
+trong các văn bản đều bị ẩn đi (unknown)(Hình \ref{fig:latent_word_doc_model}).
+Tuy nhiên chúng vẫn được thể hiện bằng cách tạo sinh văn bản dựa trên các chủ đề
+đó~\cite{tomarTopicModelingUsing2019}.
+
+\image[0.7]{img/lda/latent_word_doc_model.jpeg}{Mô hình có lớp tiềm ẩn giúp giảm
+số lượng kết nối (thread). Ảnh:
+Medium~\cite{ganegedaraIntuitiveGuideLatent2021}}{fig:latent_word_doc_model}
+
+\image[0.7]{img/lda/architecture.png}{Minh hoạ mô hình LDA. Các node thể hiện
+cho các biến ngẫu nhiên, các cạnh thể hiện sự phụ thuộc giữa các biến ngẫu
+nhiên. Node màu xám là biến ngẫu nhiên có thể quan sát được; node màu trắng là
+các biến ngẫu nhiên ẩn (hidden). Các hình chữ nhật là ký hiệu tấm (plate
+notation), thể hiện sự lặp lại của các biến ngẫu nhiên
+~\cite{bleiTopicModels2009}.}{fig:lda_architecture}
+
+Hình \ref{fig:lda_architecture} minh hoạ mô hình LDA. Quá trình tạo sinh từng
+văn bản $w$ trong kho văn bản $D$ được thực hiện như
+sau~\cite{bleiLatentDirichletAllocation2003}:
+
+\begin{enumerate}
+	\item Chọn $N \sim Poisson(\xi)$.
+	\item Chọn $\theta \sim Dir(\alpha)$ với $Dir$ là phân phối Dirichlet.
+	\item Với mỗi từ $w_n$ trong N từ:
+	\begin{enumerate}
+		\item Chọn $z_n \sim Multinomial(\theta)$.
+		\item Chọn một chủ đề $z_n$ từ $p(w_n|z_n,\beta)$, là một xác suất đa
+		thức có điều kiện phụ thuộc vào chủ đề $z_n$.
+	\end{enumerate}
+\end{enumerate}
+
+% # TODO \subsubsection{Phát hiện trend twitter với LDA}
+
+\subsection{Phương pháp khai thác ngữ nghĩa}
+\subsubsection{Word embedding, sentence embedding}
+Véc-tơ ngữ nghĩa (vectors semantics) là phương pháp cơ bản để biểu diễn nghĩa
+của các từ trong xử lý ngôn ngữ tự nhiên. Ý tưởng của véc-tơ ngữ nghĩa là
+chuyển một từ thành một điểm trong không gian ngữ nghĩa (semantic space). Điểm
+mà một từ thể hiện sẽ được rút ra từ sự phân bổ các điểm (từ) xung quanh nó
+(neighbor). Véc-tơ dùng để biểu diễn một từ gọi là word
+embedding~\cite{jurafskySpeechLanguageProcessing}.
+
+\image[0.7]{img/bert/word-embedding.png}{Minh hoạ các véc-tơ ngữ nghĩa của từ,
+các từ gần nhau thường sẽ mang ý nghĩa/ý nghĩa sử dụng gần nhau. Ảnh:
+Medium~\cite{bujokasCreatingWordEmbeddings2020}.}{fig:word_embedding}
+
+Sentence embedding cũng giống như word embedding, nhưng nó dùng để biểu diễn sự
+tương quan ngữ nghĩa giữa các câu. Một cách đơn giản để tạo sentence embedding
+là lấy trung bình tất cả các word embedding của các từ trong câu
+đó~\cite{lamGomCumVan2021}. Sentence embedding giúp ta khai thác được ngữ cảnh rộng hơn, trải dài qua nhiều câu mà các word embedding không thể làm được.
+
+Sentence embedding có thể sử dụng để phân loại (ví dụ, câu đang xét là mang ý
+nghĩa tích cực hay tiêu cực), phân tích ngữ nghĩa (ví dụ, phân tích sự liên
+quan giữa hai câu bất kỳ) hoặc dùng trong các tác vụ ngôn ngữ (linguistic task,
+ví dụ, xác định động từ là thì hiện tại hay thì quá khứ trong tiếng
+Anh)~\cite{heidenreichPaperSummaryEvaluation2018}.
+
+\subsubsection{Mô hình BERT}
 
 \subsection{VnCoreNLP}
