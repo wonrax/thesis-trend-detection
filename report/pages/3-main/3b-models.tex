@@ -306,5 +306,81 @@ ví dụ, xác định động từ là thì hiện tại hay thì quá khứ tr
 Anh)~\cite{heidenreichPaperSummaryEvaluation2018}.
 
 \subsubsection{Mô hình BERT}
+BERT~\cite{devlinBERTPretrainingDeep2019} (Bidirectional Encoder
+Representations from Transformers) là mô hình ngôn ngữ dựa trên kiến trúc
+transformer~\cite{vaswaniAttentionAllYou2017}. BERT được các kỹ sư ở Google
+phát triển và công bố vào năm 2018, đánh dấu bước đột phá trong các tác vụ xử
+lý ngôn ngữ tự nhiên và các benchmark như GLUE (đánh giá mức độ hiểu ngôn ngữ),
+SQuAD, v.v.
+
+BERT là mô hình học sẵn (pre-trained model) được huấn luyện sẵn cho mục đích
+chung (general purpose). BERT được thiết kế để huấn luyện trước (pre-train) các word embedding. Đầu ra của BERT sẽ được tinh chỉnh (fine-tune) với các
+lớp huấn luyện bổ sung để phù hợp với các yêu cầu cụ thể của các tác vụ khác
+nhau.
+
+BERT là mô hình ngôn ngữ hai chiều (bidirectional), tức là một từ trong câu sẽ
+được biểu diễn bởi các từ xung quanh nó. Khác với các mô hình một chiều
+(unidirectional), một từ trong câu chỉ xét các từ ở phía trước nó. Ví dụ cho mô
+hình một chiều là ELMo~\cite{petersDeepContextualizedWord2018}; "Mặc dù ELMo có
+kiến trúc dựa trên một mạng BiLSTM xem xét bối cảnh theo hai chiều từ trái sang
+phải và từ phải sang trái nhưng những chiều này là độc lập nhau nên ta coi như
+đó là biểu diễn một chiều."~\cite{khanhBERTModel2020}.
+
+BERT chỉ sử dụng phần encoder của kiến trúc transformer (sẽ được trình bày ở
+phần kế tiếp). Khác với Recurrent Neural Network (RNN), cơ chế attention của
+transformer truyền tất cả các từ trong câu vào mô hình và thực hiện đánh giá
+(evaluate) chúng cùng một lúc, do đó transformer có thể coi là huấn luyện hai
+chiều~\cite{khanhBERTModel2020}.
+
+Đầu vào của BERT là một tập các từ được encode thành các véc-tơ embedding. Trước tiên, đầu vào sẽ được WordPiece phân tách thành các token. BERT sẽ dựa trên các token để tạo ra ba véc-tơ embedding:
+\begin{itemize}
+	\item Các token sẽ được chuyển thành các véc-tơ 768 chiều, trở thành Token
+		Embedding.
+	\item Segment Embedding là các véc-tơ để phân biệt các câu. Giữa các câu
+		này sẽ được phân chia bởi một token [SEP]. Ví dụ, véc-tơ Segment
+		Embedding của câu thứ nhất sẽ mang giá trị 0 ở tất cả các chiều, và
+		véc-tơ Segment Embedding của câu thứ hai sẽ mang giá trị 1 ở tất cả các
+		chiều.
+	\item Positional Embedding sẽ cho biết token đang nằm ở vị trí nào trong
+		câu và được tính bằng các hàm $sin$ và $cos$ ở các tần suất khác
+		nhau~\cite{vaswaniAttentionAllYou2017}.
+\end{itemize}
+
+\image[1]{img/bert/input.png}{Minh hoạ đầu vào của
+BERT~\cite{devlinBERTPretrainingDeep2019}}{fig:bert_input}
+
+Đầu vào cho các lớp tiếp theo của BERT sẽ là tổng của ba véc-tơ embedding trên.
+Chiều dài tối đa của đầu vào cho mô hình là 512 token, token đầu tiên luôn là
+token [CLS] (token classification). Và giữa các câu được phân chia bởi token
+[SEP]. BERT được huấn luyện trên tập dữ liệu
+BooksCorpus~\cite{zhuAligningBooksMovies2015} (800 triệu từ) và Wikipedia tiếng
+Anh (2500 triệu từ).
+
+BERT sử dụng hai tác vụ để huấn luyện:
+
+\begin{enumerate}
+	\item \textbf{Masked ML (MLM)}:
+		Vì mô hình BERT là mô hình hai chiều nên một từ trong câu có thể "thấy
+		được chính nó", qua đó mô hình có thể gian lận để dự đoán từ một cách
+		dễ dàng~\cite{devlinBERTPretrainingDeep2019}. Chính vì vậy, ta cần phải
+		che dấu (mask) một số từ để huấn luyện BERT dự đoán các từ bị che đó.
+		Qua nhiều lần thử nghiệm, \cite{devlinBERTPretrainingDeep2019} chọn che
+		dấu 15\% số từ trong câu và chúng được chọn một cách ngẫu nhiên. Tuy
+		nhiên, vì quá trình fine-tune không sử dụng Masked ML để huấn luyện,
+		BERT chỉ thay thế 80\% trong số 15\% đó bằng token [MASK]. Trong 20\%
+		còn lại, một nửa sẽ được thay thế bởi các token ngẫu nhiên và nửa còn
+		lại sẽ được giữ nguyên token ban đầu.
+	\item \textbf{Next Sentence Prediction (NSP)}: Đầu vào của BERT sẽ là hai
+		câu bất kỳ trong tập dữ liệu được phân cách bởi token [SEP]. BERT chọn
+		câu thứ hai là câu tiếp theo (trên tập dữ liệu) của câu thứ nhất với cơ
+		hội 50\%, và 50\% còn lại câu thứ hai được lấy ngẫu nhiên từ tập dữ
+		liệu. BERT sẽ được huấn luyện để dự đoán xem câu thứ hai có phải là câu
+		tiếp theo của câu thứ nhất hay không, qua đó huấn luyện BERT hiểu được
+		mối quan hệ giữa các câu với nhau.
+\end{enumerate}
+
+Quá trình tinh chỉnh (fine-tune) cho các tác vụ khác được dựa trên mô hình BERT
+đã được huấn luyện sẵn (pre-trained model). Ta có thể thêm một hoặc các lớp
+(layer) bổ sung mà không cần can thiệp hay chỉnh sửa mô hình BERT ban đầu.
 
 \subsection{VnCoreNLP}
