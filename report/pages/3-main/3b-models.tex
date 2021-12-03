@@ -383,4 +383,42 @@ Quá trình tinh chỉnh (fine-tune) cho các tác vụ khác được dựa tr�
 đã được huấn luyện sẵn (pre-trained model). Ta có thể thêm một hoặc các lớp
 (layer) bổ sung mà không cần can thiệp hay chỉnh sửa mô hình BERT ban đầu.
 
+\subsubsection{Encoder của kiến trúc transformer} Kiến trúc
+transformer~\cite{vaswaniAttentionAllYou2017} bao gồm encoder và decoder
+(hình \ref{fig:transformer}). Về cơ bản, encoder được sử dụng để chuyển đầu vào
+thành các đặc trưng đơn giản (feature learning). Decoder sử dụng kết quả của
+encoder để dự đoán nhãn của đầu ra. Mô hình BERT chỉ sử dụng phần encoder của
+kiến trúc transformer.
+
+\image[0.6]{img/bert/transformer.png}{Kiến trúc transformer với phần bên trái
+là encoder, bên phải là
+decoder~\cite{vaswaniAttentionAllYou2017}.}{fig:transformer}
+
+Encoder gồm hai thành phần chính là Multi-Head Attention và mạng nơ-ron truyền
+thẳng (Feed-Forward Neural Network, hay FNN). Mỗi thành phần được bao quanh bởi
+một residual connection~\cite{heDeepResidualLearning2016} và layer
+normalization~\cite{baLayerNormalization2016}: $LayerNorm(x + Sublayer(x))$ với
+$Sublayer$ là Multi-Head Attention hoặc FFN.
+
+Cơ chế self-attention là cơ chế giúp các từ điều chỉnh trọng số của các từ sao
+cho sự ảnh hưởng của các từ xung quanh đối với bản thân nó là hợp lý nhất. Ví
+dụ câu "Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay", thì từ
+\textit{Dũng} sẽ nên có ảnh hưởng lớn nhất đến từ \textit{anh ấy}.
+Self-attention được tính bằng query, key và value: $Q = W_q * x$, $K = W_k *
+x$, $V = W_v * x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ học trong quá
+trình huấn luyện, và $x$ là véc-tơ embedding cho đầu vào. $Q, K, V$ sau đó sẽ
+được cho qua lớp Scaled Dot-Product Attention để tính giá trị attention:
+\[ \operatorname{Attention}(Q, K, V)=\operatorname{softmax}\left(\frac{Q
+K^{T}}{\sqrt{d_{k}}}\right) V \]
+
+Multi-Head Attention bao gồm nhiều lớp self-attention, và được sinh ra bằng
+cách nối (concatenate) các lớp self-attention đó lại với nhau
+(hình~\ref{fig:multi_attention}):
+\[ MultiHead(Q,K,V) = Concat(head_1,...,head_h)W^O \]
+\[ \text{với } head_i = Attention(QW_i^Q, KW_i^K, VW_i^V). \]
+
+\image[1]{img/bert/multi-attention.png}{Minh hoạ Scaled Dot-Product Attention
+và Multi-Head
+Attention~\cite{vaswaniAttentionAllYou2017}.}{fig:multi_attention}
+
 \subsection{VnCoreNLP}
