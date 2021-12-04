@@ -70,11 +70,10 @@ mục khác nhau, nên cách biểu diễn đó có thể đã đủ để giúp
 được các chủ đề. Tập dữ liệu của báo cáo chỉ thuộc về một danh mục duy nhất
 (Sức khoẻ), nên thực nghiệm cho cho thấy cách biểu diễn đó khó có thể phân biệt
 được các chủ đề với nhau. Lý do cơ bản là vì từ phổ biến nhất trong tập văn bản
-không có nghĩa là nó mang ý nghĩa và có ảnh hưởng quan trọng nhất đối với chủ
-đề. Vì vậy, báo cáo sử dụng TF-IDF để tính điểm (score) cho toàn bộ các từ
-trong một tập văn bản thuộc cùng chủ đề đã được phân cụm. Sau đó, với mỗi văn
-bản, chỉ lấy $n$ từ có điểm số cao nhất để biểu diễn thành word cloud cho chủ
-đề đó.
+không có nghĩa là nó có ảnh hưởng quan trọng nhất đối với chủ đề. Vì vậy, báo
+cáo sử dụng TF-IDF để tính điểm (score) cho toàn bộ các từ trong một tập văn
+bản thuộc cùng chủ đề đã được phân cụm. Sau đó, với mỗi văn bản, chỉ lấy $n$ từ
+có điểm số cao nhất để biểu diễn thành word cloud cho chủ đề đó.
 
 \subsection{Kết quả}
 Báo cáo sử dụng thang đo Coherence để xác định tính mạch lạc trong chủ đề,
@@ -100,3 +99,104 @@ Bảng~\ref{table:result} biểu diễn kết quả của mô hình trên các g
 Theo dữ liệu ta có thể thấy, \textit{k} càng lớn thì điểm Coherence thường càng
 cao, tuy nhiên \text{k} lớn sẽ giảm hiệu suất gom cụm đi đáng kể.
 
+Hình~\ref{fig:clusters} minh hoạ kết quả gom cụm với $k=5$. Hình
+\ref{fig:topic1}, \ref{fig:topic2}, \ref{fig:topic3}, \ref{fig:topic4},
+\ref{fig:topic5}, thể hiện 5 word cloud được lọc bởi TF-IDF cho 5 chủ đề khác
+nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
+\begin{enumerate}
+    \item Chủ đề 1 tập trung chủ yếu về "vắc-xin", "dịch" [COVID-19], "thuốc"
+        và "thử nghiệm" [vắc-xin COVID-19]. Một số tựa đề bài báo được lấy ngẫu
+        nhiên trong tập các bài viết cùng chủ đề:
+        \begin{itemize}
+            \item AstraZeneca và J\&J nối lại các thử nghiệm vắc xin COVID-19 tại Mỹ
+            \item Vắc xin COVID-19 của Việt Nam được thử nghiệm trên người ra sao?
+            \item EU có thể ngăn xuất khẩu hàng triệu liều vắc xin COVID-19 sang Anh
+            \item Chứng chỉ hành nghề của ông Võ Hoàng Yên chỉ là giúp việc chuyên môn
+            \item TP.HCM: Người dân bắt đầu khai báo hồ sơ sức khỏe điện tử
+            \item TP.HCM: Xét nghiệm cho thi tốt nghiệp THPT, xác định 12 ca mắc COVID-19
+            \item Sở Y tế TP.HCM xem xét cho bệnh nhân COVID-19 khỏi bệnh tình nguyện chống dịch
+        \end{itemize}
+    \item Chủ đề 2 có các từ "bệnh nhân", "cách ly" hay "ca", chúng đều thể
+        hiện cho các bài viết thông tin về số ca nhiễm [COVID-19] trong ngày.
+        \begin{itemize}
+            \item Bắc Giang xuất hiện ổ dịch mới với 12 ca mắc ở Công ty Hosiden, sẽ lấy mẫu xuyên đêm
+            \item Bệnh viện quận Tân Phú tạm ngưng nhận bệnh vì 3 ca nghi nhiễm COVID-19
+            \item Virus lây lan nhanh, TP.HCM phát hiện nhiều chu kỳ lây nhiễm thứ 4, thứ 5
+            \item Nam công nhân mắc COVID-19 khi từ TP.HCM về Trà Vinh
+            \item Dân xếp hàng, giãn cách lấy mẫu xét nghiệm diện rộng
+            \item Đồng Nai vượt 800 ca, COVID-19 lây nhiễm cộng đồng khá nhanh và rộng
+            \item Hà Nội thêm 13 ca COVID-19 mới, quận Hai Bà Trưng 'làm khó' thủ tục đi đường
+            TP.HCM: F0 khỏi bệnh nếu chưa được xác nhận, phải tiêm vắc xin mới có thẻ xanh COVID
+        \end{itemize}
+    \item Chủ đề 3 nói về các vấn đề chung về y tế như "bác sĩ", "bệnh nhân"
+        hay "điều trị".
+        \begin{itemize}
+            \item Ngày đêm túc trực cứu phi công người Anh
+            \item Cứu sống thai nhi bị 6 vòng dây rốn quấn chặt
+            \item Chuẩn bị đưa bệnh nhân phi công người Anh về quê hương
+            \item Xuất hiện dịch bệnh lạ ở nơi có hàng ngàn người Việt sinh sống
+            \item Tối khuya 10-8 có ca tử vong do COVID-19 thứ 4 trong ngày
+            \item Bệnh nhân COVID-19 số 761 tử vong, ca tử vong thứ 35
+            \item Mổ cấp cứu cụ ông bị thanh gỗ đâm xuyên phổi
+            \item Trái tim anh công nhân cầu đường Vũng Tàu đập trong lồng ngực thanh niên Huế
+        \end{itemize}
+    \item Chủ đề 4 có các từ "tiêm", "vắc-xin", "ca" là phổ biến, thể hiện các
+        bài viết cập nhật về tiến độ tiêm chủng.
+        \begin{itemize}
+            \item Thủ tướng Ấn Độ ca ngợi yoga trong điều trị COVID-19
+            \item Đà Nẵng dự kiến tiêm 20.000 mũi vắc xin COVID-19 một ngày, 100-110 điểm tiêm
+            \item Hai con hổ Sumatra mắc COVID-19 đã khỏi bệnh
+            \item Loài người có thể ngăn chặn được biến thể Delta?
+            \item Bình Dương nới lỏng giãn cách, cấp 'thẻ xanh' cho người tiêm 2 mũi vắc xin ở vùng xanh
+            \item Ca nhập viện do COVID-19 ở Singapore tăng nhưng ít ca bệnh nặng
+            \item Tiêm 'trộn' vắc xin Johnson \& Johnson với Moderna tăng kháng thể gấp 76 lần
+        \end{itemize}
+    \item Chủ đề 5 phổ biến với các từ "bệnh", "trẻ", "thuốc" và "nghiên cứu",
+        về cơ bản cũng là các vấn đề chung về y tế, nhưng thiên về các mẹo hay phương pháp để cải thiện sức khoẻ.
+        \begin{itemize}
+            \item Người 'chịu khó' súc họng sẽ giúp mình ít nhiễm trùng hô hấp hơn
+            \item Trẻ nhiễm COVID-19 mắc hội chứng lạ giống Kawasaki: làm sao phân biệt hai bệnh?
+            \item Làm gì để có làn da đẹp?
+            \item Những bệnh nền nào dễ khiến bệnh nhân COVID-19 gặp nguy hiểm?
+            \item Bột ngọt dưới góc nhìn chuyên gia dinh dưỡng
+            \item Sáng kiến kết hợp hai xét nghiệm di truyền giúp sinh con khỏe mạnh
+            \item Giải mã 2 yếu tố bí ẩn nắm giữ 'bản lĩnh đàn ông'
+        \end{itemize}
+\end{enumerate}
+
+\image[0.6]{img/experiments/clusters.png}{Minh hoạ kết quả gom cụm với
+$k=5$.}{fig:clusters}
+
+\image[0.6]{img/experiments/topic0.png}{Word cloud cho chủ đề thứ 1,
+$k=5$.}{fig:topic1}
+
+\image[0.6]{img/experiments/topic1.png}{Word cloud cho chủ đề thứ 2,
+$k=5$.}{fig:topic2}
+
+\image[0.6]{img/experiments/topic2.png}{Word cloud cho chủ đề thứ 3,
+$k=5$.}{fig:topic3}
+
+\image[0.6]{img/experiments/topic3.png}{Word cloud cho chủ đề thứ 4,
+$k=5$.}{fig:topic4}
+
+\image[0.6]{img/experiments/topic4.png}{Word cloud cho chủ đề thứ 5,
+$k=5$.}{fig:topic5}
+
+\subsection{Kết luận}
+Áp dụng mô hình trên để thực hiện gom cụm chủ đề cho tập dữ liệu bài báo cùng
+một danh mục Sức khoẻ, ta thấy sự phân biệt giữa các chủ đề mới chỉ ở ngang mức
+trung bình. Tuy đã được cải thiện bằng TF-IDF, nhưng cách biểu diễn chủ đề sử
+dụng word cloud vẫn còn chưa bộc lộ hết được ý nghĩa của chủ đề. Tốc độ tính
+toán của mô hình đã được tăng lên đáng kể bằng cách sử dụng GPU, tuy nhiên đa
+phần các nhược điểm mà \cite{lamGomCumVan2021} gặp phải vẫn chưa được giải
+quyết trong báo cáo này.
+
+\textbf{Kết quả đạt được}:
+\begin{itemize}
+    \item Nghiên cứu và hiểu được các kỹ thuật phát hiện xu hướng, các mô hình
+        phát hiện chủ đề và phân tích ngữ nghĩa.
+    \item Học được cách thu thập dữ liệu, các kỹ thuật làm sạch và tiền xử lý
+        dữ liệu.
+    \item Thử nghiệm dữ liệu thu thập được với mô hình có sẵn, tuy không đạt
+        đuợc kết quả tốt.
+\end{itemize}
