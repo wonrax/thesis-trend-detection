@@ -279,6 +279,11 @@ sau~\cite{bleiLatentDirichletAllocation2003}:
 	\end{enumerate}
 \end{enumerate}
 
+LDA là mô hình học không giám sát (unsupervised) nên dữ liệu có thể không cần
+được gán nhãn mà vẫn đưa được vào mô hình. Về cơ bản, LDA sẽ cố gắng sinh ra
+các văn bản giống các văn bản đầu vào nhất có thể, từ đó mô hình học được các
+tham số $\alpha$ và $\beta$.
+
 % # TODO \subsubsection{Phát hiện trend twitter với LDA}
 
 \subsection{Phương pháp khai thác ngữ nghĩa}
@@ -403,22 +408,42 @@ $Sublayer$ là Multi-Head Attention hoặc FFN.
 Cơ chế self-attention là cơ chế giúp các từ điều chỉnh trọng số của các từ sao
 cho sự ảnh hưởng của các từ xung quanh đối với bản thân nó là hợp lý nhất. Ví
 dụ câu "Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay", thì từ
-\textit{Dũng} sẽ nên có ảnh hưởng lớn nhất đến từ \textit{anh ấy}.
-Self-attention được tính bằng query, key và value: $Q = W_q * x$, $K = W_k *
-x$, $V = W_v * x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ học trong quá
+\textit{Dũng} sẽ nên có ảnh hưởng nhiều đến từ \textit{anh ấy} hơn các từ còn
+lại. Self-attention được tính bằng query, key và value: $Q = W_q * x$, $K = W_k
+* x$, $V = W_v * x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ học trong quá
 trình huấn luyện, và $x$ là véc-tơ embedding cho đầu vào. $Q, K, V$ sau đó sẽ
-được cho qua lớp Scaled Dot-Product Attention để tính giá trị attention:
+được cho qua lớp Scaled Dot-Product Attention để tính giá trị attention
+(hình~\ref{fig:multi_attention}):
 \[ \operatorname{Attention}(Q, K, V)=\operatorname{softmax}\left(\frac{Q
 K^{T}}{\sqrt{d_{k}}}\right) V \]
 
-Multi-Head Attention bao gồm nhiều lớp self-attention, và được sinh ra bằng
-cách nối (concatenate) các lớp self-attention đó lại với nhau
-(hình~\ref{fig:multi_attention}):
+với $d_k$ là chiều của query và key. Multi-Head Attention bao gồm nhiều lớp
+self-attention, và được sinh ra bằng cách nối (concatenate) các lớp
+self-attention đó lại với nhau (hình~\ref{fig:multi_attention}):
 \[ MultiHead(Q,K,V) = Concat(head_1,...,head_h)W^O \]
 \[ \text{với } head_i = Attention(QW_i^Q, KW_i^K, VW_i^V). \]
+
+Với $W_O$, $W_i^Q$, $W_i^K$ và $W_i^V$ là các linear projection, cũng là các ma
+trận tham số (parameter matrix) được học trong quá trình huấn luyện.
 
 \image[1]{img/bert/multi-attention.png}{Minh hoạ Scaled Dot-Product Attention
 và Multi-Head
 Attention~\cite{vaswaniAttentionAllYou2017}.}{fig:multi_attention}
+
+FFN là mạng nơ-ron bao gồm hai biến đổi tuyến tính sử dụng hàm kích hoạt ReLU
+(ReLU activation function):
+\[ FFN(x) = max(0,xW_1 + b_1)W_2 + b_2 \]
+
+Kiến trúc của BERT bao gồm nhiều khối encoder chồng lên nhau. Nếu $L$ là số
+khối encoder, $H$ là kích thước của véc-tơ embedding, $A$ là số self-attention
+head trong lớp Multi-Head Attention, BERT đề nghị hai kích thước mô hình
+chính~\cite{devlinBERTPretrainingDeep2019}:
+\begin{itemize}
+	\item \textbf{BERT\textsubscript{BASE}} (L=12, H=768, A=12, 110 triệu tham
+		số).
+	\item \textbf{BERT\textsubscript{LARGE}} (L=24, H=1024, A=16, 340 triệu
+		tham số).
+\end{itemize}
+
 
 \subsection{VnCoreNLP}
