@@ -26,16 +26,17 @@ khoá (keyword) của bài báo do người viết đặt. Tuy nhiên, chỉ duy
 bài báo được lấy làm dữ liệu trực tiếp cho mô hình. Tổng số bài báo thu thập
 được là 12732 bài, trải dài từ ngày tháng 9 năm 2019 đến tháng 11 năm 2021.
 
-Trước khi đưa vào mô hình, dữ liệu cần được làm sạch và chuẩn hoá\\(normalization) để tránh lỗi trong quá trình huấn luyện:
+Trước khi đưa vào mô hình, dữ liệu cần được làm sạch và chuẩn hoá
+(normalization) để tránh lỗi trong quá trình huấn luyện:
 \begin{enumerate}
     \item Loại bỏ các bài báo không có nội dung (có chứa cột mang giá trị
         \textit{NULL}).
     \item Chuẩn hoá (normalize) các ký tự unicode. Chữ cái tiếng Việt có dấu
         tuy luôn luôn hiển thị giống nhau nhưng sẽ được viết bằng nhiều cách
-        khác nhau. Ví dụ, chữ "À" sẽ có hai cách viết: (1) là một ký tự unicode
-        duy nhất "Ã" \- U+00C3, hoặc (2) được kết hợp bởi một ký tự "A" \- 0x41
-        và một ký tự "\sim" \- 0xB7. Chính vì vậy, ta phải chuẩn hoá chúng về một
-        dạng để tránh lặp từ trong quá trình huấn luyện.
+        khác nhau. Ví dụ, chữ "Â" sẽ có hai cách viết: (1) là một ký tự unicode
+        duy nhất "Â" - U+00C2, hoặc (2) được kết hợp bởi một ký tự "A" và một
+        ký tự ``\^{}''. Chính vì vậy, ta phải chuẩn hoá chúng về một dạng để tránh
+        lặp từ trong quá trình huấn luyện.
     \item Loại bỏ các ký tự đặc biệt và các stop-word (là các từ phổ biến và ít
         mang một ý nghĩa đặc trưng, ví dụ như "là", "và", v.v.).
 \end{enumerate}
@@ -84,7 +85,7 @@ càng về 1 thì các cụm càng có sự phân biệt rõ ràng và ngược 
 Bảng~\ref{table:result} biểu diễn kết quả của mô hình trên các giá trị gom cụm
 \textit{k} khác nhau.
 
-\begin{table}[]
+\begin{table}[ht!]
     \centering
     \begin{tabular}{lllllll}
         \textbf{k}          & \textit{5} & \textit{6} & \textit{7} & \textit{10} & \textit{13} & \textit{20} \\ \hline
