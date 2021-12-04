@@ -33,12 +33,12 @@ Trước khi đưa vào mô hình, dữ liệu cần được làm sạch và ch
         \textit{NULL}).
     \item Chuẩn hoá (normalize) các ký tự unicode. Chữ cái tiếng Việt có dấu
         tuy luôn luôn hiển thị giống nhau nhưng sẽ được viết bằng nhiều cách
-        khác nhau. Ví dụ, chữ "Â" sẽ có hai cách viết: (1) là một ký tự unicode
-        duy nhất "Â" - U+00C2, hoặc (2) được kết hợp bởi một ký tự "A" và một
+        khác nhau. Ví dụ, chữ ``Â'' sẽ có hai cách viết: (1) là một ký tự unicode
+        duy nhất ``Â'' - U+00C2, hoặc (2) được kết hợp bởi một ký tự ``A'' và một
         ký tự ``\^{}''. Chính vì vậy, ta phải chuẩn hoá chúng về một dạng để tránh
         lặp từ trong quá trình huấn luyện.
     \item Loại bỏ các ký tự đặc biệt và các stop-word (là các từ phổ biến và ít
-        mang một ý nghĩa đặc trưng, ví dụ như "là", "và", v.v.).
+        mang một ý nghĩa đặc trưng, ví dụ như ``là'', ``và'', v.v.).
 \end{enumerate}
 
 Sau khi được làm sạch, tập dữ liệu còn lại 12595 bài báo. Tiếp theo, ta cần đưa
@@ -105,8 +105,8 @@ Hình~\ref{fig:clusters} minh hoạ kết quả gom cụm với $k=5$. Hình
 \ref{fig:topic5}, thể hiện 5 word cloud được lọc bởi TF-IDF cho 5 chủ đề khác
 nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
 \begin{enumerate}
-    \item Chủ đề 1 tập trung chủ yếu về "vắc-xin", "dịch" [COVID-19], "thuốc"
-        và "thử nghiệm" [vắc-xin COVID-19]. Một số tựa đề bài báo được lấy ngẫu
+    \item Chủ đề 1 tập trung chủ yếu về ``vắc-xin'', ``dịch'' [COVID-19], ``thuốc''
+        và ``thử nghiệm'' [vắc-xin COVID-19]. Một số tựa đề bài báo được lấy ngẫu
         nhiên trong tập các bài viết cùng chủ đề:
         \begin{itemize}
             \item AstraZeneca và J\&J nối lại các thử nghiệm vắc xin COVID-19 tại Mỹ
@@ -117,7 +117,7 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             \item TP.HCM: Xét nghiệm cho thi tốt nghiệp THPT, xác định 12 ca mắc COVID-19
             \item Sở Y tế TP.HCM xem xét cho bệnh nhân COVID-19 khỏi bệnh tình nguyện chống dịch
         \end{itemize}
-    \item Chủ đề 2 có các từ "bệnh nhân", "cách ly" hay "ca", chúng đều thể
+    \item Chủ đề 2 có các từ ``bệnh nhân'', ``cách ly'' hay ``ca'', chúng đều thể
         hiện cho các bài viết thông tin về số ca nhiễm [COVID-19] trong ngày.
         \begin{itemize}
             \item Bắc Giang xuất hiện ổ dịch mới với 12 ca mắc ở Công ty Hosiden, sẽ lấy mẫu xuyên đêm
@@ -129,8 +129,8 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             \item Hà Nội thêm 13 ca COVID-19 mới, quận Hai Bà Trưng 'làm khó' thủ tục đi đường
             TP.HCM: F0 khỏi bệnh nếu chưa được xác nhận, phải tiêm vắc xin mới có thẻ xanh COVID
         \end{itemize}
-    \item Chủ đề 3 nói về các vấn đề chung về y tế như "bác sĩ", "bệnh nhân"
-        hay "điều trị".
+    \item Chủ đề 3 nói về các vấn đề chung về y tế như ``bác sĩ'', ``bệnh nhân''
+        hay ``điều trị''.
         \begin{itemize}
             \item Ngày đêm túc trực cứu phi công người Anh
             \item Cứu sống thai nhi bị 6 vòng dây rốn quấn chặt
@@ -141,7 +141,7 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             \item Mổ cấp cứu cụ ông bị thanh gỗ đâm xuyên phổi
             \item Trái tim anh công nhân cầu đường Vũng Tàu đập trong lồng ngực thanh niên Huế
         \end{itemize}
-    \item Chủ đề 4 có các từ "tiêm", "vắc-xin", "ca" là phổ biến, thể hiện các
+    \item Chủ đề 4 có các từ ``tiêm'', ``vắc-xin'', ``ca'' là phổ biến, thể hiện các
         bài viết cập nhật về tiến độ tiêm chủng.
         \begin{itemize}
             \item Thủ tướng Ấn Độ ca ngợi yoga trong điều trị COVID-19
@@ -152,7 +152,7 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             \item Ca nhập viện do COVID-19 ở Singapore tăng nhưng ít ca bệnh nặng
             \item Tiêm 'trộn' vắc xin Johnson \& Johnson với Moderna tăng kháng thể gấp 76 lần
         \end{itemize}
-    \item Chủ đề 5 phổ biến với các từ "bệnh", "trẻ", "thuốc" và "nghiên cứu",
+    \item Chủ đề 5 phổ biến với các từ ``bệnh'', ``trẻ'', ``thuốc'' và ``nghiên cứu'',
         về cơ bản cũng là các vấn đề chung về y tế, nhưng thiên về các mẹo hay phương pháp để cải thiện sức khoẻ.
         \begin{itemize}
             \item Người 'chịu khó' súc họng sẽ giúp mình ít nhiễm trùng hô hấp hơn

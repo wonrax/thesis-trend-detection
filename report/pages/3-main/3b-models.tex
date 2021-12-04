@@ -79,19 +79,19 @@ khả năng áp dụng cho việc định lượng dữ liệu trên mạng xã 
 khác, ta có thể mặc định dữ liệu đó tuân theo phân phối
 Poisson~\cite{hendricksonTrendDetectionSocial2015}.
 
-Ví dụ, ta xét số lượng Tweet có chứa hashtag "\#covid19" trong một khoảng thời
+Ví dụ, ta xét số lượng Tweet có chứa hashtag ``\#covid19'' trong một khoảng thời
 gian nhất định. Tần suất đăng bài của người dùng có thể thay đổi theo thời
 gian. Nhưng nếu ta bỏ qua sự thay đổi đó, ta có thể nói, số lượng Tweet có chứa
-hashtag "\#covid19" tuân theo phân phối Poisson:
+hashtag ``\#covid19'' tuân theo phân phối Poisson:
 \[ P\left(c_{i} ; \nu\right)=\nu^{c_{i}} \cdot e^{-\nu} / c_{i} ! \]
 
 với:
 \begin{itemize}
-	\item $c_{i}$ là số lượng Tweet có chứa hashtag "\#covid19" trong một khoảng
+	\item $c_{i}$ là số lượng Tweet có chứa hashtag ``\#covid19'' trong một khoảng
 	thời gian nhất định.
-	\item $P$ là xác suất xuất hiện các Tweet có chứa hashtag "\#covid19" với số
+	\item $P$ là xác suất xuất hiện các Tweet có chứa hashtag ``\#covid19'' với số
 	lượng $c_{i}$.
-	\item $\nu$ là số lượng kỳ vọng các Tweet có chứa hashtag "\#covid19".
+	\item $\nu$ là số lượng kỳ vọng các Tweet có chứa hashtag ``\#covid19''.
 \end{itemize}
 
 Vì ta không thể biết chính xác giá trị $\nu$, nên ta có thể lấy số lượng Tweet ở
@@ -172,7 +172,7 @@ tập dữ liệu là cần thiết. Các biến đổi có thể là~\cite{niko
 	\item \textbf{Chuẩn hoá đường cơ sở (Baseline Normalization)}: Quan sát cho
 		thấy khá nhiều chủ đề \textit{không trend} có tần suất Tweet rất cao,
 		bên cạnh đó cũng có rất nhiều chủ đề \textit{đang trend} lại có tần
-		suất Tweet rất thấp. Ví dụ, chủ đề "city" có tần suất cơ sở (baseline
+		suất Tweet rất thấp. Ví dụ, chủ đề ``city'' có tần suất cơ sở (baseline
 		rate) rất cao vì nó là một âm tiết phổ biến trong tiếng Anh. Vì vậy nên
 		ta có thể sử dụng Baseline Normalization để nhấn mạnh (emphasize) các
 		điểm dữ liệu cao hơn đường cơ sở và giảm độ quan trọng của các điểm dữ
@@ -205,10 +205,11 @@ cho văn bản đó.
 
 Để tìm ra chủ đề, ta không thể đơn giản chỉ tìm từ phổ biến nhất trong văn bản.
 Mỗi từ tuỳ theo ngữ cảnh có thể thuộc về nhiều chủ đề khác nhau. Ví dụ như âm
-tiết "đường" có thể vừa thuộc chủ đề "gia vị" và vừa có thể thuộc chủ đề "công
-trình". Mô hình phát hiện chủ đề là mô hình túi từ (bag-of-words model) dùng để
-khai thác mối tương quan giữa các từ và các chủ đề ngữ nghĩa tiềm ẩn (latent
-sematic theme) giữa các văn bản~\cite{madaniRealtimeTrendingTopics2015}.
+tiết ``đường'' có thể vừa thuộc chủ đề ``gia vị'' và vừa có thể thuộc chủ đề
+``công trình''. Mô hình phát hiện chủ đề là mô hình túi từ (bag-of-words model)
+dùng để khai thác mối tương quan giữa các từ và các chủ đề ngữ nghĩa tiềm ẩn
+(latent sematic theme) giữa các văn
+bản~\cite{madaniRealtimeTrendingTopics2015}.
 
 Về cơ bản, mô hình chủ đề thực hiện ba công
 việc~\cite{kapadiaTopicModelingPython2020}:
@@ -326,10 +327,10 @@ nhau.
 BERT là mô hình ngôn ngữ hai chiều (bidirectional), tức là một từ trong câu sẽ
 được biểu diễn bởi các từ xung quanh nó. Khác với các mô hình một chiều
 (unidirectional), một từ trong câu chỉ xét các từ ở phía trước nó. Ví dụ cho mô
-hình một chiều là ELMo~\cite{petersDeepContextualizedWord2018}; "Mặc dù ELMo có
+hình một chiều là ELMo~\cite{petersDeepContextualizedWord2018}; ``Mặc dù ELMo có
 kiến trúc dựa trên một mạng BiLSTM xem xét bối cảnh theo hai chiều từ trái sang
 phải và từ phải sang trái nhưng những chiều này là độc lập nhau nên ta coi như
-đó là biểu diễn một chiều."~\cite{khanhBERTModel2020}.
+đó là biểu diễn một chiều.''~\cite{khanhBERTModel2020}.
 
 BERT chỉ sử dụng phần encoder của kiến trúc transformer (sẽ được trình bày ở
 phần kế tiếp). Khác với Recurrent Neural Network (RNN), cơ chế attention của
@@ -365,8 +366,8 @@ BERT sử dụng hai tác vụ để huấn luyện:
 
 \begin{enumerate}
 	\item \textbf{Masked ML (MLM)}:
-		Vì mô hình BERT là mô hình hai chiều nên một từ trong câu có thể "thấy
-		được chính nó", qua đó mô hình có thể gian lận để dự đoán từ một cách
+		Vì mô hình BERT là mô hình hai chiều nên một từ trong câu có thể ``thấy
+		được chính nó'', qua đó mô hình có thể gian lận để dự đoán từ một cách
 		dễ dàng~\cite{devlinBERTPretrainingDeep2019}. Chính vì vậy, ta cần phải
 		che dấu (mask) một số từ để huấn luyện BERT dự đoán các từ bị che đó.
 		Qua nhiều lần thử nghiệm, \cite{devlinBERTPretrainingDeep2019} chọn che
@@ -407,7 +408,7 @@ $Sublayer$ là Multi-Head Attention hoặc FFN.
 
 Cơ chế self-attention là cơ chế giúp các từ điều chỉnh trọng số của các từ sao
 cho sự ảnh hưởng của các từ xung quanh đối với bản thân nó là hợp lý nhất. Ví
-dụ câu "Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay", thì từ
+dụ câu ``Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay'', thì từ
 \textit{Dũng} sẽ nên có ảnh hưởng nhiều đến từ \textit{anh ấy} hơn các từ còn
 lại. Self-attention được tính bằng query, key và value: $Q = W_q \cdot x$, $K =
 W_k \cdot x$, $V = W_v \cdot x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ
