@@ -409,11 +409,11 @@ Cơ chế self-attention là cơ chế giúp các từ điều chỉnh trọng s
 cho sự ảnh hưởng của các từ xung quanh đối với bản thân nó là hợp lý nhất. Ví
 dụ câu "Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay", thì từ
 \textit{Dũng} sẽ nên có ảnh hưởng nhiều đến từ \textit{anh ấy} hơn các từ còn
-lại. Self-attention được tính bằng query, key và value: $Q = W_q * x$, $K = W_k
-* x$, $V = W_v * x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ học trong quá
-trình huấn luyện, và $x$ là véc-tơ embedding cho đầu vào. $Q, K, V$ sau đó sẽ
-được cho qua lớp Scaled Dot-Product Attention để tính giá trị attention
-(hình~\ref{fig:multi_attention}):
+lại. Self-attention được tính bằng query, key và value: $Q = W_q \cdot x$, $K =
+W_k \cdot x$, $V = W_v \cdot x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ
+học trong quá trình huấn luyện, và $x$ là véc-tơ embedding cho đầu vào. $Q, K,
+V$ sau đó sẽ được cho qua lớp Scaled Dot-Product Attention để tính giá trị
+attention (hình~\ref{fig:multi_attention}):
 \[ \operatorname{Attention}(Q, K, V)=\operatorname{softmax}\left(\frac{Q
 K^{T}}{\sqrt{d_{k}}}\right) V \]
 
@@ -445,5 +445,34 @@ chính~\cite{devlinBERTPretrainingDeep2019}:
 		tham số).
 \end{itemize}
 
+Ngoài ra còn các mô hình pre-train mở rộng của BERT như \textbf{BERT
+Multilingual} (hỗ trợ nhiều ngôn ngữ) hay
+\textbf{DistilBERT}~\cite{sanhDistilBERTDistilledVersion2020} (mô hình nhẹ và
+nhanh hơn BERT) và RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019} (mô hình khai
+thác tối ưu phương thức huấn luyện của BERT), v.v.
 
-\subsection{VnCoreNLP}
+\subsubsection{PhoBERT, mô hình BERT cho tiếng Việt}
+PhoBERT~\cite{nguyenPhoBERTPretrainedLanguage2020} (hay Phở BERT) được cho là
+đạt hiệu quả cao hơn so với mô hình BERT Mutilingual trong các tác vụ xử lý
+ngôn ngữ tiếng Việt. PhoBERT được thiết kế dựa trên
+RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019}. RoBERTa là nghiên cứu mô phỏng
+(replication study) của mô hình BERT, các tham số của RoBERTa và các kích thước
+tập huấn luyện được đánh giá (evaluate) một cách kỹ lưỡng hơn. Các nhà nghiên
+cứu phía sau RoBERTa cảm thấy BERT chưa được huấn luyện để sử dụng hết khả năng
+của nó (undertrained)~\cite{liuRoBERTaRobustlyOptimized2019}, và đã đề nghị một
+công thức mới để huấn luyện BERT. Các thay đổi bao
+gồm~\cite{liuRoBERTaRobustlyOptimized2019}: \textbf{(1)} huấn luyện mô hình lâu
+hơn, với kích thước batch lớn hơn và dữ liệu nhiều hơn; \textbf{(2)} không sử
+dụng Next Sentence Prediction để huấn luyện; \textbf{(3)} huấn luyện trên các
+câu dài hơn; và \textbf{(4)} liên tục thay đổi cơ chế ẩn dấu (mask) token trong
+quá trình huấn luyện.
+
+Đầu vào của PhoBERT cần qua bước xử lý bởi
+VnCoreNLP~\cite{vuVnCoreNLPVietnameseNatural2018}. VnCoreNLP là bộ công cụ xử
+lý ngôn ngữ tự nhiên, hỗ trợ các tác vụ như phân đoạn từ (word segmentation),
+gán nhãn từ loại (part-of-speech tagging, hay POS), nhận dạng thực thể có tên
+(named entity recognition, hay NER) và phân tích quan hệ phụ thuộc (dependency
+parsing). PhoBERT chỉ yêu cầu sử dụng tác vụ phân đoạn từ từ VnCoreNLP. Phân
+đoạn từ là tác vụ quan trọng tại vì tiếng Việt là ngôn ngữ đơn âm, mà các từ có
+thể vừa là từ đơn vừa có thể là từ ghép. Cho nên các thành phần của từ ghép nếu
+đứng riêng sẽ không có nghĩa hoặc có nghĩa khác so với từ ghép bao gồm nó.

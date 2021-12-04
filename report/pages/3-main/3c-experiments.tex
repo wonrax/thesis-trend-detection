@@ -1,4 +1,102 @@
 \section{Thử nghiệm}
-\# TODO
-
 \label{sec:experiments}
+
+Báo cáo này tập trung thử nghiệm phân cụm dữ liệu văn bản dựa trên mô hình chủ
+đề và cách kết hợp các mô hình do Nguyễn Văn Quyền Lâm đề
+xuất~\cite{lamGomCumVan2021}.
+
+Mô hình được đề xuất sử dụng véc-tơ xác suất được LDA sinh ra để xác định các
+chủ đề chính yếu, sau đó chúng được kết hợp với véc-tơ sentence embedding của
+PhoBERT để khai thác ngữ nghĩa, qua đó tạo ra không gian véc-tơ mới. Không gian
+véc-tơ này sẽ được đi qua Autoencoder để giảm chiều, mục đích là để loại bỏ các
+đặc trưng nhiễu và chỉ tập trung vào các đặc trưng quan trọng, và vừa có thể
+giảm chi phí và thời gian tính toán. Cuối cùng, các véc-tơ này sẽ được đi qua
+bộ phân cụm \textit{k}-means++ để phân thành \textit{k} chủ đề.
+
+\image[0.7]{img/main-architect/proposed-architect.pdf}{Minh hoạ kiến trúc mô
+hình được đề xuất.}{fig:main_architect}
+
+\subsection{Tập dữ liệu, xử lý dữ liệu}
+
+Nguồn dữ liệu chính là các bài báo Tuổi Trẻ (tuoitre.vn) ở danh mục \textit{Sức
+khoẻ}. Báo cáo sử dụng chương trình Python để thu thập các bài báo. Các dữ liệu
+thu thập được từ một bài báo bao gồm đoạn trích tóm tắt, nội dung bài viết,
+ngày đăng, các bình luận, số lượng thích (like) bài báo nhận được và các từ
+khoá (keyword) của bài báo do người viết đặt. Tuy nhiên, chỉ duy nhất nội dung
+bài báo được lấy làm dữ liệu trực tiếp cho mô hình. Tổng số bài báo thu thập
+được là 12732 bài, trải dài từ ngày tháng 9 năm 2019 đến tháng 11 năm 2021.
+
+Trước khi đưa vào mô hình, dữ liệu cần được làm sạch và chuẩn hoá\\(normalization) để tránh lỗi trong quá trình huấn luyện:
+\begin{enumerate}
+    \item Loại bỏ các bài báo không có nội dung (có chứa cột mang giá trị
+        \textit{NULL}).
+    \item Chuẩn hoá (normalize) các ký tự unicode. Chữ cái tiếng Việt có dấu
+        tuy luôn luôn hiển thị giống nhau nhưng sẽ được viết bằng nhiều cách
+        khác nhau. Ví dụ, chữ "À" sẽ có hai cách viết: (1) là một ký tự unicode
+        duy nhất "Ã" \- U+00C3, hoặc (2) được kết hợp bởi một ký tự "A" \- 0x41
+        và một ký tự "\sim" \- 0xB7. Chính vì vậy, ta phải chuẩn hoá chúng về một
+        dạng để tránh lặp từ trong quá trình huấn luyện.
+    \item Loại bỏ các ký tự đặc biệt và các stop-word (là các từ phổ biến và ít
+        mang một ý nghĩa đặc trưng, ví dụ như "là", "và", v.v.).
+\end{enumerate}
+
+Sau khi được làm sạch, tập dữ liệu còn lại 12595 bài báo. Tiếp theo, ta cần đưa
+nội dung các bài viết qua VnCoreNLP để phân đoạn từ. Sau khi được phân đoạn, dữ
+liệu về cơ bản đã có thể được sử dụng làm đầu vào cho mô hình.
+
+\subsection{Hiện thực mô hình}
+Mô hình được hiện thực trên ngôn ngữ Python, sử dụng trình thông dịch Jupyter
+Notebook trên hạ tầng Google Colab. Các mô hình con bao gồm:
+
+\begin{itemize}
+    \item Mô hình LDA sử dụng thư viện
+        \textit{Gensim}~\cite{GensimTopicModelling2021}.
+    \item Mô hình PhoBERT sử dụng thư viện \textit{transformers} của Hugging
+        Face~\cite{wolfTransformersStateoftheArtNatural2020}. Mô hình huấn
+        luyện sẵn PhoBERT\textsubscript{BASE} với chiều dài token tối đa là
+        256.
+    %TODO cite
+    \item Autoencoder được hiện thực dựa trên mô hình mẫu của \textit{keras}.
+    %TODO cite
+    \item Bộ gom cụm k-means++ sử dụng thư viện \textit{sklearn}.
+\end{itemize}
+
+Sau khi gom cụm, tập dữ liệu được chia thành \textit{k} chủ đề với mỗi bài báo
+chỉ thuộc một chủ đề. Lâm \cite{lamGomCumVan2021} thực hiện biểu diễn
+(visualize) các chủ đề đó bằng word cloud, bằng cách lấy các từ có tần suất
+xuất hiện cao nhất trong một chủ đề để làm các từ khoá thể hiện cho chủ đề đó.
+Tuy nhiên, tại vì tập dữ liệu của Lâm \cite{lamGomCumVan2021} thuộc về 10 danh
+mục khác nhau, nên cách biểu diễn đó có thể đã đủ để giúp người xem phân biệt
+được các chủ đề. Tập dữ liệu của báo cáo chỉ thuộc về một danh mục duy nhất
+(Sức khoẻ), nên thực nghiệm cho cho thấy cách biểu diễn đó khó có thể phân biệt
+được các chủ đề với nhau. Lý do cơ bản là vì từ phổ biến nhất trong tập văn bản
+không có nghĩa là nó mang ý nghĩa và có ảnh hưởng quan trọng nhất đối với chủ
+đề. Vì vậy, báo cáo sử dụng TF-IDF để tính điểm (score) cho toàn bộ các từ
+trong một tập văn bản thuộc cùng chủ đề đã được phân cụm. Sau đó, với mỗi văn
+bản, chỉ lấy $n$ từ có điểm số cao nhất để biểu diễn thành word cloud cho chủ
+đề đó.
+
+\subsection{Kết quả}
+Báo cáo sử dụng thang đo Coherence để xác định tính mạch lạc trong chủ đề,
+Coherence có giá trị từ 0 đến 1, giá trị càng về 0 thì chủ đề càng mất đi tính
+mạch lạc; Và thang đo Silhouette để đánh giá kết quả của bộ phân cụm,
+Silhouette có giá trị từ -1 đến 1, càng về 0 thì các cụm có ít sự phân biệt,
+càng về 1 thì các cụm càng có sự phân biệt rõ ràng và ngược lại.
+Bảng~\ref{table:result} biểu diễn kết quả của mô hình trên các giá trị gom cụm
+\textit{k} khác nhau.
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{lllllll}
+        \textbf{k}          & \textit{5} & \textit{6} & \textit{7} & \textit{10} & \textit{13} & \textit{20} \\ \hline
+        \textbf{Coherence}  & 0.4679     & 0.4804     & 0.5073     & 0.4915      & 0.5009      & 0.5058      \\
+        \textbf{Silhouette} & 0.4036     & 0.3744     & 0.3914     & 0.3124      & 0.2927      & 0.1921     
+    \end{tabular}
+    \caption{Kết quả các thang đo Silhouette và Coherence với các \textit{k}
+    khác nhau.}
+    \label{table:result}
+\end{table}
+
+Theo dữ liệu ta có thể thấy, \textit{k} càng lớn thì điểm Coherence thường càng
+cao, tuy nhiên \text{k} lớn sẽ giảm hiệu suất gom cụm đi đáng kể.
+

@@ -82,6 +82,17 @@
   note = {Truy cập lần cuối 2021-12-01}
 }
 
+@misc{GensimTopicModelling2021,
+  title = {Gensim – {{Topic Modelling}} in {{Python}}},
+  year = {2021},
+  month = dec,
+  url = {https://github.com/RaRe-Technologies/gensim},
+  urldate = {2021-12-04},
+  abstract = {Topic Modelling for Humans},
+  copyright = {LGPL-2.1},
+  keywords = {data-mining,data-science,document-similarity,fasttext,gensim,information-retrieval,machine-learning,natural-language-processing,neural-network,nlp,python,topic-modeling,word-embeddings,word-similarity,word2vec}
+}
+
 @book{haightHandbookPoissonDistribution1967,
   title = {Handbook of the {{Poisson}} Distribution},
   author = {Haight, Frank A.},
@@ -195,6 +206,23 @@
   urldate = {2021-11-30}
 }
 
+@article{liuRoBERTaRobustlyOptimized2019,
+  title = {{{RoBERTa}}: A {{Robustly Optimized BERT Pretraining Approach}}},
+  shorttitle = {{{RoBERTa}}},
+  author = {Liu, Yinhan and Ott, Myle and Goyal, Naman and Du, Jingfei and Joshi, Mandar and Chen, Danqi and Levy, Omer and Lewis, Mike and Zettlemoyer, Luke and Stoyanov, Veselin},
+  year = {2019},
+  month = jul,
+  journal = {arXiv:1907.11692 [cs]},
+  eprint = {1907.11692},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  url = {http://arxiv.org/abs/1907.11692},
+  urldate = {2021-12-04},
+  abstract = {Language model pretraining has led to significant performance gains but careful comparison between different approaches is challenging. Training is computationally expensive, often done on private datasets of different sizes, and, as we will show, hyperparameter choices have significant impact on the final results. We present a replication study of BERT pretraining (Devlin et al., 2019) that carefully measures the impact of many key hyperparameters and training data size. We find that BERT was significantly undertrained, and can match or exceed the performance of every model published after it. Our best model achieves state-of-the-art results on GLUE, RACE and SQuAD. These results highlight the importance of previously overlooked design choices, and raise questions about the source of recently reported improvements. We release our models and code.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language}
+}
+
 @article{madaniRealtimeTrendingTopics2015,
   title = {Real-Time Trending Topics Detection and Description from {{Twitter}} Content},
   author = {Madani, Amina and Boussaid, Omar and Zegour, Djamel Eddine},
@@ -209,6 +237,24 @@
   url = {http://link.springer.com/10.1007/s13278-015-0298-5},
   urldate = {2021-09-22},
   langid = {english}
+}
+
+@article{nguyenPhoBERTPretrainedLanguage2020,
+  title = {{{PhoBERT}}: Pre-Trained Language Models for {{Vietnamese}}},
+  shorttitle = {{{PhoBERT}}},
+  author = {Nguyen, Dat Quoc and Nguyen, Anh Tuan},
+  year = {2020},
+  month = oct,
+  journal = {arXiv:2003.00744 [cs]},
+  eprint = {2003.00744},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  url = {http://arxiv.org/abs/2003.00744},
+  urldate = {2021-12-04},
+  abstract = {We present PhoBERT with two versions, PhoBERT-base and PhoBERT-large, the first public large-scale monolingual language models pre-trained for Vietnamese. Experimental results show that PhoBERT consistently outperforms the recent best pre-trained multilingual model XLM-R (Conneau et al., 2020) and improves the state-of-the-art in multiple Vietnamese-specific NLP tasks including Part-of-speech tagging, Dependency parsing, Named-entity recognition and Natural language inference. We release PhoBERT to facilitate future research and downstream applications for Vietnamese NLP. Our PhoBERT models are available at https://github.com/VinAIResearch/PhoBERT},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+  note = {Comment: EMNLP 2020 (Findings)}
 }
 
 @phdthesis{nikolovTrendNoTrend2012,
@@ -261,6 +307,24 @@
   note = {Comment: Published at EMNLP 2019}
 }
 
+@article{sanhDistilBERTDistilledVersion2020,
+  title = {{{DistilBERT}}, a Distilled Version of {{BERT}}: Smaller, Faster, Cheaper and Lighter},
+  shorttitle = {{{DistilBERT}}, a Distilled Version of {{BERT}}},
+  author = {Sanh, Victor and Debut, Lysandre and Chaumond, Julien and Wolf, Thomas},
+  year = {2020},
+  month = feb,
+  journal = {arXiv:1910.01108 [cs]},
+  eprint = {1910.01108},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  url = {http://arxiv.org/abs/1910.01108},
+  urldate = {2021-12-04},
+  abstract = {As Transfer Learning from large-scale pre-trained models becomes more prevalent in Natural Language Processing (NLP), operating these large models in on-the-edge and/or under constrained computational training or inference budgets remains challenging. In this work, we propose a method to pre-train a smaller general-purpose language representation model, called DistilBERT, which can then be fine-tuned with good performances on a wide range of tasks like its larger counterparts. While most prior work investigated the use of distillation for building task-specific models, we leverage knowledge distillation during the pre-training phase and show that it is possible to reduce the size of a BERT model by 40\%, while retaining 97\% of its language understanding capabilities and being 60\% faster. To leverage the inductive biases learned by larger models during pre-training, we introduce a triple loss combining language modeling, distillation and cosine-distance losses. Our smaller, faster and lighter model is cheaper to pre-train and we demonstrate its capabilities for on-device computations in a proof-of-concept experiment and a comparative on-device study.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+  note = {Comment: February 2020 - Revision: fix bug in evaluation metrics, updated metrics, argumentation unchanged. 5 pages, 1 figure, 4 tables. Accepted at the 5th Workshop on Energy Efficient Machine Learning and Cognitive Computing - NeurIPS 2019}
+}
+
 @misc{tomarTopicModelingUsing2019,
   title = {Topic Modeling Using {{Latent Dirichlet Allocation}}({{LDA}}) and {{Gibbs Sampling}} Explained!},
   author = {Tomar, Ankur},
@@ -287,6 +351,37 @@
   abstract = {The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Computation and Language,Computer Science - Machine Learning}
+}
+
+@article{vuVnCoreNLPVietnameseNatural2018,
+  title = {{{VnCoreNLP}}: A {{Vietnamese Natural Language Processing Toolkit}}},
+  shorttitle = {{{VnCoreNLP}}},
+  author = {Vu, Thanh and Nguyen, Dat Quoc and Nguyen, Dai Quoc and Dras, Mark and Johnson, Mark},
+  year = {2018},
+  journal = {Proceedings of the 2018 Conference of the North American Chapter of           the Association for Computational Linguistics: Demonstrations},
+  eprint = {1801.01331},
+  eprinttype = {arxiv},
+  pages = {56--60},
+  doi = {10.18653/v1/N18-5012},
+  url = {http://arxiv.org/abs/1801.01331},
+  urldate = {2021-12-04},
+  abstract = {We present an easy-to-use and fast toolkit, namely VnCoreNLP---a Java NLP annotation pipeline for Vietnamese. Our VnCoreNLP supports key natural language processing (NLP) tasks including word segmentation, part-of-speech (POS) tagging, named entity recognition (NER) and dependency parsing, and obtains state-of-the-art (SOTA) results for these tasks. We release VnCoreNLP to provide rich linguistic annotations to facilitate research work on Vietnamese NLP. Our VnCoreNLP is open-source and available at: https://github.com/vncorenlp/VnCoreNLP},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+  note = {Comment: Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Demonstrations, NAACL 2018, to appear}
+}
+
+@misc{wolfTransformersStateoftheArtNatural2020,
+  title = {Transformers: State-of-the-{{Art Natural Language Processing}}},
+  shorttitle = {Transformers},
+  author = {Wolf, Thomas and Debut, Lysandre and Sanh, Victor and Chaumond, Julien and Delangue, Clement and Moi, Anthony and Cistac, Perric and Ma, Clara and Jernite, Yacine and Plu, Julien and Xu, Canwen and Le Scao, Teven and Gugger, Sylvain and Drame, Mariama and Lhoest, Quentin and Rush, Alexander M.},
+  year = {2020},
+  month = oct,
+  pages = {38--45},
+  url = {https://www.aclweb.org/anthology/2020.emnlp-demos.6},
+  urldate = {2021-12-04},
+  abstract = {🤗 Transformers: State-of-the-art Machine Learning for Pytorch, TensorFlow, and JAX.},
+  copyright = {Apache-2.0}
 }
 
 @article{zhuAligningBooksMovies2015,
