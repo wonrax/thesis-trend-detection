@@ -1,4 +1,4 @@
-\section{Thử nghiệm}
+\chapter{Thực nghiệm và đánh giá}
 \label{sec:experiments}
 
 Báo cáo này tập trung thử nghiệm phân cụm dữ liệu văn bản dựa trên mô hình chủ
@@ -16,7 +16,7 @@ bộ phân cụm \textit{k}-means++ để phân thành \textit{k} chủ đề.
 \image[0.7]{img/main-architect/proposed-architect.pdf}{Minh hoạ kiến trúc mô
 hình được đề xuất.}{fig:main_architect}
 
-\subsection{Tập dữ liệu, xử lý dữ liệu}
+\section{Tập dữ liệu, xử lý dữ liệu}
 
 Nguồn dữ liệu chính là các bài báo Tuổi Trẻ (tuoitre.vn) ở danh mục \textit{Sức
 khoẻ}. Báo cáo sử dụng chương trình Python để thu thập các bài báo. Các dữ liệu
@@ -45,7 +45,7 @@ Sau khi được làm sạch, tập dữ liệu còn lại 12595 bài báo. Ti�
 nội dung các bài viết qua VnCoreNLP để phân đoạn từ. Sau khi được phân đoạn, dữ
 liệu về cơ bản đã có thể được sử dụng làm đầu vào cho mô hình.
 
-\subsection{Hiện thực mô hình}
+\section{Hiện thực mô hình}
 Mô hình được hiện thực trên ngôn ngữ Python, sử dụng trình thông dịch Jupyter
 Notebook trên hạ tầng Google Colab. Các mô hình con bao gồm:
 
@@ -76,7 +76,7 @@ cáo sử dụng TF-IDF để tính điểm (score) cho toàn bộ các từ tro
 bản thuộc cùng chủ đề đã được phân cụm. Sau đó, với mỗi văn bản, chỉ lấy $n$ từ
 có điểm số cao nhất để biểu diễn thành word cloud cho chủ đề đó.
 
-\subsection{Kết quả}
+\section{Kết quả}
 Báo cáo sử dụng thang đo Coherence để xác định tính mạch lạc trong chủ đề,
 Coherence có giá trị từ 0 đến 1, giá trị càng về 0 thì chủ đề càng mất đi tính
 mạch lạc; Và thang đo Silhouette để đánh giá kết quả của bộ phân cụm,
@@ -183,7 +183,7 @@ $k=5$.}{fig:topic4}
 \image[0.6]{img/experiments/topic4.png}{Word cloud cho chủ đề thứ 5,
 $k=5$.}{fig:topic5}
 
-\subsection{Kết luận}
+\section{Kết luận}
 Áp dụng mô hình trên để thực hiện gom cụm chủ đề cho tập dữ liệu bài báo cùng
 một danh mục Sức khoẻ, ta thấy sự phân biệt giữa các chủ đề mới chỉ ở ngang mức
 trung bình. Tuy đã được cải thiện bằng TF-IDF, nhưng cách biểu diễn chủ đề sử

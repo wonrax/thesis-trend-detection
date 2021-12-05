@@ -1,5 +1,6 @@
-\section{Các mô hình}
+\chapter{Các mô hình}
 \label{sec:models}
+
 Ta thường có hai cách để phát hiện các sự kiện hay chủ đề đang nổi bật:
 \textbf{(1)} hồi tưởng (retrospect), sử dụng toàn bộ dữ liệu để làm đầu vào cho
 mô hình, hoặc, \textbf{(2)} online, phát hiện trên thời gian thực bằng cách đưa
@@ -29,7 +30,7 @@ hơn~\cite{lamGomCumVan2021}.
 
 
 
-\subsection{Mô hình phát hiện xu hướng}
+\section{Mô hình phát hiện xu hướng}
 Tương tác của người dùng trên mạng xã hội luôn có sự liên quan nhất định nào đó
 đến các sự kiện ở ngoài thế giới
 thực~\cite{hendricksonTrendDetectionSocial2015}. Để phát hiện xu hướng, ta cần
@@ -70,7 +71,7 @@ Khi đó, giá trị $\eta$ sẽ thể hiện cho việc dữ liệu sẽ giốn
 hay dữ liệu sẽ giống \textit{không trend}
 hơn~\cite{hendricksonTrendDetectionSocial2015}.
 
-\subsubsection{Mô hình xác xuất Poisson}
+\subsection{Mô hình xác xuất Poisson}
 
 Phân phối Poisson là phân phối xác suất rời rạc, dùng để thể hiện xác suất số
 lần một sự kiện nào đó xảy ra trong một khoảng thời gian nhất
@@ -129,7 +130,7 @@ hình cơ sở. Tuy nhiên với lượng dữ liệu thay đổi liên tục v�
 phạm vi rộng, ta không thể tìm được một cặp tham số $\eta$ và $\alpha$ tối ưu
 cho mọi loại dữ liệu.
 
-\subsubsection{Mô hình thiên dữ liệu (data-driven)}
+\subsection{Mô hình thiên dữ liệu (data-driven)}
 Để giải quyết các vấn đề của mô hình Poisson,
 \cite{hendricksonTrendDetectionSocial2015}~đề xuất phương pháp đơn giản hơn đó
 là so sánh dữ liệu cần phân tích với các dữ liệu đã được gán nhãn. Trước tiên,
@@ -197,7 +198,7 @@ ta vấn có thể điều chỉnh mô hình bằng cách thay đổi các tham 
 quả tốt nhất, vì nhiều trong số chúng có ảnh hưởng trực tiếp tới các chỉ số như
 true-positive và false-positive~\cite{hendricksonTrendDetectionSocial2015}.
 
-\subsection{Mô hình phát hiện chủ đề}
+\section{Mô hình phát hiện chủ đề}
 Chủ đề là vấn đề cơ bản, là nội dung trọng tâm mà người nói hoặc người viết
 muốn đề cập. Một văn bản (bài báo, Tweet, bài văn, v.v.) có thể chứa nhiều chủ
 đề, nhưng chỉ có một hoặc một vài chủ đề có thể làm chủ đề chính để đại diện
@@ -229,7 +230,7 @@ việc~\cite{kapadiaTopicModelingPython2020}:
 		bản trong một tập văn bản thể hiện.
 \end{itemize}
 
-\subsubsection{Mô hình Latent Dirichlet Allocation (LDA)}
+\subsection{Mô hình Latent Dirichlet Allocation (LDA)}
 Mô hình LDA là mô hình tạo sinh xác suất (generative probabilistic model) cho
 các dữ liệu rời rạc như các kho văn bản (text corpora). LDA là mô hình Bayes ba
 lớp, với mỗi văn bản trong một tập văn bản được biểu diễn thông qua một tập các
@@ -285,10 +286,10 @@ LDA là mô hình học không giám sát (unsupervised) nên dữ liệu có th
 các văn bản giống các văn bản đầu vào nhất có thể, từ đó mô hình học được các
 tham số $\alpha$ và $\beta$.
 
-% # TODO \subsubsection{Phát hiện trend twitter với LDA}
+% # TODO \subsection{Phát hiện trend twitter với LDA}
 
-\subsection{Phương pháp khai thác ngữ nghĩa}
-\subsubsection{Word embedding, sentence embedding}
+\section{Phương pháp khai thác ngữ nghĩa}
+\subsection{Word embedding, sentence embedding}
 Véc-tơ ngữ nghĩa (vectors semantics) là phương pháp cơ bản để biểu diễn nghĩa
 của các từ trong xử lý ngôn ngữ tự nhiên. Ý tưởng của véc-tơ ngữ nghĩa là
 chuyển một từ thành một điểm trong không gian ngữ nghĩa (semantic space). Điểm
@@ -311,7 +312,7 @@ quan giữa hai câu bất kỳ) hoặc dùng trong các tác vụ ngôn ngữ (
 ví dụ, xác định động từ là thì hiện tại hay thì quá khứ trong tiếng
 Anh)~\cite{heidenreichPaperSummaryEvaluation2018}.
 
-\subsubsection{Mô hình BERT}
+\subsection{Mô hình BERT}
 BERT~\cite{devlinBERTPretrainingDeep2019} (Bidirectional Encoder
 Representations from Transformers) là mô hình ngôn ngữ dựa trên kiến trúc
 transformer~\cite{vaswaniAttentionAllYou2017}. BERT được các kỹ sư ở Google
@@ -389,7 +390,7 @@ Quá trình tinh chỉnh (fine-tune) cho các tác vụ khác được dựa tr�
 đã được huấn luyện sẵn (pre-trained model). Ta có thể thêm một hoặc các lớp
 (layer) bổ sung mà không cần can thiệp hay chỉnh sửa mô hình BERT ban đầu.
 
-\subsubsection{Encoder của kiến trúc transformer} Kiến trúc
+\subsection{Encoder của kiến trúc transformer} Kiến trúc
 transformer~\cite{vaswaniAttentionAllYou2017} bao gồm encoder và decoder
 (hình \ref{fig:transformer}). Về cơ bản, encoder được sử dụng để chuyển đầu vào
 thành các đặc trưng đơn giản (feature learning). Decoder sử dụng kết quả của
@@ -452,7 +453,7 @@ Multilingual} (hỗ trợ nhiều ngôn ngữ) hay
 nhanh hơn BERT) và RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019} (mô hình khai
 thác tối ưu phương thức huấn luyện của BERT), v.v.
 
-\subsubsection{PhoBERT, mô hình BERT cho tiếng Việt}
+\subsection{PhoBERT, mô hình BERT cho tiếng Việt}
 PhoBERT~\cite{nguyenPhoBERTPretrainedLanguage2020} (hay Phở BERT) được cho là
 đạt hiệu quả cao hơn so với mô hình BERT Mutilingual trong các tác vụ xử lý
 ngôn ngữ tiếng Việt. PhoBERT được thiết kế dựa trên
