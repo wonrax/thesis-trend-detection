@@ -1,10 +1,10 @@
 \chapter{Các mô hình}
-\label{sec:models}
+\label{chap:models}
 
-Ta thường có hai cách để phát hiện các sự kiện hay chủ đề đang nổi bật:
-\textbf{(1)} hồi tưởng (retrospect), sử dụng toàn bộ dữ liệu để làm đầu vào cho
-mô hình, hoặc, \textbf{(2)} online, phát hiện trên thời gian thực bằng cách đưa
-vào (feed) mô hình mỗi khi ta thu thập được dữ liệu
+Ta thường có hai cách để phát hiện các sự kiện hay chủ đề nổi bật: \textbf{(1)}
+hồi tưởng (retrospect), sử dụng toàn bộ dữ liệu để làm đầu vào cho mô hình,
+hoặc, \textbf{(2)} online, phát hiện trên thời gian thực bằng cách đưa vào
+(feed) mô hình mỗi khi ta thu thập được dữ liệu
 mới~\cite{lauOnlineTrendAnalysis2012}. Với cách \textbf{(1)}, ta có thể phân
 tích được các chủ đề hay sự kiện trong lịch sử, và thường được hiện thực bằng
 các phương thức như gọm cụm (clustering) hay phát hiện bất thường (anomaly
@@ -17,7 +17,7 @@ Ba mô hình chính được báo cáo này nhắc tới bao gồm mô hình ph�
 phát hiện chủ đề dựa trên ngữ nghĩa (được xếp vào kỹ thuật thứ \textbf{1}).  Mô
 hình phát hiện xu hướng được nghiên cứu là mô hình được phát triển bởi
 Twitter~\cite{hendricksonTrendDetectionSocial2015}, bao gồm mô hình xác suất và
-mô hình thiên dữ liệu (data-driven). Mô hình phát hiện chủ đề là mô hình khai
+mô hình hướng dữ liệu (data-driven). Mô hình phát hiện chủ đề là mô hình khai
 thác sự xuất hiện của các từ khoá trong các tập văn bản để tìm ra sự tương quan
 giữa các từ khoá và sự ảnh hưởng của từ khoá đối với chủ đề của văn bản. Mô
 hình phát hiện chủ đề mà báo cáo này sẽ tập trung nghiên cứu là mô hình Latent
@@ -88,10 +88,10 @@ hashtag ``\#covid19'' tuân theo phân phối Poisson:
 
 với:
 \begin{itemize}
-	\item $c_{i}$ là số lượng Tweet có chứa hashtag ``\#covid19'' trong một khoảng
-	thời gian nhất định.
-	\item $P$ là xác suất xuất hiện các Tweet có chứa hashtag ``\#covid19'' với số
-	lượng $c_{i}$.
+	\item $c_{i}$ là số lượng Tweet có chứa hashtag ``\#covid19'' trong một
+		khoảng thời gian nhất định.
+	\item $P$ là xác suất xuất hiện các Tweet có chứa hashtag ``\#covid19'' với
+		số lượng $c_{i}$.
 	\item $\nu$ là số lượng kỳ vọng các Tweet có chứa hashtag ``\#covid19''.
 \end{itemize}
 
@@ -130,7 +130,7 @@ hình cơ sở. Tuy nhiên với lượng dữ liệu thay đổi liên tục v�
 phạm vi rộng, ta không thể tìm được một cặp tham số $\eta$ và $\alpha$ tối ưu
 cho mọi loại dữ liệu.
 
-\subsection{Mô hình thiên dữ liệu (data-driven)}
+\subsection{Mô hình hướng dữ liệu (data-driven)}
 Để giải quyết các vấn đề của mô hình Poisson,
 \cite{hendricksonTrendDetectionSocial2015}~đề xuất phương pháp đơn giản hơn đó
 là so sánh dữ liệu cần phân tích với các dữ liệu đã được gán nhãn. Trước tiên,
@@ -184,10 +184,10 @@ tập dữ liệu là cần thiết. Các biến đổi có thể là~\cite{niko
 		độ lớn và tần suất của các điểm spike (điểm có giá trị lớn đột ngột).
 		Vì vậy, Spike Normalization giúp nhấn mạnh các điểm spike và ngược lại.
 	
-	\item \textbf{Thang đo lôgarit (Logarithmic Scale)}: Ta thường không thể
+	\item \textbf{Thang đo logarit (Logarithmic Scale)}: Ta thường không thể
 		biết được cách thức mà một chủ đề được lan toả ra khắp cộng đồng, nhưng
 		ta biết được đa số các quá trình phân nhánh (branching process) đều
-		phát sinh theo cấp số mũ. Vì vậy, ta có thể sử dụng thang đo lôgarit để
+		phát sinh theo cấp số mũ. Vì vậy, ta có thể sử dụng thang đo logarit để
 		định lượng, qua đó có thể khai thác các đặc điểm này.
 
 \end{itemize}
@@ -231,6 +231,8 @@ việc~\cite{kapadiaTopicModelingPython2020}:
 \end{itemize}
 
 \subsection{Mô hình Latent Dirichlet Allocation (LDA)}
+\label{sec:lda}
+
 Mô hình LDA là mô hình tạo sinh xác suất (generative probabilistic model) cho
 các dữ liệu rời rạc như các kho văn bản (text corpora). LDA là mô hình Bayes ba
 lớp, với mỗi văn bản trong một tập văn bản được biểu diễn thông qua một tập các
@@ -286,7 +288,29 @@ LDA là mô hình học không giám sát (unsupervised) nên dữ liệu có th
 các văn bản giống các văn bản đầu vào nhất có thể, từ đó mô hình học được các
 tham số $\alpha$ và $\beta$.
 
-% # TODO \subsection{Phát hiện trend twitter với LDA}
+\subsection{Mô hình Correlated Topic Model (CTM)}
+Vì Dirichlet sinh ra các xác suất chủ đề độc lập nên một nhược điểm của LDA là
+không thể mô hình được sự tương quan giữa các chủ đề. Ví dụ như, chủ đề về
+\textit{y tế} thường sẽ có sự liên quan với chủ đề \textit{thực phẩm} nhiều hơn
+so với \textit{thể thao}. Mô hình CTM~\cite{laffertyCorrelatedTopicModels2006}
+ra đời để giải quyết vấn đề này.
+
+\image[0.6]{img/ctm/architect.png}{Minh hoạ mô hình CTM.
+Hình:~\cite{laffertyCorrelatedTopicModels2006}}{fig:ctm_architecture}
+
+Thay vì sử dụng phân phối Dirichlet, CTM sử dụng phân phối chuẩn logistic
+(logistic normal distribution). Lúc đó, bước thứ 2 ở mục~\ref{sec:lda} sẽ trở
+thành $\theta \sim f(N(\eta, \sum))$ với $f(x)$ là biến đổi logistic và $N$ là
+phân phối chuẩn đa chiều.
+
+\[
+\theta_{j}=\frac{\exp \left(\eta_{j}\right)}{\sum_{p=0}^{k} \exp
+\left(\eta_{p}\right)}
+\]
+
+CTM không những giúp phân tách chủ đề tốt hơn mà còn giúp thể hiện các sự tương
+quan giữa các chủ đề. Tuy nhiên, vì sự thay đổi trên, CTM mất nhiều thời gian
+hơn để tính toán và ước lượng các tham số trong quá trình huấn luyện.
 
 \section{Phương pháp khai thác ngữ nghĩa}
 \subsection{Word embedding, sentence embedding}
@@ -304,7 +328,8 @@ Medium~\cite{bujokasCreatingWordEmbeddings2020}.}{fig:word_embedding}
 Sentence embedding cũng giống như word embedding, nhưng nó dùng để biểu diễn sự
 tương quan ngữ nghĩa giữa các câu. Một cách đơn giản để tạo sentence embedding
 là lấy trung bình tất cả các word embedding của các từ trong câu
-đó~\cite{lamGomCumVan2021}. Sentence embedding giúp ta khai thác được ngữ cảnh rộng hơn, trải dài qua nhiều câu mà các word embedding không thể làm được.
+đó~\cite{lamGomCumVan2021}. Sentence embedding giúp ta khai thác được ngữ cảnh
+rộng hơn, trải dài qua nhiều câu mà các word embedding không thể làm được.
 
 Sentence embedding có thể sử dụng để phân loại (ví dụ, câu đang xét là mang ý
 nghĩa tích cực hay tiêu cực), phân tích ngữ nghĩa (ví dụ, phân tích sự liên
@@ -315,15 +340,15 @@ Anh)~\cite{heidenreichPaperSummaryEvaluation2018}.
 \subsection{Mô hình BERT}
 BERT~\cite{devlinBERTPretrainingDeep2019} (Bidirectional Encoder
 Representations from Transformers) là mô hình ngôn ngữ dựa trên kiến trúc
-transformer~\cite{vaswaniAttentionAllYou2017}. BERT được các kỹ sư ở Google
+Transformer~\cite{vaswaniAttentionAllYou2017}. BERT được các kỹ sư ở Google
 phát triển và công bố vào năm 2018, đánh dấu bước đột phá trong các tác vụ xử
 lý ngôn ngữ tự nhiên và các benchmark như GLUE (đánh giá mức độ hiểu ngôn ngữ),
 SQuAD, v.v.
 
 BERT là mô hình học sẵn (pre-trained model) được huấn luyện sẵn cho mục đích
-chung (general purpose). BERT được thiết kế để huấn luyện trước (pre-train) các word embedding. Đầu ra của BERT sẽ được tinh chỉnh (fine-tune) với các
-lớp huấn luyện bổ sung để phù hợp với các yêu cầu cụ thể của các tác vụ khác
-nhau.
+chung (general purpose). BERT được thiết kế để huấn luyện trước (pre-train) các
+word embedding. Đầu ra của BERT sẽ được tinh chỉnh (fine-tune) với các lớp huấn
+luyện bổ sung để phù hợp với các yêu cầu cụ thể của các tác vụ khác nhau.
 
 BERT là mô hình ngôn ngữ hai chiều (bidirectional), tức là một từ trong câu sẽ
 được biểu diễn bởi các từ xung quanh nó. Khác với các mô hình một chiều
@@ -333,13 +358,15 @@ kiến trúc dựa trên một mạng BiLSTM xem xét bối cảnh theo hai chi�
 phải và từ phải sang trái nhưng những chiều này là độc lập nhau nên ta coi như
 đó là biểu diễn một chiều.''~\cite{khanhBERTModel2020}.
 
-BERT chỉ sử dụng phần encoder của kiến trúc transformer (sẽ được trình bày ở
+BERT chỉ sử dụng phần encoder của kiến trúc Transformer (sẽ được trình bày ở
 phần kế tiếp). Khác với Recurrent Neural Network (RNN), cơ chế attention của
-transformer truyền tất cả các từ trong câu vào mô hình và thực hiện đánh giá
-(evaluate) chúng cùng một lúc, do đó transformer có thể coi là huấn luyện hai
+Transformer truyền tất cả các từ trong câu vào mô hình và thực hiện đánh giá
+(evaluate) chúng cùng một lúc, do đó Transformer có thể coi là huấn luyện hai
 chiều~\cite{khanhBERTModel2020}.
 
-Đầu vào của BERT là một tập các từ được encode thành các véc-tơ embedding. Trước tiên, đầu vào sẽ được WordPiece phân tách thành các token. BERT sẽ dựa trên các token để tạo ra ba véc-tơ embedding:
+Đầu vào của BERT là một tập các từ được encode thành các véc-tơ embedding.
+Trước tiên, đầu vào sẽ được WordPiece phân tách thành các token. BERT sẽ dựa
+trên các token để tạo ra ba véc-tơ embedding:
 \begin{itemize}
 	\item Các token sẽ được chuyển thành các véc-tơ 768 chiều, trở thành Token
 		Embedding.
@@ -391,13 +418,13 @@ Quá trình tinh chỉnh (fine-tune) cho các tác vụ khác được dựa tr�
 (layer) bổ sung mà không cần can thiệp hay chỉnh sửa mô hình BERT ban đầu.
 
 \subsection{Encoder của kiến trúc transformer} Kiến trúc
-transformer~\cite{vaswaniAttentionAllYou2017} bao gồm encoder và decoder
+Transformer~\cite{vaswaniAttentionAllYou2017} bao gồm encoder và decoder
 (hình \ref{fig:transformer}). Về cơ bản, encoder được sử dụng để chuyển đầu vào
 thành các đặc trưng đơn giản (feature learning). Decoder sử dụng kết quả của
 encoder để dự đoán nhãn của đầu ra. Mô hình BERT chỉ sử dụng phần encoder của
-kiến trúc transformer.
+kiến trúc Transformer.
 
-\image[0.6]{img/bert/transformer.png}{Kiến trúc transformer với phần bên trái
+\image[0.6]{img/bert/transformer.png}{Kiến trúc Transformer với phần bên trái
 là encoder, bên phải là
 decoder~\cite{vaswaniAttentionAllYou2017}.}{fig:transformer}
 
@@ -448,12 +475,12 @@ chính~\cite{devlinBERTPretrainingDeep2019}:
 \end{itemize}
 
 Ngoài ra còn các mô hình pre-train mở rộng của BERT như \textbf{BERT
-Multilingual} (hỗ trợ nhiều ngôn ngữ) hay
+Multilingual} (hỗ trợ đa ngôn ngữ) hay
 \textbf{DistilBERT}~\cite{sanhDistilBERTDistilledVersion2020} (mô hình nhẹ và
 nhanh hơn BERT) và RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019} (mô hình khai
 thác tối ưu phương thức huấn luyện của BERT), v.v.
 
-\subsection{PhoBERT, mô hình BERT cho tiếng Việt}
+\subsection{Mô hình BERT cho tiếng Việt: PhoBERT}
 PhoBERT~\cite{nguyenPhoBERTPretrainedLanguage2020} (hay Phở BERT) được cho là
 đạt hiệu quả cao hơn so với mô hình BERT Mutilingual trong các tác vụ xử lý
 ngôn ngữ tiếng Việt. PhoBERT được thiết kế dựa trên
@@ -478,3 +505,6 @@ parsing). PhoBERT chỉ yêu cầu sử dụng tác vụ phân đoạn từ từ
 đoạn từ là tác vụ quan trọng tại vì tiếng Việt là ngôn ngữ đơn âm, mà các từ có
 thể vừa là từ đơn vừa có thể là từ ghép. Cho nên các thành phần của từ ghép nếu
 đứng riêng sẽ không có nghĩa hoặc có nghĩa khác so với từ ghép bao gồm nó.
+
+\section{Tổng kết chương~\ref{chap:models}}
+Báo cáo đã trình bày các mô hình 
