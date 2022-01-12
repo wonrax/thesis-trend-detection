@@ -16,7 +16,7 @@
 } 
 % Example usage
 % \image[0.7]{img/Skein_permutation.png}{Hoán vị Skein \
-% \citep{wiki:skein_permutation}}
+% \citep{wiki:skein_permutation}}{fig:skein}
 
 \newcommand{\doubleimage}[7][0.4]{ 
 \begin{figure}[ht!]
@@ -32,9 +32,10 @@
 		\caption{#5}
 	\end{subfigure}
 	\caption{#6}
+	\label{#7}
 \end{figure} 
 }
 % Example usage
 % \doubleimage[0.7]{img/code/naiveHashing/circle.jpg}{Hình \
 % tròn}{img/code/naiveHashing/circle-1p.jpg}{Hình tròn bị thay đổi 1 điểm \
-% ảnh}{Hai hình ảnh chỉ khác nhau một điểm ảnh}
+% ảnh}{Hai hình ảnh chỉ khác nhau một điểm ảnh}{fig:doubleimage}
