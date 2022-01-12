@@ -51,7 +51,7 @@ class Clean_data:
    return self.f_base_2(self.data_raw)
 
 
-  def create_token_list(self, s):
+  def create_token_list(self, s, stopword_list=[]):
 
     rdrsegmenter = VnCoreNLP("VnCoreNLP/VnCoreNLP-1.1.1.jar", annotators="wseg,pos", max_heap_size='-Xmx2g') 
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     Test = Clean_data(dataset[:50])
     processed_data = Test.preprocess_document()
-    processed_data = Test.create_token_list(processed_data)
+    processed_data = Test.create_token_list(processed_data, stopword_list)
     
     processed_data.drop(['author', 'excerpt', 'content', 'url', 'comments', 'tags', 'likes'], axis=1, inplace=True)
     
