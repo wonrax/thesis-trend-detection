@@ -1,12 +1,15 @@
 import time
-import re, string
 from vncorenlp import VnCoreNLP
 import pandas as pd
+
+import threading
+from multiprocessing import Pool
+
+import string, re
 
 class Clean_data:
   
   def __init__(self, data_raw):
-    self.data_raw = data_raw
     self.data = data_raw.copy()
   
   def f_base(self, s):
@@ -41,58 +44,87 @@ class Clean_data:
 
     return s.strip()
 
-  def f_base_2(self, s):
-    remove_digits = str.maketrans('', '' , string.digits)
-    s['content'] = s['content'].map(lambda x: self.f_base(x))
+    
+  def job(self, x):
+    return self.f_base(x)
+
+  def f_base_2(self, s=None):
+    if s is None:
+      s = self.data
+
+    with Pool(4) as p:
+      s['content'] = p.map(self.job, s['content'])
+    
+    # s['content'] = s['content'].map(lambda x: self.f_base(x))
     s['content_lower_case'] = s['content'].map(lambda x: x.lower())
     return s
 
-  def preprocess_document(self):
-   return self.f_base_2(self.data_raw)
+  def preprocess_document(self, stopword_list=[]):
+    self.f_base_2()
+    return self.create_token_list(stopword_list=stopword_list)
 
 
-  def create_token_list(self, s, stopword_list=[]):
+  def create_token_list(self, s=None, stopword_list=[]):
 
-    rdrsegmenter = VnCoreNLP("VnCoreNLP/VnCoreNLP-1.1.1.jar", annotators="wseg,pos", max_heap_size='-Xmx2g') 
+    if s is None:
+      s = self.data
 
-    tmp_df = s['content'].copy()
+    t1 = time.time()
+    tmp_df = s['content']
+    rdrsegmenter = VnCoreNLP("./src/VnCoreNLP/VnCoreNLP-1.1.1.jar", annotators="wseg,pos", max_heap_size='-Xmx2g')
     tmp_df = tmp_df.map(lambda x: rdrsegmenter.annotate(x)['sentences'])
-    s["sentences"] = tmp_df.map(lambda x: " ".join([" ".join([w['form'] for w in y]) for y in x]))
-    s["token_lists"] = tmp_df.map(lambda x:sum( [[ y['form'].lower() for y in w if (y['posTag'] in ["N", "V", "A", "Np"] and y['form'] not in stopword_list) ] for w in x] , []))
+    print("Done segmentation. Time: ", time.time() - t1)
+
+    sentences = []
+    for article in tmp_df:
+      texts = []
+      if article is None:
+        continue
+      for paragraph in article:
+        texts.append(" ".join([x["form"] for x in paragraph]))
+      sentences.append(" ".join(texts))
+
+    tokens_list = []
+    for article in tmp_df:
+      tokens = []
+      if article is None:
+        continue
+      for paragraph in article:
+        for word in paragraph:
+          if word['form'] not in stopword_list and word['posTag'] in ["N", "V", "A", "Np"]:
+            tokens.append(word['form'])
+      tokens_list.append(str(tokens))
+
+    s["segmented"] = sentences
+    s["tokens"] = tokens_list
+
     return s
-
-
-  def create_store_file(self, name="demo"):
-    D = self.preprocess_document()
-    D = self.create_token_list(D)
-    D.to_csv("cleanData" + str(name) +".csv")
-    print("Success create " + name + ".csv" + "Ver 02")
 
 if __name__ == "__main__":
     stopword_list = []
 
-    with open('data/vietnamese-stopwords-dash.txt', encoding="utf-8") as f:
+    with open('./data/vietnamese-stopwords-dash.txt', encoding="utf-8") as f:
       stopword_list = f.readlines()
 
     stopword_list = [word.replace("\n", '') for word in stopword_list]
     assert stopword_list
+    
+    print(stopword_list[:5])
 
     t1 = time.time()
 
-    dataset = pd.read_csv('C:/Users/hahuy/OneDrive/Work/School/Thesis_TrendDetection/data/suc-khoe-articles.csv.backup5')
-    dataset = dataset.dropna()
-    print(dataset.head())
+    dataset = pd.read_csv('C:/Users/hahuy/OneDrive/Work/School/Thesis_TrendDetection/data/suc-khoe-articles.csv')
+    dataset = dataset.dropna()[:300]
+    print(dataset.tail())
 
-    Test = Clean_data(dataset[:50])
-    processed_data = Test.preprocess_document()
-    processed_data = Test.create_token_list(processed_data, stopword_list)
+    test = Clean_data(dataset)
+    processed_data = test.preprocess_document(stopword_list=stopword_list)
     
     processed_data.drop(['author', 'excerpt', 'content', 'url', 'comments', 'tags', 'likes'], axis=1, inplace=True)
     
-    print(processed_data.head)
+    processed_data.info()
     
-    processed_data.to_csv("cleansed-tokenized-suc-khoe-articles.csv")
-    
+    processed_data.to_csv("./data/t2_cleansed-tokenized-suc-khoe-articles.csv")
 
     print("Time taken:", time.time() - t1)
 
