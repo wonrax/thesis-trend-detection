@@ -54,7 +54,7 @@ class TuoiTreCrawler(Crawler):
         )
         self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[self.category]
 
-    def get_page_url(self, cursor: int):
+    def get_news_list_url(self, cursor: int):
         """
         Return the URL of the newspaper indexes given the cursor.
         """
@@ -65,7 +65,7 @@ class TuoiTreCrawler(Crawler):
             self.category_id, cursor
         )
 
-    def get_id(self, url: str):
+    def get_id_from_url(self, url: str):
         """
         Return the article ID given the URL.
         """
@@ -111,7 +111,7 @@ class TuoiTreCrawler(Crawler):
             a_tag = item.find("a", recursive=False)
             article_url = TuoiTreCrawler.BASE_URL + a_tag["href"]
 
-            if (self.SOURCE_NAME, self.get_id(article_url)) not in self.skip_these:
+            if (self.SOURCE_NAME, self.get_id_from_url(article_url)) not in self.skip_these:
                 article_urls.add(article_url)
 
             elif self.newer_only:
@@ -132,7 +132,7 @@ class TuoiTreCrawler(Crawler):
         try:
             while len(article_urls) < limit:
 
-                page_url = self.get_page_url(cursor)
+                page_url = self.get_news_list_url(cursor)
 
                 new_urls, stop = self.find_article_urls(
                     page_url, limit - len(article_urls)
@@ -188,7 +188,7 @@ class TuoiTreCrawler(Crawler):
         Return an Article object.
         """
 
-        id = self.get_id(url)
+        id = self.get_id_from_url(url)
 
         likes = [None]  # A list makes it easier to pass data across threads
 
@@ -406,7 +406,7 @@ class TuoiTreCrawler(Crawler):
 
                 if self.crawl_comment:
 
-                    id = self.get_id(url)
+                    id = self.get_id_from_url(url)
                     get_comments_thread = threading.Thread(
                         target=self.crawl_comments,
                         kwargs={"id": id, "thread_return": comments},
