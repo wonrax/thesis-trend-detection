@@ -1,5 +1,5 @@
 from crawler.tuoitre import TuoiTreCrawler
-from crawler.crawlerbase import Category
+from crawler.base import Category
 from model.article import Article
 from serialization import FileStorage
 import argparse

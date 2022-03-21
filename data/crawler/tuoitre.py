@@ -9,7 +9,7 @@ import unicodedata
 import threading
 from model.article import Article, Comment
 from util import telegram
-from crawler.crawlerbase import Crawler, Category
+from crawler.base import Crawler, Category
 import pytz
 
 
