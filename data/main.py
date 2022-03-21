@@ -1,16 +1,18 @@
 from crawler.tuoitre import TuoiTreCrawler
+from crawler.crawlerbase import Category
+from model.article import Article
 from serialization import FileStorage
 import argparse
 
 CATEGORY_MAP = {
-    "moi-nhat": TuoiTreCrawler.Category.MOI_NHAT,
-    "the-gioi": TuoiTreCrawler.Category.THE_GIOI,
-    "thoi-su": TuoiTreCrawler.Category.THOI_SU,
-    "suc-khoe": TuoiTreCrawler.Category.SUC_KHOE,
-    "van-hoa": TuoiTreCrawler.Category.VAN_HOA,
-    "cong-nghe": TuoiTreCrawler.Category.CONG_NGHE,
-    "the-thao": TuoiTreCrawler.Category.THE_THAO,
-    "giao-duc": TuoiTreCrawler.Category.GIAO_DUC,
+    "the-gioi": Category.THE_GIOI,
+    "thoi-su": Category.THOI_SU,
+    "suc-khoe": Category.SUC_KHOE,
+    "van-hoa": Category.VAN_HOA,
+    "cong-nghe": Category.CONG_NGHE,
+    "the-thao": Category.THE_THAO,
+    "giao-duc": Category.GIAO_DUC,
+    "moi-nhat": Category.MOI_NHAT,
 }
 
 
@@ -22,8 +24,8 @@ def crawl(
 
     if extend:
         write_mode = "a"
-        loaded_articles = FileStorage.load(args.file)
-        crawled_ids = set([a.id for a in loaded_articles])
+        loaded_articles: list[Article] = FileStorage.load(args.file)
+        crawled_ids = set([(a.source, a.id) for a in loaded_articles])
 
     crawler = TuoiTreCrawler(
         category=category,

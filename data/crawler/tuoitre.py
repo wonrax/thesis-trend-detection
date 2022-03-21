@@ -9,10 +9,11 @@ import unicodedata
 import threading
 from model.article import Article, Comment
 from util import telegram
+from crawler.crawlerbase import Crawler, Category
 import pytz
 
 
-class TuoiTreCrawler:
+class TuoiTreCrawler(Crawler):
     """
     Crawl articles from TuoiTre news. Support crawling articles from
     sub-categories (e.g "the-thao" as in "https://tuoitre.vn/the-thao.htm").
@@ -23,24 +24,16 @@ class TuoiTreCrawler:
     LIKE_COUNT_URL = "https://s5.tuoitre.vn/count-object.htm"
     SOURCE_NAME = "Tuổi Trẻ"
 
-    class Category:
-        """
-        Sub-categories ids extracted from the URL
-        (e.g. https://tuoitre.vn/timeline/11/trang-12.htm).
-        Not a comprehensive list. Add more as needed.
-
-        To find the id of a category, find the value with the key "category_id"
-        in the HTML source. Or monitor network traffic when "See more" is pressed.
-        """
-
-        MOI_NHAT = 0
-        THE_GIOI = 2
-        THOI_SU = 3
-        SUC_KHOE = 12
-        VAN_HOA = 200017
-        CONG_NGHE = 200029
-        THE_THAO = 1209
-        GIAO_DUC = 13
+    MAP_CATEGORY_TO_CATEGORY_ID = {
+        Category.MOI_NHAT: 0,
+        Category.THE_GIOI: 2,
+        Category.THOI_SU: 3,
+        Category.SUC_KHOE: 12,
+        Category.VAN_HOA: 200017,
+        Category.CONG_NGHE: 200029,
+        Category.THE_THAO: 1209,
+        Category.GIAO_DUC: 13,
+    }
 
     def __init__(
         self,
@@ -51,35 +44,25 @@ class TuoiTreCrawler:
         newer_only=False,
         telegram_key=None,
     ):
-
-        self.category = category
-        self.crawl_comment = crawl_comment
-
-        # A set of article ids to skip crawling.
-        # Can be used to enlarge the existing data (skip the ones that already
-        # crawled)
-        self.skip_these = skip_these if skip_these else set()
-        # Only get the articles newer than the existing ones in self.skip_these
-        # regardless the limit.
-        self.newer_only = newer_only
-
-        # Amount of delay in seconds after each request
-        # (to avoid overloading the server).
-        self.delay = delay
-
-        self.timeout = 10
-
-        self.telegram_key = telegram_key
+        super().__init__(
+            category,
+            crawl_comment,
+            delay,
+            skip_these,
+            newer_only,
+            telegram_key,
+        )
+        self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[self.category]
 
     def get_page_url(self, cursor: int):
         """
         Return the URL of the newspaper indexes given the cursor.
         """
 
-        assert self.category is not None
+        assert self.category_id is not None
 
         return TuoiTreCrawler.BASE_URL + "/timeline/{}/trang-{}.htm".format(
-            self.category, cursor
+            self.category_id, cursor
         )
 
     def get_id(self, url: str):
@@ -128,7 +111,7 @@ class TuoiTreCrawler:
             a_tag = item.find("a", recursive=False)
             article_url = TuoiTreCrawler.BASE_URL + a_tag["href"]
 
-            if self.get_id(article_url) not in self.skip_these:
+            if (self.SOURCE_NAME, self.get_id(article_url)) not in self.skip_these:
                 article_urls.add(article_url)
 
             elif self.newer_only:
