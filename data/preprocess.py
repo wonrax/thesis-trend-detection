@@ -2,10 +2,9 @@ import time
 from vncorenlp import VnCoreNLP
 import pandas as pd
 
-import threading
 from multiprocessing import Pool
 
-import string, re
+import re
 
 class Clean_data:
   
@@ -114,7 +113,7 @@ if __name__ == "__main__":
     t1 = time.time()
 
     dataset = pd.read_csv('C:/Users/hahuy/OneDrive/Work/School/Thesis_TrendDetection/data/suc-khoe-articles.csv')
-    dataset = dataset.dropna()[:300]
+    dataset = dataset.dropna()
     print(dataset.tail())
 
     test = Clean_data(dataset)
@@ -124,7 +123,7 @@ if __name__ == "__main__":
     
     processed_data.info()
     
-    processed_data.to_csv("./data/t2_cleansed-tokenized-suc-khoe-articles.csv")
+    processed_data.to_csv("./data/cleansed-tokenized-suc-khoe-articles.csv")
 
     print("Time taken:", time.time() - t1)
 
