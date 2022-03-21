@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 import csv
-from article import Article, Comment
+from model.article import Article, Comment
 
 
 class ArticleSerialization:

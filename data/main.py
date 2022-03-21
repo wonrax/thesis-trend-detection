@@ -1,4 +1,4 @@
-from crawler import TuoiTreCrawler
+from crawler.tuoitre import TuoiTreCrawler
 from serialization import FileStorage
 import argparse
 

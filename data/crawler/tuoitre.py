@@ -7,8 +7,8 @@ import json
 from datetime import datetime
 import unicodedata
 import threading
-from article import Article, Comment
-import telegram
+from model.article import Article, Comment
+from util import telegram
 import pytz
 
 
