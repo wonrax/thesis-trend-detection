@@ -141,8 +141,6 @@ class TuoiTreCrawler(Crawler):
                 if stop:
                     break
 
-                print("Found", len(article_urls), "/", limit, "article URLs")
-
                 cursor += 1
 
                 time.sleep(self.delay)

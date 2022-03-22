@@ -144,7 +144,6 @@ class VnExpressCrawler(Crawler):
                         url = self.get_news_list_url(target_date, index)
                         print("Crawling {}".format(url))
                         a_urls = self.find_article_urls(url, limit - len(article_urls))
-                        print("Found {} articles".format(len(a_urls)))
                         
                         if len(a_urls) == 0: # End of the page
                             break

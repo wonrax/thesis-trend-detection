@@ -7,6 +7,7 @@ import argparse
 import time
 from util import telegram
 from queue import Queue, Empty
+import threading
 
 CATEGORY_MAP = {
     "the-gioi": Category.THE_GIOI,
@@ -63,9 +64,19 @@ def crawl(
         telegram_key=telegram_key,
     )
 
-    articles = []
+    def start_crawl_thread(crawler, queue):
+        _articles = crawler.crawl_articles(limit=limit)
+        queue.put(_articles)
+
+    crawler_result_queue = Queue(len(crawlers_engine))
+
     for crawler in crawlers_engine:
-        articles += crawler.crawl_articles(limit=limit)
+        threading.Thread(target=start_crawl_thread, args=(crawler, crawler_result_queue)).start()
+    
+    articles = []
+
+    for _ in range(len(crawlers_engine)):
+        articles += crawler_result_queue.get(timeout=24*60*60)
 
     FileStorage.store(articles, file_path=file_path, mode=write_mode)
 
