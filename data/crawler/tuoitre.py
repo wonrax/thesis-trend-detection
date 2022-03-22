@@ -233,25 +233,25 @@ class TuoiTreCrawler(Crawler):
             )
             content = self.normalize_unicode(content)
 
+            return Article(
+                id,
+                source,
+                title,
+                date,
+                tags,
+                author,
+                excerpt,
+                content,
+                url,
+                category=category,
+                likes=likes[0],
+            )
+
         except Exception as e:
             print("\nError while getting article with id", id, ":", e)
             print("The article could be an unexpected format (Infographic, video...).")
 
         get_like_thread.join()
-
-        return Article(
-            id,
-            source,
-            title,
-            date,
-            tags,
-            author,
-            excerpt,
-            content,
-            url,
-            category=category,
-            likes=likes[0],
-        )
 
     def json_to_comment(self, json_comment: dict):
         """
