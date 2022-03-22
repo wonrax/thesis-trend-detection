@@ -166,6 +166,8 @@ def duplication_test(file_path):
     ids = [a.id for a in loaded_articles]
 
     print("Duplicated:", len(ids) - len(set(ids)))
+    import collections
+    print([item for item, count in collections.Counter(ids).items() if count > 1])
 
 
 if __name__ == "__main__":
