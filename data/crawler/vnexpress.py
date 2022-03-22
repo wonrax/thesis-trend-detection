@@ -7,6 +7,13 @@ from crawler.base import Crawler, Category
 from bs4 import BeautifulSoup
 import requests
 import time
+
+class EmptyPageException(Exception):
+    """
+    Exception raised when the news page is empty, indicating we have reached
+    the end of the database.
+    """
+    pass
 class VnExpressCrawler(Crawler):
 
     BASE_URL = "https://vnexpress.net/"
@@ -47,7 +54,7 @@ class VnExpressCrawler(Crawler):
     def get_news_list_url(self, time: int, index: int):
         """
         Return the url of the page containing a list of articles
-        in a day given the time and the index.
+        in a day given the time of that day and the index.
         """
 
         assert self.category_id is not None
@@ -65,12 +72,16 @@ class VnExpressCrawler(Crawler):
         try:
             response = requests.get(url, timeout=self.timeout)
         except:
-            return set(), False
+            return set()
     
         article_urls = set()
 
         soup = BeautifulSoup(response.text, "html.parser")
+
         articles = soup.select("article.item-news.item-news-common")
+        if len(articles) == 0:
+            raise EmptyPageException
+
         for article in articles:
             if len(article_urls) >= limit:
                 break
@@ -82,13 +93,59 @@ class VnExpressCrawler(Crawler):
                 pass
         
         return article_urls
+
+    def crawl_article_urls(self, limit=15):
+        """
+        Try to find as many articles as possible given the limit.
+        Return a set of article URLs.
+        """
+        article_urls = set()
+        
+        target_date = int(time.time())
+        date_step = 86400 # 1 day
+        
+        # Assuming the first page contains all the articles in that day
+        only_crawl_first_page = True
+        
+        while len(article_urls) < limit:
+            index = 1
+            try:
+                while True:
+                        url = self.get_news_list_url(target_date, index)
+                        print("Crawling {}".format(url))
+                        a_urls = self.find_article_urls(url, limit - len(article_urls))
+                        print("Found {} articles".format(len(a_urls)))
+                        
+                        if len(a_urls) == 0: # End of the page
+                            break
+                        else:
+                            article_urls.update(a_urls)
+                            index += 1
+
+                        if len(article_urls) < limit:
+                            time.sleep(self.delay)
+
+                        if only_crawl_first_page:
+                            break
+
+            except EmptyPageException:
+                # We didn't get anything even on page 1, indicating
+                # we've reached the end of the database
+                if index == 1:
+                    break
+                time.sleep(self.delay)
+
+            target_date -= date_step
+        
+        return article_urls
+
     
     def crawl_articles(limit=float("inf")):
         pass
 
 if __name__ == "__main__":
 
-    crawler = VnExpressCrawler(Category.SUC_KHOE)
-    url = crawler.get_news_list_url(int(time.time()), 1)
-    a_urls = crawler.find_article_urls(url)
+    crawler = VnExpressCrawler(Category.SUC_KHOE, delay=10)
+    a_urls = crawler.crawl_article_urls(limit=50)
     print(a_urls)
+    print("len ", len(a_urls))
