@@ -198,10 +198,8 @@ class TuoiTreCrawler(Crawler):
 
         try:
             response = requests.get(url, timeout=self.timeout)
-        except requests.exceptions.ConnectionError:
-            print("\nConnection timed out while getting article {}.\n".format(id))
-            return None
-        except:
+        except Exception as e:
+            print("Error while getting article with url", url, ":", e, "\n")
             return None
 
         response_soup = BeautifulSoup(response.text, "html.parser")

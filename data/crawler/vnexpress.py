@@ -101,7 +101,8 @@ class VnExpressCrawler(Crawler):
         
         try:
             response = requests.get(url, timeout=self.timeout)
-        except:
+        except Exception as e:
+            print("Error while crawling {}: {}".format(url, e))
             return set()
     
         article_urls = set()
@@ -190,7 +191,8 @@ class VnExpressCrawler(Crawler):
                     replies=self.crawl_replies(reply["comment_id"])
                 ))
             return replies
-        except:
+        except Exception as e:
+            print("Error while crawling reply of {}: {}".format(url, e))
             return []
 
     def crawl_comments(self, id: str, queue: Queue):
@@ -215,7 +217,8 @@ class VnExpressCrawler(Crawler):
                     likes=int(comment["userlike"])
                 ))
             queue.put(comments)
-        except:
+        except Exception as e:
+            print("Error while crawling comment of {}: {}".format(id, e))
             queue.put([])
 
     def get_article(self, url: str, crawl_comment=True):
