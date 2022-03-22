@@ -195,7 +195,7 @@ class VnExpressCrawler(Crawler):
             print("Error while crawling reply of {}: {}".format(url, e))
             return []
 
-    def crawl_comments(self, id: str, queue: Queue):
+    def crawl_comments(self, id: str, queue: Queue, crawl_replies=False):
         """
         Crawl comments of the given articles.
         """
@@ -205,6 +205,10 @@ class VnExpressCrawler(Crawler):
             response = requests.get(comments_endpoint, timeout=self.timeout)
             data = json.loads(response.text)
             assert data["error"] != "0"
+
+            replies = []
+            if crawl_replies:
+                replies = self.crawl_replies(comment["comment_id"])
             
             comments = []
             for comment in data["data"]["items"]:
@@ -213,7 +217,7 @@ class VnExpressCrawler(Crawler):
                     author=comment["full_name"],
                     content=BeautifulSoup(comment["content"], "html.parser").text,
                     date=datetime.utcfromtimestamp(int(comment["creation_time"])),
-                    replies=self.crawl_replies(comment["comment_id"]),
+                    replies=replies,
                     likes=int(comment["userlike"])
                 ))
             queue.put(comments)
