@@ -81,6 +81,8 @@ def print_session_info(limit, category, crawl_comment, delay, newer_only, telegr
         "Starting to crawl articles...\nLimit per news source: {}\nCategory ID: {}\n"
         + "Crawl comments: {}\nDelay: {}\nNewer only: {}"
     ).format(limit, category, crawl_comment, delay, newer_only)
+    
+    print(start_string)
 
     from datetime import datetime
     import pytz
