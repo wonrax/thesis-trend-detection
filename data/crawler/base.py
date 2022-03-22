@@ -39,6 +39,6 @@ class Crawler:
         # (to avoid overloading the server).
         self.delay = delay
 
-        self.timeout = 10
+        self.timeout = 60
 
         self.telegram_key = telegram_key
