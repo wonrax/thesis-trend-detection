@@ -6,6 +6,7 @@ from serialization import FileStorage
 import argparse
 import time
 from util import telegram
+from queue import Queue, Empty
 
 CATEGORY_MAP = {
     "the-gioi": Category.THE_GIOI,
@@ -68,8 +69,8 @@ def crawl(
 
     FileStorage.store(articles, file_path=file_path, mode=write_mode)
 
-    time_taken_string = "Time taken: {}m{:.2f}s".format(
-        time.time() - t_start // 60, time.time() - t_start % 60
+    time_taken_string = "Finish. Time taken: {}m{:.2f}s".format(
+        (time.time() - t_start) // 60, (time.time() - t_start) % 60
     )
     
     print(time_taken_string)
