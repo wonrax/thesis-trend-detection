@@ -26,7 +26,6 @@ class VnExpressCrawler(Crawler):
 
     BASE_URL = "https://vnexpress.net/"
     API_URL = "https://usi-saas.vnexpress.net/"
-    LIKE_COUNT_URL = "https://s5.tuoitre.vn/count-object.htm"
     SOURCE_NAME = "VnExpress"
     MAP_CATEGORY_TO_CATEGORY_ID = {
         Category.SUC_KHOE: 1003750
@@ -64,7 +63,7 @@ class VnExpressCrawler(Crawler):
         Return the API endpoint to get comments of the given the article id.
         """
         return self.API_URL + \
-            "index/get?offset=0&limit=1000&sort=like&objectid={}&objecttype=1&siteid=1003750" \
+            "index/get?offset=0&limit=200&sort=like&objectid={}&objecttype=1&siteid=1003750" \
                 .format(article_id)
 
     def get_reply_endpoint(self, comment_id: str):
