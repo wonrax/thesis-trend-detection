@@ -41,9 +41,12 @@ class ArticleSerialization:
         comment_dict["likes"] = int(comment_dict["likes"])
 
         # 2021-11-08T18:18:45
-        comment_dict["date"] = datetime.strptime(
-            comment_dict["date"], "%Y-%m-%dT%H:%M:%S"
-        )
+        if comment_dict["date"] is not None:
+            comment_dict["date"] = datetime.strptime(
+                comment_dict["date"], "%Y-%m-%dT%H:%M:%S"
+            )
+        else:
+            print(f"Date of this comment is None: {comment_dict}")
         return Comment(**comment_dict)
 
     @staticmethod

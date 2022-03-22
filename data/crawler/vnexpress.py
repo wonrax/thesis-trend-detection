@@ -14,6 +14,7 @@ import unicodedata
 import json
 from queue import Queue, Empty
 import threading
+from util import telegram
 
 class EmptyPageException(Exception):
     """
@@ -174,6 +175,7 @@ class VnExpressCrawler(Crawler):
         Return a list of replies.
         """
         url = self.get_reply_endpoint(id)
+        time.sleep(min(self.delay, 1))
         try:
             response = requests.get(url, timeout=self.timeout)
             data = json.loads(response.text)
@@ -184,6 +186,7 @@ class VnExpressCrawler(Crawler):
                     id=reply["comment_id"],
                     author=reply["full_name"],
                     content=BeautifulSoup(reply["content"], "html.parser").text,
+                    date=datetime.utcfromtimestamp(int(reply["creation_time"])),
                     likes=reply["userlike"],
                     replies=self.crawl_replies(reply["comment_id"])
                 ))
@@ -261,7 +264,7 @@ class VnExpressCrawler(Crawler):
             )
             content = self.normalize_unicode(content)
             
-            time.sleep(self.timeout)
+            time.sleep(self.delay)
             
             comments = []
             if crawl_comment:
@@ -289,8 +292,39 @@ class VnExpressCrawler(Crawler):
             print("Error getting article {}: {}".format(url, e))
         
     
-    def crawl_articles(limit=float("inf")):
-        pass
+    def crawl_articles(self, limit=15):
+        """
+        Crawl articles given the limit.
+        """
+        article_urls = self.crawl_article_urls(limit)
+        articles = []
+        loss = 0
+        try:
+            for url in article_urls:
+                article = self.get_article(url)
+                if article:
+                    articles.append(article)
+                else:
+                    loss += 1
+
+                # Print progress
+                freq = limit // 10 if limit > 10 else 1
+                if len(articles) % freq == 0:
+                    progress_string = (
+                        "{}: Crawling {}%... Success: {}/{} Loss: {}".format(
+                            self.SOURCE_NAME, len(articles) / limit * 100, len(articles), limit, loss
+                        )
+                    )
+                    print(progress_string)
+                    if self.telegram_key:
+                        telegram.send_message(progress_string, self.telegram_key)
+
+        except Exception as e:
+            print(f"{self.SOURCE_NAME}:", "Error while getting articles:", e)
+
+        print(f"{self.SOURCE_NAME}:", "Success:", len(articles), "/", limit, "Loss:", loss)
+        
+        return articles
 
 if __name__ == "__main__":
 

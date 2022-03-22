@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import time
 from functools import reduce
-from tqdm import tqdm
 import json
 from datetime import datetime
 import unicodedata
@@ -242,13 +241,6 @@ class TuoiTreCrawler(Crawler):
             print("\nError while getting article with id", id, ":", e)
             print("The article could be an unexpected format (Infographic, video...).")
 
-            if self.telegram_key:
-                telegram.send_message(
-                    "Error while getting article with id {}: {}".format(id, e),
-                    self.telegram_key,
-                )
-            return None
-
         get_like_thread.join()
 
         return Article(
@@ -363,43 +355,14 @@ class TuoiTreCrawler(Crawler):
         Return a list of Article objects.
         """
 
-        t_start = time.time()
-
-        start_string = (
-            "Starting to crawl articles...\nLimit: {}\nCategory ID: {}\n"
-            + "Crawl comments: {}\nDelay: {}\nNewer only: {}\n\n"
-        ).format(limit, self.category, self.crawl_comment, self.delay, self.newer_only)
-
-        if self.telegram_key:
-            telegram.send_message(
-                "🔥🔥🔥\nNew crawl session started at {}".format(
-                    datetime.now(pytz.timezone("Asia/Ho_Chi_Minh")).strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-                ),
-                self.telegram_key,
-            )
-            telegram.send_message(start_string, self.telegram_key)
-
-        print(start_string)
-
         article_urls = self.crawl_article_urls(limit)
-
-        if self.telegram_key:
-            message = (
-                "Found {}/{} urls, starting to crawl articles...".format(
-                    len(article_urls),
-                    limit,
-                ),
-            )
-            telegram.send_message(message, self.telegram_key)
 
         articles = []
         loss = 0
 
         print("Getting", len(article_urls), "articles...")
         try:
-            for url in tqdm(article_urls, mininterval=0.5):
+            for url in article_urls:
 
                 get_comments_thread = None
                 comments = [None]  # A list makes it easier to pass data across threads
@@ -427,34 +390,20 @@ class TuoiTreCrawler(Crawler):
 
                 time.sleep(self.delay)
 
-                if self.telegram_key:
-                    freq = limit // 10 if limit > 10 else 1
-                    if len(articles) % freq == 0:
-                        telegram_notify_string = (
-                            "Crawling {}%...\nSuccess: {}/{}\nLoss: {}".format(
-                                len(articles) / limit * 100, len(articles), limit, loss
-                            )
+                freq = limit // 10 if limit > 10 else 1
+                if len(articles) % freq == 0:
+                    progress_string = (
+                        "{}: Crawling {}%... Success: {}/{} Loss: {}".format(
+                            self.SOURCE_NAME, len(articles) / limit * 100, len(articles), limit, loss
                         )
-                        telegram.send_message(telegram_notify_string, self.telegram_key)
+                    )
+                    print(progress_string)
+                    if self.telegram_key:
+                        telegram.send_message(progress_string, self.telegram_key)
 
         except Exception as e:
-            print("Error while getting articles:", e)
+            print(f"{self.SOURCE_NAME}:", "Error while getting articles:", e)
 
-        time_taken = time.time() - t_start
-        time_taken_string = "Time taken: {}m{:.2f}s".format(
-            time_taken // 60, time_taken % 60
-        )
-
-        print("\nSuccess:", len(articles), "/", limit, "\tLoss:", loss)
-        print(time_taken_string)
-
-        if self.telegram_key:
-            message = (
-                "Crawling finished.\nSuccess: {}/{}\nLoss: {}".format(
-                    len(articles), limit, loss
-                ),
-            )
-            telegram.send_message(message, self.telegram_key)
-            telegram.send_message(time_taken_string, self.telegram_key)
+        print(f"{self.SOURCE_NAME}:", "Success:", len(articles), "/", limit, "Loss:", loss)
 
         return articles

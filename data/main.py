@@ -1,8 +1,11 @@
 from crawler.tuoitre import TuoiTreCrawler
+from crawler.vnexpress import VnExpressCrawler
 from crawler.base import Category
 from model.article import Article
 from serialization import FileStorage
 import argparse
+import time
+from util import telegram
 
 CATEGORY_MAP = {
     "the-gioi": Category.THE_GIOI,
@@ -17,7 +20,7 @@ CATEGORY_MAP = {
 
 
 def crawl(
-    file_path, category, limit, delay, crawl_comment, newer_only, extend, telegram_key
+    crawlers, file_path, category, limit, delay, crawl_comment, newer_only, extend, telegram_key
 ):
     crawled_ids = set()
     write_mode = "w"
@@ -27,18 +30,71 @@ def crawl(
         loaded_articles: list[Article] = FileStorage.load(args.file)
         crawled_ids = set([(a.source, a.id) for a in loaded_articles])
 
-    crawler = TuoiTreCrawler(
+    crawlers_engine = []
+    if "tuoitre" in crawlers:
+        crawlers_engine.append(TuoiTreCrawler(
+            category=category,
+            delay=delay,
+            crawl_comment=crawl_comment,
+            skip_these=crawled_ids,
+            newer_only=newer_only,
+            telegram_key=telegram_key,
+        ))
+    if "vnexpress" in crawlers:
+        crawlers_engine.append(VnExpressCrawler(
+            category=category,
+            delay=delay,
+            crawl_comment=crawl_comment,
+            skip_these=crawled_ids,
+            newer_only=newer_only,
+            telegram_key=telegram_key,
+        ))
+
+    t_start = time.time()
+
+
+    print_session_info(
+        limit=limit,
         category=category,
-        delay=delay,
         crawl_comment=crawl_comment,
-        skip_these=crawled_ids,
+        delay=delay,
         newer_only=newer_only,
         telegram_key=telegram_key,
     )
 
-    articles = crawler.crawl_articles(limit=limit)
+    articles = []
+    for crawler in crawlers_engine:
+        articles += crawler.crawl_articles(limit=limit)
 
     FileStorage.store(articles, file_path=file_path, mode=write_mode)
+
+    time_taken_string = "Time taken: {}m{:.2f}s".format(
+        time.time() - t_start // 60, time.time() - t_start % 60
+    )
+    
+    print(time_taken_string)
+    if telegram_key:
+        telegram.send_message(time_taken_string, telegram_key)
+
+def print_session_info(limit, category, crawl_comment, delay, newer_only, telegram_key):
+    start_string = (
+        "Starting to crawl articles...\nLimit per news source: {}\nCategory ID: {}\n"
+        + "Crawl comments: {}\nDelay: {}\nNewer only: {}"
+    ).format(limit, category, crawl_comment, delay, newer_only)
+
+    from datetime import datetime
+    import pytz
+
+    if telegram_key:
+        telegram.send_message(
+            "🔥🔥🔥\nNew crawl session started at {}".format(
+                datetime.now(pytz.timezone("Asia/Ho_Chi_Minh")).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+            ),
+            telegram_key,
+        )
+        telegram.send_message(start_string, telegram_key)
 
 
 def preview_data(file_path):
@@ -99,6 +155,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("Crawl TuoiTre news.")
 
     group = parser.add_mutually_exclusive_group()
+    
+    parser.add_argument('--crawler', action='append', help='Add news crawler. Default: Use all crawlers. Options: tuoitre, vnexpress.', required=False)
 
     parser.add_argument("-f", "--file", help="file to store or load the crawled data")
 
@@ -157,8 +215,13 @@ if __name__ == "__main__":
             )
         if args.category not in CATEGORY_MAP:
             parser.error("Please specify a valid category with --category")
+        
+        crawlers = ["tuoitre", "vnexpress"]
+        if args.crawler:
+            crawlers = args.crawler
 
         crawl(
+            crawlers,
             file_path=args.file,
             category=CATEGORY_MAP[args.category],
             limit=args.number,
@@ -177,6 +240,7 @@ if __name__ == "__main__":
 
         if args.test:
             duplication_test(file_path=args.file)
+            
 
     else:
         if args.file is None:
