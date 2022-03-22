@@ -37,7 +37,7 @@ class TuoiTreCrawler(Crawler):
 
     def __init__(
         self,
-        category: Category = None,
+        category: Category,
         crawl_comment=True,
         delay=0.5,
         skip_these=None,
