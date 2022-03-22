@@ -165,7 +165,7 @@ def duplication_test(file_path):
     loaded_articles = FileStorage.load(file_path)
     ids = [a.id for a in loaded_articles]
 
-    print("Duplicated:", len(ids) != len(set(ids)))
+    print("Duplicated:", len(ids) - len(set(ids)))
 
 
 if __name__ == "__main__":
