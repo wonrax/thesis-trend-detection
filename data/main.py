@@ -76,7 +76,10 @@ def crawl(
     articles = []
 
     for _ in range(len(crawlers_engine)):
-        articles += crawler_result_queue.get(timeout=24*60*60)
+        try:
+            articles += crawler_result_queue.get(timeout=24*60*60)
+        except Empty:
+            print(f"Timeout for {crawler.SOURCE_NAME}")
 
     FileStorage.store(articles, file_path=file_path, mode=write_mode)
 
