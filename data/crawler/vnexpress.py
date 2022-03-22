@@ -254,7 +254,13 @@ class VnExpressCrawler(Crawler):
         soup = BeautifulSoup(response.text, "html.parser")
 
         try:
-            title = soup.select_one(".title-detail").getText()
+            title = soup.select_one(".title-detail")
+            # Try look for title in other places
+            if title is None:
+                title = soup.select_one("title")
+            
+            title = title.getText()
+            
             author = soup.find("meta", {"name": "author"})["content"]
             excerpt = soup.find("meta", {"property": "og:description"})["content"]
             category = soup.find("meta", {"name": "tt_site_id_detail"})[
