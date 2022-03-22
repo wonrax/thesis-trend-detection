@@ -98,11 +98,14 @@ class VnExpressCrawler(Crawler):
         Return a set of URLs to the main articles.
         """
         
+        # Signal the caller to stop
+        stop = False
+
         try:
             response = requests.get(url, timeout=self.timeout)
         except Exception as e:
             print("Error while crawling {}: {}".format(url, e))
-            return set()
+            return set(), stop
     
         article_urls = set()
 
@@ -119,10 +122,13 @@ class VnExpressCrawler(Crawler):
                 url = article.select_one(".title-news").select_one("a").get("href")
                 if (self.SOURCE_NAME, self.get_id_from_url(url)) not in self.skip_these:
                     article_urls.add(url)
+                elif self.newer_only:
+                    stop = True
+                    return article_urls, stop
             except:
                 pass
         
-        return article_urls
+        return article_urls, stop
 
     def crawl_article_urls(self, limit=15):
         """
@@ -137,25 +143,28 @@ class VnExpressCrawler(Crawler):
         # Assuming the first page contains all the articles in that day
         only_crawl_first_page = True
         
+        stop = False
         while len(article_urls) < limit:
+            if stop:
+                break
             index = 1
             try:
                 while True:
-                        url = self.get_news_list_url(target_date, index)
-                        print("Crawling {}".format(url))
-                        a_urls = self.find_article_urls(url, limit - len(article_urls))
-                        
-                        if len(a_urls) == 0: # End of the page
-                            break
-                        else:
-                            article_urls.update(a_urls)
-                            index += 1
+                    url = self.get_news_list_url(target_date, index)
+                    print("Crawling {}".format(url))
+                    a_urls, stop = self.find_article_urls(url, limit - len(article_urls))
+                    
+                    if len(a_urls) == 0: # End of the page
+                        break
+                    else:
+                        article_urls.update(a_urls)
+                        index += 1
 
-                        if len(article_urls) < limit:
-                            time.sleep(self.delay)
+                    if len(article_urls) < limit:
+                        time.sleep(self.delay)
 
-                        if only_crawl_first_page:
-                            break
+                    if only_crawl_first_page or stop:
+                        break
 
             except EmptyPageException:
                 # We didn't get anything even on page 1, indicating
@@ -302,6 +311,10 @@ class VnExpressCrawler(Crawler):
         Crawl articles given the limit.
         """
         article_urls = self.crawl_article_urls(limit)
+
+        # update the limit according to the number of articles
+        limit = len(article_urls)
+
         articles = []
         loss = 0
         try:

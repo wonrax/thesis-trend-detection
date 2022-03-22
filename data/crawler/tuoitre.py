@@ -357,6 +357,10 @@ class TuoiTreCrawler(Crawler):
         loss = 0
 
         print("Getting", len(article_urls), "articles...")
+        
+        # update the limit according to the number of articles
+        limit = len(article_urls)
+
         try:
             for url in article_urls:
 
