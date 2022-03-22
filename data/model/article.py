@@ -23,10 +23,10 @@ class Article:
         self.excerpt = excerpt
         self.content = content
         self.url = url
+        self.comments = comments  # List of Comment objects
         self.tags = tags
         self.category = category
         self.likes = likes  # Like count
-        self.comments = comments  # List of Comment objects
 
     def __str__(self):
         return (
@@ -76,8 +76,8 @@ class Comment:
         self.author = author
         self.content = content
         self.date = date
-        self.likes = likes
         self.replies = replies  # list of Comment objects
+        self.likes = likes
 
     def __str__(self):
         return (
