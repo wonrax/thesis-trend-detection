@@ -4,7 +4,7 @@ if __name__ == "__main__":
     sys.path.append(ROOT_DIR + "/data")
 
 from crawler.base import Crawler, Category
-from model.article import Article
+from model.article import Article, Comment
 from bs4 import BeautifulSoup
 import requests
 import time
@@ -12,6 +12,8 @@ from datetime import datetime
 from functools import reduce
 import unicodedata
 import json
+from queue import Queue, Empty
+import threading
 
 class EmptyPageException(Exception):
     """
@@ -22,7 +24,7 @@ class EmptyPageException(Exception):
 class VnExpressCrawler(Crawler):
 
     BASE_URL = "https://vnexpress.net/"
-    API_URL = "https://id.tuoitre.vn/api"
+    API_URL = "https://usi-saas.vnexpress.net/"
     LIKE_COUNT_URL = "https://s5.tuoitre.vn/count-object.htm"
     SOURCE_NAME = "VnExpress"
     MAP_CATEGORY_TO_CATEGORY_ID = {
@@ -55,6 +57,22 @@ class VnExpressCrawler(Crawler):
         """
 
         return url.split(".")[-2].split("/")[-1].split("-")[-1]
+    
+    def get_comments_endpoint(self, article_id: str):
+        """
+        Return the API endpoint to get comments of the given the article id.
+        """
+        return self.API_URL + \
+            "index/get?offset=0&limit=1000&sort=like&objectid={}&objecttype=1&siteid=1003750" \
+                .format(article_id)
+
+    def get_reply_endpoint(self, comment_id: str):
+        """
+        Return the API endpoint to get replies of the given the comment id.
+        """
+        return self.API_URL + \
+            "index/getreplay?id={}&limit=1000&offset=0&sort_by=like" \
+                .format(comment_id)
 
     def get_news_list_url(self, time: int, index: int):
         """
@@ -149,12 +167,68 @@ class VnExpressCrawler(Crawler):
             target_date -= date_step
         
         return article_urls
+    
+    def crawl_replies(self, id: str):
+        """
+        Crawl replies of the given comment ID.
+        Return a list of replies.
+        """
+        url = self.get_reply_endpoint(id)
+        try:
+            response = requests.get(url, timeout=self.timeout)
+            data = json.loads(response.text)
+            assert data["error"] != "0"
+            replies = []
+            for reply in data["data"]["items"]:
+                replies.append(Comment(
+                    id=reply["comment_id"],
+                    author=reply["full_name"],
+                    content=BeautifulSoup(reply["content"], "html.parser").text,
+                    likes=reply["userlike"],
+                    replies=self.crawl_replies(reply["comment_id"])
+                ))
+            return replies
+        except:
+            return []
+
+    def crawl_comments(self, id: str, queue: Queue):
+        """
+        Crawl comments of the given articles.
+        """
+        comments_endpoint = self.get_comments_endpoint(id)
+
+        try:
+            response = requests.get(comments_endpoint, timeout=self.timeout)
+            data = json.loads(response.text)
+            assert data["error"] != "0"
+            
+            comments = []
+            for comment in data["data"]["items"]:
+                comments.append(Comment(
+                    id=comment["comment_id"],
+                    author=comment["full_name"],
+                    content=BeautifulSoup(comment["content"], "html.parser").text,
+                    date=datetime.utcfromtimestamp(int(comment["creation_time"])),
+                    replies=self.crawl_replies(comment["comment_id"]),
+                    likes=int(comment["userlike"])
+                ))
+            queue.put(comments)
+        except:
+            queue.put([])
 
     def get_article(self, url: str, crawl_comment=True):
         """
         Get an article given its URL.
         Return an Article object.
         """
+        
+        comments_queue = Queue(1)
+        if crawl_comment:
+            threading.Thread(
+                target=self.crawl_comments,
+                args=(self.get_id_from_url(url),
+                comments_queue)).start()
+
         try:
             response = requests.get(url, timeout=self.timeout)
         except:
@@ -186,6 +260,15 @@ class VnExpressCrawler(Crawler):
                 lambda value, p: value + p.get_text().strip() + "\n", paragraphs, ""
             )
             content = self.normalize_unicode(content)
+            
+            time.sleep(self.timeout)
+            
+            comments = []
+            if crawl_comment:
+                try:
+                    comments = comments_queue.get(timeout=10*60)
+                except Empty:
+                    pass
 
             return Article(
                 id=self.get_id_from_url(url),
@@ -197,7 +280,7 @@ class VnExpressCrawler(Crawler):
                 excerpt=excerpt,
                 content=content,
                 url=url,
-                comments=[], # TODO
+                comments=comments,
                 category=category,
                 likes=None # This news source doesn't have like count
             )
@@ -215,9 +298,9 @@ if __name__ == "__main__":
     a_urls = crawler.crawl_article_urls(limit=50)
     print(a_urls)
     print("len ", len(a_urls))
+    
     for a_url in a_urls:
         a = crawler.get_article(a_url)
         if a is not None:
             with open("data/vnexpress_suc_khoe/{}.json".format(a.id), "w", encoding='utf8') as f:
                 json.dump(a.to_dict(), f, ensure_ascii=False, indent=4)
-        time.sleep(5)
