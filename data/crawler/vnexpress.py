@@ -3,7 +3,7 @@ if __name__ == "__main__":
     ROOT_DIR = os.path.abspath(os.curdir)
     sys.path.append(ROOT_DIR + "/data")
 
-from crawler.base import Crawler, Category
+from crawler.base import Crawler, Category, EmptyPage
 from model.article import Article, Comment
 from bs4 import BeautifulSoup
 import requests
@@ -16,12 +16,6 @@ from queue import Queue, Empty
 import threading
 from util import telegram
 
-class EmptyPageException(Exception):
-    """
-    Exception raised when the news page is empty, indicating we have reached
-    the end of the database.
-    """
-    pass
 class VnExpressCrawler(Crawler):
 
     BASE_URL = "https://vnexpress.net/"
@@ -113,7 +107,7 @@ class VnExpressCrawler(Crawler):
 
         articles = soup.select("article.item-news.item-news-common")
         if len(articles) == 0:
-            raise EmptyPageException
+            raise EmptyPage
 
         for article in articles:
             if len(article_urls) >= limit:
@@ -166,7 +160,7 @@ class VnExpressCrawler(Crawler):
                     if only_crawl_first_page or stop:
                         break
 
-            except EmptyPageException:
+            except EmptyPage:
                 # We didn't get anything even on page 1, indicating
                 # we've reached the end of the database
                 if index == 1:
