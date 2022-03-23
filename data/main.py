@@ -22,7 +22,15 @@ CATEGORY_MAP = {
 
 
 def crawl(
-    crawlers, file_path, category, limit, delay, crawl_comment, newer_only, extend, telegram_key
+    crawlers,
+    file_path,
+    category,
+    limit,
+    delay,
+    crawl_comment,
+    newer_only,
+    extend,
+    telegram_key,
 ):
     crawled_ids = set()
     write_mode = "w"
@@ -34,26 +42,29 @@ def crawl(
 
     crawlers_engine = []
     if "tuoitre" in crawlers:
-        crawlers_engine.append(TuoiTreCrawler(
-            category=category,
-            delay=delay,
-            crawl_comment=crawl_comment,
-            skip_these=crawled_ids,
-            newer_only=newer_only,
-            telegram_key=telegram_key,
-        ))
+        crawlers_engine.append(
+            TuoiTreCrawler(
+                category=category,
+                delay=delay,
+                crawl_comment=crawl_comment,
+                skip_these=crawled_ids,
+                newer_only=newer_only,
+                telegram_key=telegram_key,
+            )
+        )
     if "vnexpress" in crawlers:
-        crawlers_engine.append(VnExpressCrawler(
-            category=category,
-            delay=delay,
-            crawl_comment=crawl_comment,
-            skip_these=crawled_ids,
-            newer_only=newer_only,
-            telegram_key=telegram_key,
-        ))
+        crawlers_engine.append(
+            VnExpressCrawler(
+                category=category,
+                delay=delay,
+                crawl_comment=crawl_comment,
+                skip_these=crawled_ids,
+                newer_only=newer_only,
+                telegram_key=telegram_key,
+            )
+        )
 
     t_start = time.time()
-
 
     print_session_info(
         limit=limit,
@@ -71,13 +82,15 @@ def crawl(
     crawler_result_queue = Queue(len(crawlers_engine))
 
     for crawler in crawlers_engine:
-        threading.Thread(target=start_crawl_thread, args=(crawler, crawler_result_queue)).start()
-    
+        threading.Thread(
+            target=start_crawl_thread, args=(crawler, crawler_result_queue)
+        ).start()
+
     articles = []
 
     for _ in range(len(crawlers_engine)):
         try:
-            articles += crawler_result_queue.get(timeout=24*60*60)
+            articles += crawler_result_queue.get(timeout=24 * 60 * 60)
         except Empty:
             print(f"Timeout for {crawler.SOURCE_NAME}")
 
@@ -86,17 +99,18 @@ def crawl(
     time_taken_string = "Finish. Time taken: {}m{:.2f}s".format(
         (time.time() - t_start) // 60, (time.time() - t_start) % 60
     )
-    
+
     print(time_taken_string)
     if telegram_key:
         telegram.send_message(time_taken_string, telegram_key)
+
 
 def print_session_info(limit, category, crawl_comment, delay, newer_only, telegram_key):
     start_string = (
         "Starting to crawl articles...\nLimit per news source: {}\nCategory ID: {}\n"
         + "Crawl comments: {}\nDelay: {}\nNewer only: {}"
     ).format(limit, category, crawl_comment, delay, newer_only)
-    
+
     print(start_string)
 
     from datetime import datetime
@@ -168,15 +182,27 @@ def duplication_test(file_path):
 
     # Print duplicate article ids
     import collections
-    print([item.id for item, count in collections.Counter(loaded_articles).items() if count > 1])
+
+    print(
+        [
+            item.id
+            for item, count in collections.Counter(loaded_articles).items()
+            if count > 1
+        ]
+    )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Crawl TuoiTre news.")
 
     group = parser.add_mutually_exclusive_group()
-    
-    parser.add_argument('--crawler', action='append', help='Add news crawler. Default: Use all crawlers. Options: tuoitre, vnexpress.', required=False)
+
+    parser.add_argument(
+        "--crawler",
+        action="append",
+        help="Add news crawler. Default: Use all crawlers. Options: tuoitre, vnexpress.",
+        required=False,
+    )
 
     parser.add_argument("-f", "--file", help="file to store or load the crawled data")
 
@@ -235,7 +261,7 @@ if __name__ == "__main__":
             )
         if args.category not in CATEGORY_MAP:
             parser.error("Please specify a valid category with --category")
-        
+
         crawlers = ["tuoitre", "vnexpress"]
         if args.crawler:
             crawlers = args.crawler
@@ -260,7 +286,6 @@ if __name__ == "__main__":
 
         if args.test:
             duplication_test(file_path=args.file)
-            
 
     else:
         if args.file is None:

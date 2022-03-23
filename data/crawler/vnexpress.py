@@ -1,5 +1,6 @@
 if __name__ == "__main__":
     import os, sys
+
     ROOT_DIR = os.path.abspath(os.curdir)
     sys.path.append(ROOT_DIR + "/data")
 
@@ -16,15 +17,13 @@ from queue import Queue, Empty
 import threading
 from util import telegram
 
+
 class VnExpressCrawler(Crawler):
 
     BASE_URL = "https://vnexpress.net/"
     API_URL = "https://usi-saas.vnexpress.net/"
     SOURCE_NAME = "VnExpress"
-    MAP_CATEGORY_TO_CATEGORY_ID = {
-        Category.SUC_KHOE: 1003750
-    }
-
+    MAP_CATEGORY_TO_CATEGORY_ID = {Category.SUC_KHOE: 1003750}
 
     def __init__(
         self,
@@ -51,22 +50,28 @@ class VnExpressCrawler(Crawler):
         """
 
         return url.split(".")[-2].split("/")[-1].split("-")[-1]
-    
+
     def get_comments_endpoint(self, article_id: str):
         """
         Return the API endpoint to get comments of the given the article id.
         """
-        return self.API_URL + \
-            "index/get?offset=0&limit=200&sort=like&objectid={}&objecttype=1&siteid=1003750" \
-                .format(article_id)
+        return (
+            self.API_URL
+            + "index/get?offset=0&limit=200&sort=like&objectid={}&objecttype=1&siteid=1003750".format(
+                article_id
+            )
+        )
 
     def get_reply_endpoint(self, comment_id: str):
         """
         Return the API endpoint to get replies of the given the comment id.
         """
-        return self.API_URL + \
-            "index/getreplay?id={}&limit=1000&offset=0&sort_by=like" \
-                .format(comment_id)
+        return (
+            self.API_URL
+            + "index/getreplay?id={}&limit=1000&offset=0&sort_by=like".format(
+                comment_id
+            )
+        )
 
     def get_news_list_url(self, time: int, index: int):
         """
@@ -76,8 +81,11 @@ class VnExpressCrawler(Crawler):
 
         assert self.category_id is not None
 
-        return self.BASE_URL + "category/day?cateid={}&fromdate={}&todate={}&page={}".format(
-            self.category_id, time, time, index
+        return (
+            self.BASE_URL
+            + "category/day?cateid={}&fromdate={}&todate={}&page={}".format(
+                self.category_id, time, time, index
+            )
         )
 
     def normalize_unicode(self, unicode_str):
@@ -91,7 +99,7 @@ class VnExpressCrawler(Crawler):
         Find articles in a page given its URL.
         Return a set of URLs to the main articles.
         """
-        
+
         # Signal the caller to stop
         stop = False
 
@@ -100,7 +108,7 @@ class VnExpressCrawler(Crawler):
         except Exception as e:
             print("Error while crawling {}: {}".format(url, e))
             return set(), stop
-    
+
         article_urls = set()
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -121,7 +129,7 @@ class VnExpressCrawler(Crawler):
                     return article_urls, stop
             except:
                 pass
-        
+
         return article_urls, stop
 
     def crawl_article_urls(self, limit=15):
@@ -130,13 +138,13 @@ class VnExpressCrawler(Crawler):
         Return a set of article URLs.
         """
         article_urls = set()
-        
+
         target_date = int(time.time())
-        date_step = 86400 # 1 day
-        
+        date_step = 86400  # 1 day
+
         # Assuming the first page contains all the articles in that day
         only_crawl_first_page = True
-        
+
         stop = False
         while len(article_urls) < limit:
             if stop:
@@ -146,9 +154,11 @@ class VnExpressCrawler(Crawler):
                 while True:
                     url = self.get_news_list_url(target_date, index)
                     print("Crawling {}".format(url))
-                    a_urls, stop = self.find_article_urls(url, limit - len(article_urls))
-                    
-                    if len(a_urls) == 0: # End of the page
+                    a_urls, stop = self.find_article_urls(
+                        url, limit - len(article_urls)
+                    )
+
+                    if len(a_urls) == 0:  # End of the page
                         break
                     else:
                         article_urls.update(a_urls)
@@ -168,9 +178,9 @@ class VnExpressCrawler(Crawler):
                 time.sleep(self.delay)
 
             target_date -= date_step
-        
+
         return article_urls
-    
+
     def crawl_replies(self, id: str):
         """
         Crawl replies of the given comment ID.
@@ -184,14 +194,16 @@ class VnExpressCrawler(Crawler):
             assert data["error"] != "0"
             replies = []
             for reply in data["data"]["items"]:
-                replies.append(Comment(
-                    id=reply["comment_id"],
-                    author=reply["full_name"],
-                    content=BeautifulSoup(reply["content"], "html.parser").text,
-                    date=datetime.utcfromtimestamp(int(reply["creation_time"])),
-                    likes=reply["userlike"],
-                    replies=self.crawl_replies(reply["comment_id"])
-                ))
+                replies.append(
+                    Comment(
+                        id=reply["comment_id"],
+                        author=reply["full_name"],
+                        content=BeautifulSoup(reply["content"], "html.parser").text,
+                        date=datetime.utcfromtimestamp(int(reply["creation_time"])),
+                        likes=reply["userlike"],
+                        replies=self.crawl_replies(reply["comment_id"]),
+                    )
+                )
             return replies
         except Exception as e:
             print("Error while crawling reply of {}: {}".format(url, e))
@@ -211,17 +223,19 @@ class VnExpressCrawler(Crawler):
             replies = []
             if crawl_replies:
                 replies = self.crawl_replies(comment["comment_id"])
-            
+
             comments = []
             for comment in data["data"]["items"]:
-                comments.append(Comment(
-                    id=comment["comment_id"],
-                    author=comment["full_name"],
-                    content=BeautifulSoup(comment["content"], "html.parser").text,
-                    date=datetime.utcfromtimestamp(int(comment["creation_time"])),
-                    replies=replies,
-                    likes=int(comment["userlike"])
-                ))
+                comments.append(
+                    Comment(
+                        id=comment["comment_id"],
+                        author=comment["full_name"],
+                        content=BeautifulSoup(comment["content"], "html.parser").text,
+                        date=datetime.utcfromtimestamp(int(comment["creation_time"])),
+                        replies=replies,
+                        likes=int(comment["userlike"]),
+                    )
+                )
             queue.put(comments)
         except Exception as e:
             print("Error while crawling comment of {}: {}".format(id, e))
@@ -232,13 +246,13 @@ class VnExpressCrawler(Crawler):
         Get an article given its URL.
         Return an Article object.
         """
-        
+
         comments_queue = Queue(1)
         if crawl_comment:
             threading.Thread(
                 target=self.crawl_comments,
-                args=(self.get_id_from_url(url),
-                comments_queue)).start()
+                args=(self.get_id_from_url(url), comments_queue),
+            ).start()
 
         try:
             response = requests.get(url, timeout=self.timeout)
@@ -252,14 +266,12 @@ class VnExpressCrawler(Crawler):
             # Try look for title in other places
             if title is None:
                 title = soup.select_one("title")
-            
+
             title = title.getText()
-            
+
             author = soup.find("meta", {"name": "author"})["content"]
             excerpt = soup.find("meta", {"property": "og:description"})["content"]
-            category = soup.find("meta", {"name": "tt_site_id_detail"})[
-                "catename"
-            ]
+            category = soup.find("meta", {"name": "tt_site_id_detail"})["catename"]
 
             tags = soup.find("meta", {"name": "keywords"})["content"]
             if tags:
@@ -277,13 +289,13 @@ class VnExpressCrawler(Crawler):
                 lambda value, p: value + p.get_text().strip() + "\n", paragraphs, ""
             )
             content = self.normalize_unicode(content)
-            
+
             time.sleep(self.delay)
-            
+
             comments = []
             if crawl_comment:
                 try:
-                    comments = comments_queue.get(timeout=10*60)
+                    comments = comments_queue.get(timeout=10 * 60)
                 except Empty:
                     pass
 
@@ -299,13 +311,12 @@ class VnExpressCrawler(Crawler):
                 url=url,
                 comments=comments,
                 category=category,
-                likes=None # This news source doesn't have like count
+                likes=None,  # This news source doesn't have like count
             )
 
         except Exception as e:
             print("Error getting article {}: {}".format(url, e))
-        
-    
+
     def crawl_articles(self, limit=15):
         """
         Crawl articles given the limit.
@@ -330,7 +341,11 @@ class VnExpressCrawler(Crawler):
                 if len(articles) % freq == 0:
                     progress_string = (
                         "{}: Crawling {}%... Success: {}/{} Loss: {}".format(
-                            self.SOURCE_NAME, len(articles) / limit * 100, len(articles), limit, loss
+                            self.SOURCE_NAME,
+                            len(articles) / limit * 100,
+                            len(articles),
+                            limit,
+                            loss,
                         )
                     )
                     print(progress_string)
@@ -340,9 +355,12 @@ class VnExpressCrawler(Crawler):
         except Exception as e:
             print(f"{self.SOURCE_NAME}:", "Error while getting articles:", e)
 
-        print(f"{self.SOURCE_NAME}:", "Success:", len(articles), "/", limit, "Loss:", loss)
-        
+        print(
+            f"{self.SOURCE_NAME}:", "Success:", len(articles), "/", limit, "Loss:", loss
+        )
+
         return articles
+
 
 if __name__ == "__main__":
 
@@ -350,9 +368,11 @@ if __name__ == "__main__":
     a_urls = crawler.crawl_article_urls(limit=50)
     print(a_urls)
     print("len ", len(a_urls))
-    
+
     for a_url in a_urls:
         a = crawler.get_article(a_url)
         if a is not None:
-            with open("data/vnexpress_suc_khoe/{}.json".format(a.id), "w", encoding='utf8') as f:
+            with open(
+                "data/vnexpress_suc_khoe/{}.json".format(a.id), "w", encoding="utf8"
+            ) as f:
                 json.dump(a.to_dict(), f, ensure_ascii=False, indent=4)

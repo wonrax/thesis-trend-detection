@@ -110,7 +110,10 @@ class TuoiTreCrawler(Crawler):
             a_tag = item.find("a", recursive=False)
             article_url = TuoiTreCrawler.BASE_URL + a_tag["href"]
 
-            if (self.SOURCE_NAME, self.get_id_from_url(article_url)) not in self.skip_these:
+            if (
+                self.SOURCE_NAME,
+                self.get_id_from_url(article_url),
+            ) not in self.skip_these:
                 article_urls.add(article_url)
 
             elif self.newer_only:
@@ -357,7 +360,7 @@ class TuoiTreCrawler(Crawler):
         loss = 0
 
         print("Getting", len(article_urls), "articles...")
-        
+
         # update the limit according to the number of articles
         limit = len(article_urls)
 
@@ -394,7 +397,11 @@ class TuoiTreCrawler(Crawler):
                 if len(articles) % freq == 0:
                     progress_string = (
                         "{}: Crawling {}%... Success: {}/{} Loss: {}".format(
-                            self.SOURCE_NAME, len(articles) / limit * 100, len(articles), limit, loss
+                            self.SOURCE_NAME,
+                            len(articles) / limit * 100,
+                            len(articles),
+                            limit,
+                            loss,
                         )
                     )
                     print(progress_string)
@@ -404,6 +411,8 @@ class TuoiTreCrawler(Crawler):
         except Exception as e:
             print(f"{self.SOURCE_NAME}:", "Error while getting articles:", e)
 
-        print(f"{self.SOURCE_NAME}:", "Success:", len(articles), "/", limit, "Loss:", loss)
+        print(
+            f"{self.SOURCE_NAME}:", "Success:", len(articles), "/", limit, "Loss:", loss
+        )
 
         return articles

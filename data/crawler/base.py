@@ -1,4 +1,6 @@
 from enum import Enum
+
+
 class Category(Enum):
     SUC_KHOE = 1
     MOI_NHAT = 2
@@ -8,6 +10,7 @@ class Category(Enum):
     CONG_NGHE = 6
     THE_THAO = 7
     GIAO_DUC = 8
+
 
 class Crawler:
     """
@@ -43,9 +46,11 @@ class Crawler:
 
         self.telegram_key = telegram_key
 
+
 class EmptyPage(Exception):
     """
     Exception raised when the news page is empty, indicating we have reached
     the end of the database.
     """
+
     pass
