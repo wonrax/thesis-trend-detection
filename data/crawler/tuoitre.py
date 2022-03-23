@@ -382,13 +382,15 @@ class TuoiTreCrawler(Crawler):
 
         return comments
 
-    def crawl_articles(self, limit):
+    def crawl_articles(self, limit, start_time=None, end_time=None):
         """
         Crawl articles given the limit.
         Return a list of Article objects.
         """
 
-        article_urls = self.crawl_article_urls(limit)
+        article_urls = self.crawl_article_urls(
+            limit=limit, start_time=start_time, end_time=end_time
+        )
 
         articles = []
         loss = 0
