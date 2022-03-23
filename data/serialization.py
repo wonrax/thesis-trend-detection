@@ -92,6 +92,9 @@ class FileStorage:
         Store Article objects to a file.
         Return the file path.
         """
+        if len(objects) == 0:
+            raise Exception("No object to store")
+
         sorted_objects = objects
 
         if sort:

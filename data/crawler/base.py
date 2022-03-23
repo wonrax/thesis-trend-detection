@@ -1,4 +1,5 @@
 from enum import Enum
+from datetime import datetime, timedelta
 
 
 class Category(Enum):
@@ -45,6 +46,12 @@ class Crawler:
         self.timeout = 60
 
         self.telegram_key = telegram_key
+
+    def utc_to_vietnam_time(self, date: datetime):
+        """
+        Convert UTC time to Vietnam time
+        """
+        return date + timedelta(hours=7)
 
 
 class EmptyPage(Exception):

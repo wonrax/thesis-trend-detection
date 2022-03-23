@@ -3,13 +3,12 @@ from bs4 import BeautifulSoup
 import time
 from functools import reduce
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import unicodedata
 import threading
 from model.article import Article, Comment
 from util import telegram
 from crawler.base import Crawler, Category
-import pytz
 
 
 class TuoiTreCrawler(Crawler):
@@ -53,15 +52,18 @@ class TuoiTreCrawler(Crawler):
         )
         self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[self.category]
 
-    def get_news_list_url(self, cursor: int):
+    def get_news_list_url(self, date: datetime, cursor: int):
         """
-        Return the URL of the newspaper indexes given the cursor.
+        Return the URL of the newspaper indexes given the date and cursor.
         """
 
         assert self.category_id is not None
 
-        return TuoiTreCrawler.BASE_URL + "/timeline/{}/trang-{}.htm".format(
-            self.category_id, cursor
+        return (
+            TuoiTreCrawler.BASE_URL
+            + "/timeline-xem-theo-ngay/{}/{}/trang-{}.htm".format(
+                self.category_id, date.strftime("%d-%m-%Y"), cursor
+            )
         )
 
     def get_id_from_url(self, url: str):
@@ -92,6 +94,8 @@ class TuoiTreCrawler(Crawler):
             return set(), False
         except:
             return set(), False
+        finally:
+            time.sleep(self.delay)
 
         response_soup = BeautifulSoup(response.text, "html.parser")
 
@@ -122,29 +126,59 @@ class TuoiTreCrawler(Crawler):
 
         return article_urls, stop
 
-    def crawl_article_urls(self, limit=15):
+    def get_date_from_range(self, start_time, end_time):
+        """
+        Generate a list of dates between end_time and start_time.
+        """
+
+        date = end_time
+
+        while date >= start_time:
+            yield date
+            date -= timedelta(days=1)
+
+    def crawl_article_urls(self, limit=15, start_time=None, end_time=None):
         """
         Try to find as many articles as possible given the limit.
         Return a set of article URLs.
         """
 
+        if start_time is None:
+            start_time = self.utc_to_vietnam_time(
+                datetime(1970, 1, 1, tzinfo=timezone.utc)
+            )
+        if end_time is None:
+            end_time = self.utc_to_vietnam_time(
+                datetime.utcnow().astimezone(timezone.utc)
+            )
+
         article_urls = set()
-        cursor = 1
+
+        date_generator = self.get_date_from_range(start_time, end_time)
 
         try:
+            stop = False
+
             while len(article_urls) < limit:
+                date = next(date_generator, None)
+                if date is None:
+                    break
+                cursor = 1
 
-                page_url = self.get_news_list_url(cursor)
-
-                new_urls, stop = self.find_article_urls(
-                    page_url, limit - len(article_urls)
-                )
-                article_urls.update(new_urls)
+                while True and len(article_urls) < limit:
+                    page_url = self.get_news_list_url(date, cursor)
+                    new_urls, stop = self.find_article_urls(
+                        page_url, limit - len(article_urls)
+                    )
+                    article_urls.update(new_urls)
+                    # Empty page (indicating we've reached the end of this day)
+                    # or stop signal
+                    if len(new_urls) == 0 or stop:
+                        break
+                    cursor += 1
 
                 if stop:
                     break
-
-                cursor += 1
 
                 time.sleep(self.delay)
         except Exception as e:
