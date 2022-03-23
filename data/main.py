@@ -163,11 +163,12 @@ def duplication_test(file_path):
     """
 
     loaded_articles = FileStorage.load(file_path)
-    ids = [a.id for a in loaded_articles]
 
-    print("Duplicated:", len(ids) - len(set(ids)))
+    print("Duplicated:", len(loaded_articles) - len(set(loaded_articles)))
+
+    # Print duplicate article ids
     import collections
-    print([item for item, count in collections.Counter(ids).items() if count > 1])
+    print([item.id for item, count in collections.Counter(loaded_articles).items() if count > 1])
 
 
 if __name__ == "__main__":

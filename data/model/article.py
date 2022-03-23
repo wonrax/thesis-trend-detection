@@ -50,6 +50,9 @@ class Article:
 
     def __hash__(self):
         return hash(self.source + self.id)
+    
+    def __eq__(self, __o: object) -> bool:
+        return self.id == __o.id and self.source == __o.source
 
     def to_dict(self):
 
