@@ -2,16 +2,6 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {},
-    // spacing: {
-    //   1: "4px",
-    //   2: "8px",
-    //   3: "12px",
-    //   4: "16px",
-    //   5: "20px",
-    //   6: "24px",
-    //   7: "28px",
-    //   8: "32px",
-    // },
     fontSize: {
       sm: [
         "13px",
@@ -55,6 +45,8 @@ module.exports = {
     },
     borderRadius: {
       DEFAULT: "0",
+      xs: "4px",
+      md: "16px",
       xl: "24px",
       "2xl": "32px",
     },

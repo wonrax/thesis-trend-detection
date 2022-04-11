@@ -22,9 +22,9 @@ function getRandomArticle() {
   const now = new Date();
   const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-  let sourceImageUrl = "https://source.unsplash.com/random/64x64";
+  let sourceLogoUrl = "https://source.unsplash.com/random/64x64";
   if (Math.random() > 0.5) {
-    sourceImageUrl = "https://source.unsplash.com/random/256x64";
+    sourceLogoUrl = "https://source.unsplash.com/random/256x64";
   }
 
   return {
@@ -33,8 +33,10 @@ function getRandomArticle() {
     title: loremGenerator.generateSentences(1),
     description: loremGenerator.generateSentences(2),
     publishDate: getRandomDate(oneDayAgo, now),
-    sourceName: sourceNameGenerator.generateSentences(1),
-    sourceImageUrl,
+    sourceName: formatTitleCase(
+      sourceNameGenerator.generateSentences(1).replace(".", "")
+    ),
+    sourceLogoUrl,
     positiveRate,
     negativeRate,
     neutralRate,
@@ -46,6 +48,13 @@ function getRandomDate(from: Date, to: Date) {
   const toTime = to.getTime();
   return new Date(fromTime + Math.random() * (toTime - fromTime));
 }
+
+const formatTitleCase = (string: string) =>
+  string
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
+    .join(" ");
 
 const MockData = { getRandomArticle };
 export default MockData;
