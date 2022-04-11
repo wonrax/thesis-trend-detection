@@ -58,7 +58,7 @@ class Clean_data:
         return s
 
     def preprocess_document(self, stopword_list=[]):
-        self.f_base_2()
+        # self.f_base_2()
         return self.create_token_list(stopword_list=stopword_list)
 
     def create_token_list(self, s=None, stopword_list=[]):
@@ -104,6 +104,37 @@ class Clean_data:
         s["segmented"] = sentences
         s["tokens"] = tokens_list
 
+        excerpt_df = s["excerpt"]
+        excerpt_df = excerpt_df.map(lambda x: rdrsegmenter.annotate(x)["sentences"])
+
+        excerpt_sentences = []
+        for article in excerpt_df:
+            texts = []
+            if article is None:
+                continue
+            for paragraph in article:
+                texts.append(" ".join([x["form"] for x in paragraph]))
+            excerpt_sentences.append(" ".join(texts))
+
+        excerpt_tokens_list = []
+        for article in excerpt_df:
+            tokens = []
+            if article is None:
+                continue
+            for paragraph in article:
+                for word in paragraph:
+                    if word["form"] not in stopword_list and word["posTag"] in [
+                        "N",
+                        "V",
+                        "A",
+                        "Np",
+                    ]:
+                        tokens.append(word["form"])
+            excerpt_tokens_list.append(str(tokens))
+
+        s["excerpt_segmented"] = excerpt_sentences
+        s["excerpt_tokens"] = excerpt_tokens_list
+
         return s
 
 
@@ -121,10 +152,10 @@ if __name__ == "__main__":
     t1 = time.time()
 
     dataset = pd.read_csv(
-        "C:/Users/hahuy/OneDrive/Work/School/Thesis_TrendDetection/data/suc-khoe-articles.csv"
+        r"C:\Users\hahuy\code-projects\school\thesis-trend-detection\data\suc-khoe-articles-truncated.csv"
     )
-    dataset = dataset.dropna()
-    print(dataset.tail())
+    # dataset = dataset.dropna()
+    print(dataset.info())
 
     test = Clean_data(dataset)
     processed_data = test.preprocess_document(stopword_list=stopword_list)
@@ -137,6 +168,8 @@ if __name__ == "__main__":
 
     processed_data.info()
 
-    processed_data.to_csv("./data/cleansed-tokenized-suc-khoe-articles.csv")
+    processed_data.to_csv(
+        "./data/cleansed-tokenized-suc-khoe-articles-truncated.csv", encoding="utf-8-sig"
+    )
 
     print("Time taken:", time.time() - t1)
