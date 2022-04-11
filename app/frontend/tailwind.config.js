@@ -14,7 +14,7 @@ module.exports = {
     // },
     fontSize: {
       sm: [
-        "12px",
+        "13px",
         {
           lineHeight: "1.5em",
         },

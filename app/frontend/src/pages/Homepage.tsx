@@ -1,5 +1,12 @@
 import MockData from "../test/data";
 import { useEffect, useState } from "react";
+import "dayjs";
+import "dayjs/locale/vi";
+import relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+
+dayjs.locale("vi");
+dayjs.extend(relativeTime);
 
 export const Homepage = () => {
   const [topics, setTopics] = useState<
@@ -62,9 +69,9 @@ const Article = ({
           <p className="text-sm font-medium uppercase">
             {article.sourceName.replace(".", "")}
           </p>
-          <p className="text-sm text-gray-40">·</p>
-          <p className="text-sm text-gray-40">
-            {article.publishDate.toLocaleString()}
+          <p className="text-sm font-medium text-gray-40">·</p>
+          <p className="text-sm font-medium text-gray-40">
+            {dayjs(article.publishDate).fromNow()}
           </p>
         </div>
         <h4 className="text-lg font-bold text-gray-100">{article.title}</h4>
