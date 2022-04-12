@@ -3,7 +3,7 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-        mobile: "390px",
+        mobile: "300px",
       },
     },
     fontSize: {

@@ -9,7 +9,7 @@ export const Homepage = () => {
 
   useEffect(() => {
     const topics: Array<ReturnType<typeof MockData.getRandomArticle>[]> =
-      new Array(Math.floor(Math.random() * 5)).fill(null);
+      new Array(Math.floor(Math.random() * 8)).fill(null);
     setTopics(
       topics.map(() => {
         const articles: ReturnType<typeof MockData.getRandomArticle>[] =

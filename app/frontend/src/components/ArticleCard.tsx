@@ -95,7 +95,7 @@ const ArticleCardCompact = ({
 }) => {
   return (
     <div className="p-4 w-full bg-white rounded-md flex flex-row justify-between gap-x-4">
-      <div className="space-y-4 w-full">
+      <div className="space-y-4 min-w-0">
         <div className="space-y-2">
           <NewsSourceBar
             sourceName={article.sourceName}
@@ -150,18 +150,13 @@ const NewsSourceBar = ({
         className="h-4 rounded-xs"
         alt={`${sourceName} logo`}
       />
-      <Text
-        className="shrink grow-0"
-        fontSize="sm"
-        fontWeight="medium"
-        ellipsis
-      >
+      <Text className="shrink" fontSize="sm" fontWeight="medium" ellipsis>
         {sourceName}
       </Text>
       <Text color="gray-40" fontSize="sm" fontWeight="medium">
         ·
       </Text>
-      <Text color="gray-40" fontSize="sm" fontWeight="medium" ellipsis>
+      <Text color="gray-40" fontSize="sm" fontWeight="medium" nowrap>
         {`${capitalizeFirstLetter(dayjs(publishDate).fromNow())}`}
       </Text>
     </div>

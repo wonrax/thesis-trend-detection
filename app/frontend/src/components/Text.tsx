@@ -55,7 +55,6 @@ export const Text = ({
       uppercase: uppercase,
       capitalize: capitalize,
       truncate: ellipsis,
-      "overflow-hidden": ellipsis,
       "whitespace-nowrap": nowrap,
     }
   );
