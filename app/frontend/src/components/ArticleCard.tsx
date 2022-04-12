@@ -1,6 +1,3 @@
-import MockData from "../test/data";
-import "dayjs";
-import "dayjs/locale/vi";
 import dayjs from "dayjs";
 import { Text } from "./Text";
 import Article from "../models/Article";
