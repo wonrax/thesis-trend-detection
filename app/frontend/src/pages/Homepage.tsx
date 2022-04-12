@@ -25,7 +25,7 @@ export const Homepage = () => {
         <h3 className="text-xl inline text-gray-100">Các chủ đề nổi bật về</h3>
         <h3 className="text-xl inline font-bold text-gray-100">Sức khỏe</h3>
       </div>
-      <div className="p-2 space-y-2">
+      <div className="space-y-2">
         {topics.map((articles) =>
           articles.map((article) => (
             <ArticleCard key={article.id} article={article} compact />

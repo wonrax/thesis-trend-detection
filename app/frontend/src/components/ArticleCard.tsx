@@ -3,20 +3,21 @@ import "dayjs";
 import "dayjs/locale/vi";
 import dayjs from "dayjs";
 import { Text } from "./Text";
+import Article from "../models/Article";
 
 export const ArticleCard = ({
   article,
   compact = false,
   showThumbnail = true,
 }: {
-  article: ReturnType<typeof MockData.getRandomArticle>;
+  article: Article;
   compact?: boolean;
   showThumbnail?: boolean;
 }) => {
   const maxSentimentValue = Math.max(
-    article.positiveRate,
-    article.negativeRate,
-    article.neutralRate
+    article.positiveRate || 0,
+    article.negativeRate || 0,
+    article.neutralRate || 0
   );
 
   if (compact)
@@ -42,13 +43,13 @@ const ArticleCardDefault = ({
   maxSentimentValue,
   showThumbnail,
 }: {
-  article: ReturnType<typeof MockData.getRandomArticle>;
+  article: Article;
   maxSentimentValue: number;
   showThumbnail: boolean;
 }) => {
   return (
     <div className="p-4 w-full space-y-4">
-      {showThumbnail && (
+      {article.imageUrl && showThumbnail && (
         <img
           className="w-full h-64 rounded-xl object-cover"
           src={article.imageUrl}
@@ -75,7 +76,7 @@ const ArticleCardDefault = ({
         )}
         {maxSentimentValue == article.negativeRate && (
           <Text color="red" fontSize="sm" fontWeight="medium">
-            {`${article.positiveRate.toFixed(0)}% `}
+            {`${article.negativeRate.toFixed(0)}% `}
             tiêu cực
           </Text>
         )}
@@ -89,7 +90,7 @@ const ArticleCardCompact = ({
   maxSentimentValue,
   showThumbnail,
 }: {
-  article: ReturnType<typeof MockData.getRandomArticle>;
+  article: Article;
   maxSentimentValue: number;
   showThumbnail: boolean;
 }) => {
@@ -120,12 +121,12 @@ const ArticleCardCompact = ({
         )}
         {maxSentimentValue == article.negativeRate && (
           <Text color="red" fontSize="sm" fontWeight="medium">
-            {`${article.positiveRate.toFixed(0)}% `}
+            {`${article.negativeRate.toFixed(0)}% `}
             tiêu cực
           </Text>
         )}
       </div>
-      {showThumbnail && (
+      {article.imageUrl && showThumbnail && (
         <img
           className="rounded-md object-cover h-24 w-24 hidden mobile:block"
           src={article.imageUrl}
@@ -141,26 +142,34 @@ const NewsSourceBar = ({
   sourceName,
   publishDate,
 }: {
-  sourceLogoUrl: string;
-  sourceName: string;
-  publishDate: Date;
+  sourceLogoUrl?: string;
+  sourceName?: string;
+  publishDate?: Date;
 }) => {
   return (
     <div className="flex flex-row items-center space-x-1">
-      <img
-        src={sourceLogoUrl}
-        className="h-4 rounded-xs"
-        alt={`${sourceName} logo`}
-      />
-      <Text className="shrink" fontSize="sm" fontWeight="medium" ellipsis>
-        {sourceName}
-      </Text>
-      <Text color="gray-40" fontSize="sm" fontWeight="medium">
-        ·
-      </Text>
-      <Text color="gray-40" fontSize="sm" fontWeight="medium" nowrap>
-        {`${capitalizeFirstLetter(dayjs(publishDate).fromNow())}`}
-      </Text>
+      {sourceLogoUrl && (
+        <img
+          src={sourceLogoUrl}
+          className="h-4 rounded-xs"
+          alt={`${sourceName} logo`}
+        />
+      )}
+      {sourceName && (
+        <Text className="shrink" fontSize="sm" fontWeight="medium" ellipsis>
+          {sourceName}
+        </Text>
+      )}
+      {publishDate && (
+        <>
+          <Text color="gray-40" fontSize="sm" fontWeight="medium">
+            ·
+          </Text>
+          <Text color="gray-40" fontSize="sm" fontWeight="medium" nowrap>
+            {`${capitalizeFirstLetter(dayjs(publishDate).fromNow())}`}
+          </Text>
+        </>
+      )}
     </div>
   );
 };

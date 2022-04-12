@@ -1,6 +1,7 @@
 import { LoremIpsum } from "lorem-ipsum";
+import Article from "../models/Article";
 
-function getRandomArticle() {
+function getRandomArticle(): Article {
   const loremGenerator = new LoremIpsum({
     wordsPerSentence: {
       max: 14,
@@ -15,27 +16,44 @@ function getRandomArticle() {
     },
   });
 
-  const positiveRate = Math.random() * 100;
-  const negativeRate = Math.random() * (100 - positiveRate);
-  const neutralRate = 100 - positiveRate - negativeRate;
+  let positiveRate = undefined;
+  let negativeRate = undefined;
+  let neutralRate = undefined;
+
+  if (Math.random() > 0.4) {
+    positiveRate = Math.random() * 100;
+    negativeRate = Math.random() * (100 - positiveRate);
+    neutralRate = 100 - positiveRate - negativeRate;
+  }
 
   const now = new Date();
   const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-  let sourceLogoUrl = "https://source.unsplash.com/random/64x64";
-  if (Math.random() > 0.5) {
+  let sourceLogoUrl = undefined;
+  if (Math.random() > 0.4) {
+    sourceLogoUrl = "https://source.unsplash.com/random/64x64";
+  }
+  if (Math.random() > 0.4) {
     sourceLogoUrl = "https://source.unsplash.com/random/256x64";
   }
 
   return {
     id: Math.floor(Math.random() * 1000).toString(),
-    imageUrl: `https://source.unsplash.com/random/600x400?a=${Math.random()}`,
+    imageUrl:
+      Math.random() > 0.3
+        ? `https://source.unsplash.com/random/600x400?a=${Math.random()}`
+        : undefined,
     title: loremGenerator.generateSentences(1),
-    description: loremGenerator.generateSentences(2),
-    publishDate: getRandomDate(oneDayAgo, now),
-    sourceName: formatTitleCase(
-      sourceNameGenerator.generateSentences(1).replace(".", "")
-    ),
+    description:
+      Math.random() > 0.3 ? loremGenerator.generateSentences(2) : undefined,
+    publishDate:
+      Math.random() > 0.3 ? getRandomDate(oneDayAgo, now) : undefined,
+    sourceName:
+      Math.random() > 0.3
+        ? formatTitleCase(
+            sourceNameGenerator.generateSentences(1).replace(".", "")
+          )
+        : undefined,
     sourceLogoUrl,
     positiveRate,
     negativeRate,
