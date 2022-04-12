@@ -30,28 +30,27 @@ function getRandomArticle(): Article {
   const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
   let sourceLogoUrl = undefined;
-  if (Math.random() > 0.4) {
-    sourceLogoUrl =
-      "https://source.unsplash.com/random/64x64?a=${Math.random()}";
+  if (Math.random() > 0.5) {
+    sourceLogoUrl = `https://source.unsplash.com/random/64x64?a=${Math.random()}`;
   }
-  if (Math.random() > 0.4) {
-    sourceLogoUrl =
-      "https://source.unsplash.com/random/256x64?a=${Math.random()}";
+  if (Math.random() > 0.5) {
+    sourceLogoUrl = `https://source.unsplash.com/random/256x64?a=${Math.random()}`;
   }
 
   return {
     id: Math.floor(Math.random() * 1000).toString(),
-    imageUrl:
-      Math.random() > 0.3
+    thumbnailUrl:
+      Math.random() > 0.1
         ? `https://source.unsplash.com/random/600x400?a=${Math.random()}`
         : undefined,
     title: loremGenerator.generateSentences(1),
+    articleUrl: Math.random() > 0.1 ? "#" : undefined,
     description:
-      Math.random() > 0.3 ? loremGenerator.generateSentences(2) : undefined,
+      Math.random() > 0.1 ? loremGenerator.generateSentences(2) : undefined,
     publishDate:
-      Math.random() > 0.3 ? getRandomDate(oneDayAgo, now) : undefined,
+      Math.random() > 0.01 ? getRandomDate(oneDayAgo, now) : undefined,
     sourceName:
-      Math.random() > 0.3
+      Math.random() > 0.1
         ? formatTitleCase(
             sourceNameGenerator.generateSentences(1).replace(".", "")
           )

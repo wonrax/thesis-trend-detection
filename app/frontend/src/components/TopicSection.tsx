@@ -14,26 +14,29 @@ export const TopicSection = ({
 }) => {
   if (!spotlightArticle) return null;
   return (
-    <div className="w-full rounded-lg bg-white pb-4">
+    <div className="w-full rounded-lg bg-white">
       {spotlightArticle && (
         <ArticleCard spotlight showThumbnail article={spotlightArticle} />
       )}
       {articles &&
         articles.length > 0 &&
-        articles.map((article) => (
+        articles.map((article, index) => (
           <>
-            <Divider />
+            {index == 0 && <Divider />}
             <ArticleCard showThumbnail article={article} />
+            {(hasMore || index < articles.length - 1) && <Divider />}
           </>
         ))}
       {hasMore && (
-        <Text
-          className="px-3 py-1 m-auto mt-4 rounded-md bg-gray-0 w-fit"
-          fontWeight="medium"
-          textAlign="center"
-        >
-          Xem thêm tin về chủ đề này
-        </Text>
+        <div className="py-4 group hover:cursor-pointer">
+          <Text
+            className="px-3 py-1 m-auto rounded-md bg-gray-0 w-fit group-hover:underline"
+            fontWeight="medium"
+            textAlign="center"
+          >
+            Xem thêm tin về chủ đề này
+          </Text>
+        </div>
       )}
     </div>
   );

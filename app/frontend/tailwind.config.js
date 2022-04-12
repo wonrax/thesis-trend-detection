@@ -27,7 +27,7 @@ module.exports = {
         },
       ],
       xl: [
-        "32px",
+        "28px",
         {
           letterSpacing: "-0.03em",
           lineHeight: "1.25em",
