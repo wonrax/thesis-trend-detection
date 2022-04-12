@@ -20,14 +20,14 @@ module.exports = {
         },
       ],
       lg: [
-        "20px",
+        "24px",
         {
           letterSpacing: "-0.02em",
           lineHeight: "1.25em",
         },
       ],
       xl: [
-        "24px",
+        "32px",
         {
           letterSpacing: "-0.03em",
           lineHeight: "1.25em",

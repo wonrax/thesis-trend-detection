@@ -1,15 +1,18 @@
 import dayjs from "dayjs";
 import Text from "./Text";
 import Article from "../models/Article";
+import classNames from "classnames";
 
 export const ArticleCard = ({
   article,
-  compact = false,
-  showThumbnail = true,
+  spotlight = false,
+  showThumbnail = false,
+  mobile = false,
 }: {
   article: Article;
-  compact?: boolean;
+  spotlight?: boolean;
   showThumbnail?: boolean;
+  mobile?: boolean;
 }) => {
   const maxSentimentValue = Math.max(
     article.positiveRate || 0,
@@ -17,17 +20,18 @@ export const ArticleCard = ({
     article.neutralRate || 0
   );
 
-  if (compact)
+  if (!spotlight)
     return (
-      <ArticleCardCompact
+      <ArticleCardDefault
         article={article}
         maxSentimentValue={maxSentimentValue}
         showThumbnail={showThumbnail}
+        mobile={mobile}
       />
     );
   else
     return (
-      <ArticleCardDefault
+      <ArticleCardSpotlight
         article={article}
         maxSentimentValue={maxSentimentValue}
         showThumbnail={showThumbnail}
@@ -35,7 +39,7 @@ export const ArticleCard = ({
     );
 };
 
-const ArticleCardDefault = ({
+const ArticleCardSpotlight = ({
   article,
   maxSentimentValue,
   showThumbnail,
@@ -48,7 +52,7 @@ const ArticleCardDefault = ({
     <div className="p-4 w-full space-y-4">
       {article.imageUrl && showThumbnail && (
         <img
-          className="w-full h-64 rounded-xl object-cover"
+          className="w-full h-64 rounded-lg object-cover"
           src={article.imageUrl}
           alt={`Hình ảnh cho bài viết ${article.title}`}
         />
@@ -82,17 +86,26 @@ const ArticleCardDefault = ({
   );
 };
 
-const ArticleCardCompact = ({
+const ArticleCardDefault = ({
   article,
   maxSentimentValue,
   showThumbnail,
+  mobile,
 }: {
   article: Article;
   maxSentimentValue: number;
   showThumbnail: boolean;
+  mobile: boolean;
 }) => {
   return (
-    <div className="p-4 w-full bg-white rounded-lg flex flex-row justify-between gap-x-4">
+    <div
+      className={classNames(
+        "p-4 w-full flex flex-row justify-between gap-x-4",
+        {
+          "bg-white rounded-lg": mobile,
+        }
+      )}
+    >
       <div className="space-y-4 min-w-0">
         <div className="space-y-2">
           <NewsSourceBar

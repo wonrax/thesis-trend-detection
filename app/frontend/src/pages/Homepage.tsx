@@ -21,22 +21,29 @@ export const Homepage = () => {
   }, []);
 
   return (
-    <div className="bg-gray-0 min-h-screen">
-      <div className="p-8 flex flex-col justify-center items-center">
-        <h3 className="text-xl inline text-gray-100">Các chủ đề nổi bật về</h3>
-        <h3 className="text-xl inline font-bold text-gray-100">Sức khỏe</h3>
+    <div className="w-full bg-gray-0">
+      <div className="min-h-screen m-auto py-8 p-2 sm:w-[512px]">
+        <div className="p-8 flex flex-col justify-center items-center">
+          <h3 className="text-xl inline text-gray-100">
+            Các chủ đề nổi bật về
+          </h3>
+          <h3 className="text-xl inline font-bold text-gray-100">Sức khỏe</h3>
+        </div>
+        {topics.length == 0 && (
+          <Text className="p-4" fontSize="lg" textAlign="center">
+            Hôm nay không có tin gì mới, mời bạn quay lại sau.
+          </Text>
+        )}
+        <div className="space-y-2">
+          {topics.map((articles) => (
+            <TopicSection
+              spotlightArticle={articles[0]}
+              articles={articles.slice(1)}
+              hasMore={Math.random() > 0.3}
+            />
+          ))}
+        </div>
       </div>
-      {topics.length == 0 && (
-        <Text className="p-4" fontSize="lg" textAlign="center">
-          Hôm nay không có tin gì mới, mời bạn quay lại sau.
-        </Text>
-      )}
-      {topics.map((articles) => (
-        <TopicSection
-          spotlightArticle={articles[0]}
-          articles={articles.slice(1)}
-        />
-      ))}
     </div>
   );
 };
