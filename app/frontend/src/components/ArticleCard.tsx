@@ -94,7 +94,7 @@ const ArticleCardCompact = ({
   showThumbnail: boolean;
 }) => {
   return (
-    <div className="p-4 w-full bg-white rounded-md flex flex-row justify-between gap-x-4">
+    <div className="p-4 w-full bg-white rounded-lg flex flex-row justify-between gap-x-4">
       <div className="space-y-4 min-w-0">
         <div className="space-y-2">
           <NewsSourceBar
@@ -125,11 +125,13 @@ const ArticleCardCompact = ({
           </Text>
         )}
       </div>
-      <img
-        className="rounded-md object-cover h-24 w-24 hidden mobile:block"
-        src={article.imageUrl}
-        alt={`Hình ảnh cho bài viết ${article.title}`}
-      />
+      {showThumbnail && (
+        <img
+          className="rounded-md object-cover h-24 w-24 hidden mobile:block"
+          src={article.imageUrl}
+          alt={`Hình ảnh cho bài viết ${article.title}`}
+        />
+      )}
     </div>
   );
 };

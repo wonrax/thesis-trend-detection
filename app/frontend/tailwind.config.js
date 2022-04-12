@@ -51,8 +51,8 @@ module.exports = {
       DEFAULT: "0",
       xs: "4px",
       md: "16px",
-      xl: "24px",
-      "2xl": "32px",
+      lg: "24px",
+      xl: "32px",
     },
   },
   safelist: [
