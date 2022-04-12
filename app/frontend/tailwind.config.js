@@ -63,7 +63,13 @@ module.exports = {
       pattern: /text-(sm|body|lg|xl)/,
     },
     {
+      pattern: /text-(left|center|right)/,
+    },
+    {
       pattern: /leading-(normal|tight)/,
+    },
+    {
+      pattern: /font-(normal|bold|medium)/,
     },
   ],
   plugins: [],

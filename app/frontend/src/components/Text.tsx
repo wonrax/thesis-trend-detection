@@ -69,3 +69,5 @@ export const Text = ({
     </Tag>
   );
 };
+
+export default Text;

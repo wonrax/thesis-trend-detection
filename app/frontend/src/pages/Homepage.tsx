@@ -1,6 +1,7 @@
 import MockData from "../test/data";
+import Text from "../components/Text";
 import { useEffect, useState } from "react";
-import ArticleCard from "../components/ArticleCard";
+import TopicSection from "../components/TopicSection";
 
 export const Homepage = () => {
   const [topics, setTopics] = useState<
@@ -25,13 +26,17 @@ export const Homepage = () => {
         <h3 className="text-xl inline text-gray-100">Các chủ đề nổi bật về</h3>
         <h3 className="text-xl inline font-bold text-gray-100">Sức khỏe</h3>
       </div>
-      <div className="space-y-2">
-        {topics.map((articles) =>
-          articles.map((article) => (
-            <ArticleCard key={article.id} article={article} compact />
-          ))
-        )}
-      </div>
+      {topics.length == 0 && (
+        <Text className="p-4" fontSize="lg" textAlign="center">
+          Hôm nay không có tin gì mới, mời bạn quay lại sau.
+        </Text>
+      )}
+      {topics.map((articles) => (
+        <TopicSection
+          spotlightArticle={articles[0]}
+          articles={articles.slice(1)}
+        />
+      ))}
     </div>
   );
 };

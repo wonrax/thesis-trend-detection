@@ -31,10 +31,12 @@ function getRandomArticle(): Article {
 
   let sourceLogoUrl = undefined;
   if (Math.random() > 0.4) {
-    sourceLogoUrl = "https://source.unsplash.com/random/64x64";
+    sourceLogoUrl =
+      "https://source.unsplash.com/random/64x64?a=${Math.random()}";
   }
   if (Math.random() > 0.4) {
-    sourceLogoUrl = "https://source.unsplash.com/random/256x64";
+    sourceLogoUrl =
+      "https://source.unsplash.com/random/256x64?a=${Math.random()}";
   }
 
   return {

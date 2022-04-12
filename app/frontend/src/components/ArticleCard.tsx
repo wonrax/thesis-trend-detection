@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Text } from "./Text";
+import Text from "./Text";
 import Article from "../models/Article";
 
 export const ArticleCard = ({
