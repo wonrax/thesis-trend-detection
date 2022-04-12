@@ -51,5 +51,13 @@ module.exports = {
       "2xl": "32px",
     },
   },
+  safelist: [
+    {
+      pattern: /text-(gray|white|red|green)(-(100|80|60|40|20|0))?/,
+    },
+    {
+      pattern: /text-(sm|body|lg|xl)/,
+    },
+  ],
   plugins: [],
 };
