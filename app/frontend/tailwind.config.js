@@ -1,18 +1,22 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        mobile: "390px",
+      },
+    },
     fontSize: {
       sm: [
-        "13px",
+        "12px",
         {
-          lineHeight: "1.5em",
+          lineHeight: "1.25em",
         },
       ],
       body: [
         "15px",
         {
-          lineHeight: "1.5em",
+          lineHeight: "1.25em",
         },
       ],
       lg: [
@@ -57,6 +61,9 @@ module.exports = {
     },
     {
       pattern: /text-(sm|body|lg|xl)/,
+    },
+    {
+      pattern: /leading-(normal|tight)/,
     },
   ],
   plugins: [],

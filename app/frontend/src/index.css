@@ -8,4 +8,8 @@
   html {
     font-family: Inter, system-ui, sans-serif;
   }
+  .break-words {
+    word-break: break-word;
+    word-wrap: break-word;
+  }
 }

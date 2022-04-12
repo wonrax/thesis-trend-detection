@@ -18,6 +18,7 @@ export const Text = ({
   capitalize = false,
   ellipsis = false,
   nowrap = false,
+  leading = "normal",
   children,
   ...props
 }: {
@@ -40,6 +41,7 @@ export const Text = ({
   capitalize?: boolean;
   ellipsis?: boolean;
   nowrap?: boolean;
+  leading?: "normal" | "tight";
   children: React.ReactNode;
 }) => {
   const classNames = classnames(
@@ -47,11 +49,13 @@ export const Text = ({
     `font-${fontWeight}`,
     `text-${color}`,
     `text-${textAlign}`,
+    `leading-${leading}`,
     className,
     {
       uppercase: uppercase,
       capitalize: capitalize,
       truncate: ellipsis,
+      "overflow-hidden": ellipsis,
       "whitespace-nowrap": nowrap,
     }
   );
