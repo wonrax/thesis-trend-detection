@@ -3,6 +3,8 @@ from newspaper import Article as NewspaperArticle
 from model.article import Article, Comment
 import time
 from typing import List
+import unicodedata
+from dateutil.parser import parse
 
 
 class Category(Enum):
@@ -51,12 +53,34 @@ class FastCrawler:
         """
         raise NotImplementedError
 
+    def get_id_by_url(self, url):
+        """
+        Get the id of the article given its url.
+        """
+        raise NotImplementedError
+
     def extract_article(self, url) -> Article:
         article = NewspaperArticle(url)
         article.download()
         article.parse()
-        # TODO convert to Article object
-        return article
+
+        pub_date = article.publish_date
+        if isinstance(pub_date, str):
+            pub_date = parse(pub_date)
+
+        return Article(
+            id=self.get_id_by_url(url),
+            source=self.SOURCE_NAME,
+            title=article.title,
+            date=pub_date,
+            tags=article.keywords,
+            author=article.authors[0],
+            excerpt=article.summary,
+            content=article.text,
+            url=url,
+            comments=[],
+            likes=None,
+        )
 
     def crawl(self) -> "List[Article]":
         """
@@ -68,10 +92,20 @@ class FastCrawler:
         articles = []
         for url in urls:
             article = self.extract_article(url)
+
             if self.do_crawl_comment:
                 comments = self.crawl_comments(url)
                 article.comments = comments
+
+            articles.append(article)
+
             if self.delay is not None:
                 time.sleep(self.delay)
 
         return articles
+
+    def normalize_unicode(self, unicode_str):
+        """
+        Normalize unicode string (e.g. remove \xa0 characters).
+        """
+        return unicodedata.normalize("NFKC", unicode_str)
