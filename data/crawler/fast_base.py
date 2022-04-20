@@ -23,7 +23,6 @@ class Category(Enum):
 class FastCrawler:
     """
     Doesn't crawl faster, just easier to implement for new news sources.
-    This crawler only crawls today and yesterday news.
     """
 
     def __init__(
@@ -62,9 +61,13 @@ class FastCrawler:
         raise NotImplementedError
 
     def extract_article(self, url) -> Article:
-        article = NewspaperArticle(url)
-        article.download()
-        article.parse()
+        try:
+            article = NewspaperArticle(url)
+            article.download()
+            article.parse()
+        except Exception as e:
+            print(f"Error when extracting article from {url}: {e}")
+            return None
 
         pub_date = article.publish_date
         if isinstance(pub_date, str):
@@ -86,15 +89,22 @@ class FastCrawler:
             likes=None,
         )
 
-    def crawl(self) -> "List[Article]":
+    def crawl(
+        self, start_date: datetime.datetime = None, end_date: datetime.datetime = None
+    ) -> "List[Article]":
         """
-        Crawl today and yesterday news.
+        Crawl news given start date and end date.
         Return a list of articles.
         """
+        
+        if self.category not in self.MAP_CATEGORY_TO_CATEGORY_ID:
+            print(f"Category not supported for {self.SOURCE_NAME}. Skipping...")
+            return []
 
-        urls = self.crawl_urls()
+        urls = self.crawl_urls(start_date, end_date)
         articles = []
         for url in urls:
+            print(f"Extracting article from {url}")
             article = self.extract_article(url)
 
             if self.do_crawl_comment:
@@ -105,6 +115,9 @@ class FastCrawler:
 
             if self.delay is not None:
                 time.sleep(self.delay)
+
+        # Filter None articles
+        articles = [article for article in articles if article is not None]
 
         return articles
 
@@ -121,3 +134,22 @@ class FastCrawler:
         Normalize unicode string (e.g. remove \xa0 characters).
         """
         return unicodedata.normalize("NFKC", unicode_str)
+
+    def date_generator_from_range(self, start_time, end_time):
+        """
+        Generate a list of dates between end_time and start_time.
+        """
+
+        date = end_time
+
+        while date >= start_time:
+            yield date
+            date -= datetime.timedelta(days=1)
+
+class EmptyPageException(Exception):
+    """
+    Exception raised when the news page is empty, indicating we have reached
+    the end of the database.
+    """
+
+    pass

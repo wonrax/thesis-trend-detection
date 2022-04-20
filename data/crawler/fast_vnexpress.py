@@ -11,27 +11,43 @@ from dateutil.parser import parse
 class FastVnExpressCrawler(FastCrawler):
 
     SOURCE_NAME = "VnExpress"
-    BASE_URL = "https://vnexpress.net/"
-    API_URL = "https://usi-saas.vnexpress.net/"
-    MAP_CATEGORY_TO_CATEGORY_ID = {Category.SUC_KHOE: 1003750}
+    BASE_URL = "https://vnexpress.net"
+    API_URL = "https://usi-saas.vnexpress.net"
+    MAP_CATEGORY_TO_CATEGORY_ID = {
+        Category.SUC_KHOE: 1003750,
+        Category.MOI_NHAT: 1001005,
+        Category.THE_GIOI: 1001002,
+        Category.THOI_SU: 1001005,
+        Category.CONG_NGHE: 1002592,
+        Category.THE_THAO: 1002565,
+        Category.GIAO_DUC: 1003497,
+    }
 
     def __init__(self, category: Category, do_crawl_comment: bool, delay: float):
         super().__init__(category, do_crawl_comment, delay)
-        self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[category]
 
-    def get_news_list_url(self, date: datetime.datetime, cursor: int = 1):
+        if category in self.MAP_CATEGORY_TO_CATEGORY_ID:
+            self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[category]
+
+    def get_news_list_url(
+        self,
+        start_date: datetime.datetime,
+        end_date: datetime.datetime,
+        cursor: int = 1,
+    ):
         """
         Return the URL of the newspaper indexes given the date and cursor.
         """
 
         assert self.category_id is not None
 
-        timestamp = int(date.timestamp())
+        start_timestamp = int(start_date.timestamp())
+        end_timestamp = int(end_date.timestamp())
 
         return (
             self.BASE_URL
-            + "category/day?cateid={}&fromdate={}&todate={}&page={}".format(
-                self.category_id, timestamp, timestamp, cursor
+            + "/category/day?cateid={}&fromdate={}&todate={}&page={}".format(
+                self.category_id, start_timestamp, end_timestamp, cursor
             )
         )
 
@@ -48,10 +64,16 @@ class FastVnExpressCrawler(FastCrawler):
         Return a list of article urls.
         """
 
+        next_page_url = None
+
         try:
             html = requests.get(url, timeout=self.timeout).text
             soup = BeautifulSoup(html, "html.parser")
             news_list = soup.find(class_="list-news-subfolder")
+
+            next_page_button = soup.select_one(".btn-page.next-page")
+            if next_page_button and "disable" not in next_page_button["class"]:
+                next_page_url = self.BASE_URL + next_page_button["href"]
 
             if news_list:
                 urls = re.findall(
@@ -59,7 +81,7 @@ class FastVnExpressCrawler(FastCrawler):
                     str(news_list),
                 )
 
-                return urls
+                return urls, next_page_url
 
         except Exception as e:
             print(
@@ -67,25 +89,31 @@ class FastVnExpressCrawler(FastCrawler):
             )
 
         print(f"Found 0 url in webpage at {self.SOURCE_NAME} with url {url}")
-        return []
+        return [], next_page_url
 
-    def crawl_urls(self):
+    def crawl_urls(
+        self, start_date: datetime.datetime = None, end_date: datetime.datetime = None
+    ):
         """
-        Crawl urls of today and yesterday news urls.
+        Crawl urls of the news category.
         Return a list of urls.
         """
 
-        today, yesterday = self.get_datetime_today_yesterday()
+        if start_date is None or end_date is None:
+            start_date, end_date = self.get_datetime_today_yesterday()
 
         urls = []
-        for date in [today, yesterday]:
-            for cursor in range(2):
-                index_page_url = self.get_news_list_url(date, cursor)
-                article_urls = self.crawl_urls_in_webpage(index_page_url)
-                urls += article_urls
 
-                if self.delay:
-                    time.sleep(self.delay)
+        index_page_url = self.get_news_list_url(start_date, end_date, 1)
+        article_urls, next_page_url = self.crawl_urls_in_webpage(index_page_url)
+        urls += article_urls
+
+        while next_page_url:
+            article_urls, next_page_url = self.crawl_urls_in_webpage(next_page_url)
+            urls += article_urls
+
+            if self.delay:
+                time.sleep(self.delay)
 
         return list(set(urls))
 

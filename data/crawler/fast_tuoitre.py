@@ -1,8 +1,9 @@
-from crawler.fast_base import FastCrawler, Category
+from crawler.fast_base import FastCrawler, Category, EmptyPageException
 import datetime
 import time
 import re
 import requests
+from bs4 import BeautifulSoup
 
 
 class FastTuoiTreCrawler(FastCrawler):
@@ -52,27 +53,44 @@ class FastTuoiTreCrawler(FastCrawler):
         try:
             html = requests.get(url, timeout=self.timeout).text
             urls = re.findall(r"href=\"(\/.*?[0-9]{8,}\.htm)\"", html)
-            return [self.BASE_URL + url for url in urls]
-        except:
-            print(
-                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}"
-            )
-        return []
 
-    def crawl_urls(self):
+            if not urls:
+                raise EmptyPageException
+
+            return [self.BASE_URL + url for url in urls]
+        except Exception as e:
+            print(
+                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}: {e}"
+            )
+
+        raise EmptyPageException
+
+    def crawl_urls(
+        self, start_date: datetime.datetime = None, end_date: datetime.datetime = None
+    ):
         """
-        Crawl urls of today and yesterday news urls.
+        Crawl urls of the news category.
         Return a list of urls.
         """
 
-        today, yesterday = self.get_datetime_today_yesterday()
+        if start_date is None or end_date is None:
+            start_date, end_date = self.get_datetime_today_yesterday()
 
+        date_generator = self.date_generator_from_range(start_date, end_date)
         urls = []
-        for date in [today, yesterday]:
-            for cursor in range(2):
+
+        for date in date_generator:
+            cursor = 1
+            while True:
                 index_page_url = self.get_news_list_url(date, cursor)
-                article_urls = self.crawl_urls_in_webpage(index_page_url)
-                urls += article_urls
+
+                try:
+                    article_urls = self.crawl_urls_in_webpage(index_page_url)
+                    urls += article_urls
+                except EmptyPageException:
+                    break
+
+                cursor += 1
 
                 if self.delay:
                     time.sleep(self.delay)
