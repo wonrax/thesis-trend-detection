@@ -5,6 +5,8 @@ import time
 from typing import List
 import unicodedata
 from dateutil.parser import parse
+import datetime
+from zoneinfo import ZoneInfo
 
 
 class Category(Enum):
@@ -73,12 +75,14 @@ class FastCrawler:
             source=self.SOURCE_NAME,
             title=article.title,
             date=pub_date,
-            tags=article.keywords,
-            author=article.authors[0],
-            excerpt=article.summary,
+            tags=list(article.tags),
+            author=article.authors,
+            excerpt=article.meta_description,
             content=article.text,
             url=url,
+            img_url=article.top_img,
             comments=[],
+            category=self.category,
             likes=None,
         )
 
@@ -103,6 +107,14 @@ class FastCrawler:
                 time.sleep(self.delay)
 
         return articles
+
+    def get_datetime_today_yesterday(self):
+        """
+        Get today and yesterday datetime.
+        """
+        today = datetime.datetime.now(ZoneInfo("Asia/Jakarta"))
+        yesterday = today - datetime.timedelta(days=1)
+        return today, yesterday
 
     def normalize_unicode(self, unicode_str):
         """

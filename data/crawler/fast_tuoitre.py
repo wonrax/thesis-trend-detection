@@ -65,8 +65,7 @@ class FastTuoiTreCrawler(FastCrawler):
         Return a list of urls.
         """
 
-        today = datetime.datetime.today()
-        yesterday = today - datetime.timedelta(days=1)
+        today, yesterday = self.get_datetime_today_yesterday()
 
         urls = []
         for date in [today, yesterday]:
@@ -78,4 +77,4 @@ class FastTuoiTreCrawler(FastCrawler):
                 if self.delay:
                     time.sleep(self.delay)
 
-        return urls
+        return list(set(urls))

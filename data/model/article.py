@@ -10,6 +10,7 @@ class Article:
         excerpt=None,
         content=None,
         url=None,
+        img_url=None,
         comments=[],
         category=None,
         likes=None,
@@ -23,6 +24,7 @@ class Article:
         self.excerpt = excerpt
         self.content = content
         self.url = url
+        self.img_url = img_url
         self.comments = comments  # List of Comment objects
         self.tags = tags
         self.category = category
@@ -31,7 +33,7 @@ class Article:
     def __str__(self):
         return (
             "ID: {}\nTitle: {}\nExcerpt: {}\nDate: {}\nAuthor: {}\n"
-            + "Source: {}\nCategory: {}\nURL: {}\nTags: {}\n"
+            + "Source: {}\nCategory: {}\nURL: {}\nImage: {}\nTags: {}\n"
             + "Likes: {}\nComments: {}\n-----\n{}"
         ).format(
             self.id,
@@ -42,6 +44,7 @@ class Article:
             self.source,
             self.category,
             self.url,
+            self.img_url,
             self.tags,
             self.likes,
             len(self.comments),
