@@ -1,19 +1,21 @@
 from crawler.fast_tuoitre import FastTuoiTreCrawler
 from crawler.fast_vnexpress import FastVnExpressCrawler
+from crawler.fast_dantri import FastDanTriCrawler
 from crawler.fast_base import Category
 import json
 import datetime
 from zoneinfo import ZoneInfo
 
-config = {"category": Category.MOI_NHAT, "do_crawl_comment": False, "delay": None}
+config = {"category": Category.SUC_KHOE, "do_crawl_comment": False, "delay": None}
 
 ttcrawler = FastTuoiTreCrawler(**config)
 vncrawler = FastVnExpressCrawler(**config)
+dtcrawler = FastDanTriCrawler(**config)
 
 articles = []
-for crawler in [ttcrawler]:
+for crawler in [dtcrawler]:
     end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-    start_date = end_date - datetime.timedelta(days=3)
+    start_date = end_date - datetime.timedelta(days=1)
     articles += crawler.crawl(
         start_date=start_date,
         end_date=end_date,

@@ -33,6 +33,10 @@ class FastCrawler:
     ):
 
         self.category = category
+
+        if category in self.MAP_CATEGORY_TO_CATEGORY_ID:
+            self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[category]
+
         self.do_crawl_comment = do_crawl_comment
 
         # Amount of delay in seconds after each request
@@ -96,7 +100,7 @@ class FastCrawler:
         Crawl news given start date and end date.
         Return a list of articles.
         """
-        
+
         if self.category not in self.MAP_CATEGORY_TO_CATEGORY_ID:
             print(f"Category not supported for {self.SOURCE_NAME}. Skipping...")
             return []
@@ -145,6 +149,7 @@ class FastCrawler:
         while date >= start_time:
             yield date
             date -= datetime.timedelta(days=1)
+
 
 class EmptyPageException(Exception):
     """

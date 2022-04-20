@@ -3,7 +3,6 @@ import datetime
 import time
 import re
 import requests
-from bs4 import BeautifulSoup
 
 
 class FastTuoiTreCrawler(FastCrawler):
@@ -22,10 +21,6 @@ class FastTuoiTreCrawler(FastCrawler):
         Category.THE_THAO: 1209,
         Category.GIAO_DUC: 13,
     }
-
-    def __init__(self, category: Category, do_crawl_comment: bool, delay: float):
-        super().__init__(category, do_crawl_comment, delay)
-        self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[category]
 
     def get_news_list_url(self, date: datetime.datetime, cursor: int = 1):
         """

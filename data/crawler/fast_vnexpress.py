@@ -23,12 +23,6 @@ class FastVnExpressCrawler(FastCrawler):
         Category.GIAO_DUC: 1003497,
     }
 
-    def __init__(self, category: Category, do_crawl_comment: bool, delay: float):
-        super().__init__(category, do_crawl_comment, delay)
-
-        if category in self.MAP_CATEGORY_TO_CATEGORY_ID:
-            self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[category]
-
     def get_news_list_url(
         self,
         start_date: datetime.datetime,
