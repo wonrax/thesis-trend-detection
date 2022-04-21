@@ -1,3 +1,6 @@
+import sys
+sys.path.append('./data')
+
 from crawler.fast_tuoitre import FastTuoiTreCrawler
 from crawler.fast_vnexpress import FastVnExpressCrawler
 from crawler.fast_dantri import FastDanTriCrawler
@@ -10,7 +13,11 @@ import threading
 from queue import Queue, Empty
 import time
 
-config = {"category": Category.THOI_SU, "do_crawl_comment": False, "delay": 0.5}
+BASE_PATH = "pipeline/tmp"
+import os
+assert os.path.isdir(BASE_PATH)
+
+config = {"category": Category.MOI_NHAT, "do_crawl_comment": False, "delay": 0.5}
 
 ttcrawler = FastTuoiTreCrawler(**config)
 vncrawler = FastVnExpressCrawler(**config)
@@ -21,7 +28,8 @@ crawler_engines = [ttcrawler, vncrawler, dtcrawler, vnncrawler]
 
 # Date range to crawl
 end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-start_date = end_date - datetime.timedelta(days=2)
+# start_date = end_date - datetime.timedelta(days=2)
+start_date = end_date
 
 
 def start_crawl_thread(crawler, queue):
@@ -56,7 +64,7 @@ print(f"Usable amount: {len(articles)} articles (date not null).")
 # sort articles by date
 articles.sort(key=lambda x: x.date)
 
-with open("./tmp/articles.json", "w", encoding="utf-8") as f:
+with open(BASE_PATH + "/articles.json", "w", encoding="utf-8") as f:
     file_content = json.dump(
         [article.to_dict() for article in articles],
         fp=f,
