@@ -45,9 +45,9 @@ class FastCrawler:
 
         self.timeout = 60
 
-    def crawl_urls(self) -> "List[str]":
+    def crawl_urls(self, start_date, end_date) -> "List[str]":
         """
-        Crawl urls of today and yesterday news urls.
+        Crawl urls news articles.
         Return a list of urls.
         """
         raise NotImplementedError
@@ -107,8 +107,10 @@ class FastCrawler:
 
         urls = self.crawl_urls(start_date, end_date)
         articles = []
+
+        print(f"Extracting {len(urls)} articles from {self.SOURCE_NAME}")
+
         for url in urls:
-            print(f"Extracting article from {url}")
             article = self.extract_article(url)
 
             if self.do_crawl_comment:

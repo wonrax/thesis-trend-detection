@@ -44,7 +44,6 @@ class FastDanTriCrawler(FastCrawler):
         Return a list of article urls.
         """
 
-        print(f"Crawling urls at {url}")
         try:
             html = requests.get(url, timeout=self.timeout).text
             soup = BeautifulSoup(html, "html.parser")

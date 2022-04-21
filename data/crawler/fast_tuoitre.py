@@ -53,6 +53,9 @@ class FastTuoiTreCrawler(FastCrawler):
                 raise EmptyPageException
 
             return [self.BASE_URL + url for url in urls]
+        except EmptyPageException:
+            # Forward the exception to caller
+            pass
         except Exception as e:
             print(
                 f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}: {e}"
