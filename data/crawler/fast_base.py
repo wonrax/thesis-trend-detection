@@ -105,10 +105,11 @@ class FastCrawler:
             print(f"Category not supported for {self.SOURCE_NAME}. Skipping...")
             return []
 
+        print(f"Crawling urls for {self.SOURCE_NAME}...")
         urls = self.crawl_urls(start_date, end_date)
         articles = []
 
-        print(f"Extracting {len(urls)} articles from {self.SOURCE_NAME}")
+        print(f"Extracting {len(urls)} articles from {self.SOURCE_NAME}...")
 
         for url in urls:
             article = self.extract_article(url)

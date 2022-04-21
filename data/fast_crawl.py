@@ -42,12 +42,16 @@ articles = []
 
 for _ in crawler_engines:
     try:
-        articles += crawler_result_queue.get(timeout=24 * 60 * 60)
+        articles += crawler_result_queue.get(timeout=15 * 60)
     except Empty:
         print(f"Timeout for {crawler.SOURCE_NAME}")
 
 print(f"Got a total of {len(articles)} articles.")
 print(f"Crawling took {time.time() - t1} seconds.")
+
+# remove articles that have None date
+articles = [article for article in articles if article.date is not None]
+print(f"Usable amount: {len(articles)} articles (date not null).")
 
 # sort articles by date
 articles.sort(key=lambda x: x.date)
