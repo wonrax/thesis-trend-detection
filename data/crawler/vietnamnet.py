@@ -1,14 +1,13 @@
-from crawler.fast_base import FastCrawler, Category
+from crawler.base import Crawler, Category
 import datetime
 import time
 import re
 import requests
 from bs4 import BeautifulSoup
-from model.article import Article
 from dateutil.parser import parse
 
 
-class FastVietnamnetCrawler(FastCrawler):
+class VietnamnetCrawler(Crawler):
 
     SOURCE_NAME = "Vietnamnet"
     BASE_URL = "https://vietnamnet.vn"

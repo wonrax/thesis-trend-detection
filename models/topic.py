@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # lower all tokens
     tokens_list = [[token.lower() for token in doc] for doc in tokens_list]
 
-    hdpmodel.train(tokens_list, initial_k=100, iteration=20000)
+    hdpmodel.train(tokens_list, initial_k=100, iteration=5000)
     vecs = hdpmodel.vectorize(tokens_list)
 
     from sklearn.cluster import KMeans

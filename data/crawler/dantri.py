@@ -1,4 +1,4 @@
-from crawler.fast_base import FastCrawler, Category, EmptyPageException
+from crawler.base import Crawler, Category, EmptyPageException
 import datetime
 import time
 import re
@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from dateutil.parser import parse
 
 
-class FastDanTriCrawler(FastCrawler):
+class DanTriCrawler(Crawler):
 
     SOURCE_NAME = "Dân Trí"
     BASE_URL = "https://dantri.com.vn"

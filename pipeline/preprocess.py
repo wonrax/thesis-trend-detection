@@ -1,103 +1,80 @@
-from vncorenlp import VnCoreNLP
-import re
+# add python root folder to os path
+import sys
 
-# VnCoreNLP segmentizer
-rdrsegmenter = None
+sys.path.append(r".")
 
 
-class Preprocess:
-    @staticmethod
-    def deep_clean(s: str):
-        """Do an advanced deep clean of the string
+from data.preprocess import Preprocess
+from typing import List
+import json
 
-        Args:
-            s (str): string to be cleaned
+articles: List[dict] = []
+with open("pipeline/tmp/articles.json", "r", encoding="utf-8") as f:
+    articles = json.load(f)
 
-        Returns:
-            str: cleaned string
-        """
+assert articles
 
-        s = s.replace("\n", " ")
+stopword_list = []
+with open("data/vietnamese-stopwords-dash.txt", encoding="utf-8") as f:
+    stopword_list = f.read().split("\n")
 
-        # normalization 1: xxxThis is a --> xxx. This is a (missing delimiter)
-        s = re.sub(r"([a-z])([A-Z])", r"\1\. \2", s)  # before lower case
-        # normalization 2: lower case
-        s = s.lower()
-        # normalization 3: "&gt", "&lt"
-        s = re.sub(r"&gt|&lt", " ", s)
-        # normalization 4: letter repetition (if more than 2)
-        s = re.sub(r"([a-z])\1{2,}", r"\1", s)
-        # normalization 5: non-word repetition (if more than 1)
-        s = re.sub(r"([\W+])\1{1,}", r"\1", s)
-        # normalization 6: string * as delimiter
-        s = re.sub(r"\*|\W\*|\*\W", ". ", s)
-        # normalization 7: stuff in parenthesis, assumed to be less informal
-        s = re.sub(r"\(.*?\)", ". ", s)
-        # normalization 8: xxx[?!]. -- > xxx.
-        s = re.sub(r"\W+?\.", ".", s)
-        # normalization 9: [.?!] --> [.?!] xxx
-        s = re.sub(r"(\.|\?|!)(\w)", r"\1 \2", s)
-        # normalization 12: phrase repetition
-        s = re.sub(r"(.{2,}?)\1{1,}", r"\1", s)
 
-        return s.strip()
+class PreprocessedArticle:
+    def __init__(
+        self,
+        id: str,
+        source: str,
+        title: str,
+        title_segmented_tokens: List[str],
+        excerpt_segmented_tokens: List[str] = None,
+        excerpt_segmented_sentences: str = None,
+        content_segmented_tokens: List[str] = None,
+        content_segmented_sentences: str = None,
+    ) -> None:
+        self.id = id
+        self.source = source
+        self.title = title
+        self.title_segmented_tokens = title_segmented_tokens
+        self.excerpt_segmented_tokens = excerpt_segmented_tokens
+        self.excerpt_segmented_sentences = excerpt_segmented_sentences
+        self.content_segmented_tokens = content_segmented_tokens
+        self.content_segmented_sentences = content_segmented_sentences
 
-    @staticmethod
-    def segmentize(
-        text: str,
-        do_deep_clean=False,
-        do_sentences=True,
-        do_tokens=True,
-        stopword_list=[],
-    ) -> dict:
-        """Segmentize text (aka "phân đoạn từ") using VnCoreNLP segmentizer.
 
-        Args:
-            text (str): the text to be segmentized
-            do_deep_clean (bool, optional): Do deep clean on the text, could take much longer to process.
-            do_sentences (bool, optional): Either return as the sentence form or not.
-            do_tokens (bool, optional): Either return a list of tokens or not.
-            stopword_list (list, optional): Words to exclude.
+processed_articles = []
 
-        Returns:
-            dict: a dictionary of the form {'tokens': [], 'sentences': []}
-        """
+# Stopword list used for excerpt to remove news source signature
+stopword_list_for_excerpt = stopword_list + ["TTO", "Dân_trí", "VnExpress"]
 
-        if do_deep_clean:
-            text = Preprocess.deep_clean(text)
+for article in articles:
+    excerpt_segmented = Preprocess.segmentize(
+        article["excerpt"], stopword_list=stopword_list_for_excerpt
+    )
+    content_segmented = Preprocess.segmentize(
+        article["content"], stopword_list=stopword_list
+    )
+    title_segmented = Preprocess.segmentize(
+        article["title"], do_sentences=False, stopword_list=stopword_list
+    )
+    processed_articles.append(
+        PreprocessedArticle(
+            article["id"],
+            article["source"],
+            article["title"],
+            title_segmented["tokens"],
+            excerpt_segmented["tokens"],
+            excerpt_segmented["sentences"],
+            content_segmented["tokens"],
+            content_segmented["sentences"],
+        )
+    )
 
-        global rdrsegmenter
-
-        if not rdrsegmenter:
-            rdrsegmenter = VnCoreNLP(
-                "./notebooks/VnCoreNLP/VnCoreNLP-1.1.1.jar",
-                annotators="wseg,pos",
-                max_heap_size="-Xmx2g",
-            )
-
-        segmented = rdrsegmenter.annotate(text)["sentences"]
-
-        sentences = None
-        if do_sentences:
-            paragraphs = []
-            for paragraph in segmented:
-                paragraphs.append(" ".join([x["form"] for x in paragraph]))
-            sentences = " ".join(paragraphs)
-
-        tokens = []
-        if do_tokens:
-            for paragraph in segmented:
-                for word in paragraph:
-                    if word["form"] not in stopword_list and word["posTag"] in [
-                        "N",
-                        "V",
-                        "A",
-                        "Np",
-                        "M",
-                    ]:
-                        tokens.append(word["form"])
-
-        return {
-            "sentences": sentences,
-            "tokens": tokens,
-        }
+# dump processed_articles to json
+with open("pipeline/tmp/preprocessed_articles.json", "w", encoding="utf-8") as f:
+    json.dump(
+        [a.__dict__ for a in processed_articles],
+        f,
+        indent=2,
+        default=str,
+        ensure_ascii=False,
+    )

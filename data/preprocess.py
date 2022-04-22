@@ -1,20 +1,20 @@
-import time
 from vncorenlp import VnCoreNLP
-import pandas as pd
-
-from multiprocessing import Pool
-
 import re
 
+# VnCoreNLP segmentizer
+rdrsegmenter = None
 
-class Clean_data:
-    def __init__(self, data_raw):
-        self.data = data_raw.copy()
 
-    def deep_clean(self, s):
-        """
-        :param s: string to be processed
-        :return: processed string: see comments in the source code for more info
+class Preprocess:
+    @staticmethod
+    def deep_clean(s: str):
+        """Do an advanced deep clean of the string
+
+        Args:
+            s (str): string to be cleaned
+
+        Returns:
+            str: cleaned string
         """
 
         s = s.replace("\n", " ")
@@ -42,134 +42,62 @@ class Clean_data:
 
         return s.strip()
 
-    def job(self, x):
-        return self.deep_clean(x)
+    @staticmethod
+    def segmentize(
+        text: str,
+        do_deep_clean=False,
+        do_sentences=True,
+        do_tokens=True,
+        stopword_list=[],
+    ) -> dict:
+        """Segmentize text (aka "phân đoạn từ") using VnCoreNLP segmentizer.
 
-    def f_base_2(self, s=None):
-        if s is None:
-            s = self.data
+        Args:
+            text (str): the text to be segmentized
+            do_deep_clean (bool, optional): Do deep clean on the text, could take much longer to process.
+            do_sentences (bool, optional): Either return as the sentence form or not.
+            do_tokens (bool, optional): Either return a list of tokens or not.
+            stopword_list (list, optional): Words to exclude.
 
-        with Pool(4) as p:
-            s["content"] = p.map(self.job, s["content"])
+        Returns:
+            dict: a dictionary of the form {'tokens': [], 'sentences': []}
+        """
 
-        # s['content'] = s['content'].map(lambda x: self.f_base(x))
-        s["content_lower_case"] = s["content"].map(lambda x: x.lower())
-        return s
+        if do_deep_clean:
+            text = Preprocess.deep_clean(text)
 
-    def preprocess_document(self, stopword_list=[]):
-        # self.f_base_2()
-        return self.create_token_list(stopword_list=stopword_list)
+        global rdrsegmenter
 
-    def create_token_list(self, s=None, stopword_list=[]):
+        if not rdrsegmenter:
+            rdrsegmenter = VnCoreNLP(
+                "./notebooks/VnCoreNLP/VnCoreNLP-1.1.1.jar",
+                annotators="wseg,pos",
+                max_heap_size="-Xmx2g",
+            )
 
-        if s is None:
-            s = self.data
+        segmented = rdrsegmenter.annotate(text)["sentences"]
 
-        t1 = time.time()
-        tmp_df = s["content"]
-        rdrsegmenter = VnCoreNLP(
-            "./src/VnCoreNLP/VnCoreNLP-1.1.1.jar",
-            annotators="wseg,pos",
-            max_heap_size="-Xmx2g",
-        )
-        tmp_df = tmp_df.map(lambda x: rdrsegmenter.annotate(x)["sentences"])
-        print("Done segmentation. Time: ", time.time() - t1)
+        sentences = None
+        if do_sentences:
+            paragraphs = []
+            for paragraph in segmented:
+                paragraphs.append(" ".join([x["form"] for x in paragraph]))
+            sentences = " ".join(paragraphs)
 
-        sentences = []
-        for article in tmp_df:
-            texts = []
-            if article is None:
-                continue
-            for paragraph in article:
-                texts.append(" ".join([x["form"] for x in paragraph]))
-            sentences.append(" ".join(texts))
-
-        tokens_list = []
-        for article in tmp_df:
-            tokens = []
-            if article is None:
-                continue
-            for paragraph in article:
+        tokens = []
+        if do_tokens:
+            for paragraph in segmented:
                 for word in paragraph:
                     if word["form"] not in stopword_list and word["posTag"] in [
                         "N",
                         "V",
                         "A",
                         "Np",
+                        "M",
                     ]:
                         tokens.append(word["form"])
-            tokens_list.append(str(tokens))
 
-        s["segmented"] = sentences
-        s["tokens"] = tokens_list
-
-        excerpt_df = s["excerpt"]
-        excerpt_df = excerpt_df.map(lambda x: rdrsegmenter.annotate(x)["sentences"])
-
-        excerpt_sentences = []
-        for article in excerpt_df:
-            texts = []
-            if article is None:
-                continue
-            for paragraph in article:
-                texts.append(" ".join([x["form"] for x in paragraph]))
-            excerpt_sentences.append(" ".join(texts))
-
-        excerpt_tokens_list = []
-        for article in excerpt_df:
-            tokens = []
-            if article is None:
-                continue
-            for paragraph in article:
-                for word in paragraph:
-                    if word["form"] not in stopword_list and word["posTag"] in [
-                        "N",
-                        "V",
-                        "A",
-                        "Np",
-                    ]:
-                        tokens.append(word["form"])
-            excerpt_tokens_list.append(str(tokens))
-
-        s["excerpt_segmented"] = excerpt_sentences
-        s["excerpt_tokens"] = excerpt_tokens_list
-
-        return s
-
-
-if __name__ == "__main__":
-    stopword_list = []
-
-    with open("./data/vietnamese-stopwords-dash.txt", encoding="utf-8") as f:
-        stopword_list = f.readlines()
-
-    stopword_list = [word.replace("\n", "") for word in stopword_list]
-    assert stopword_list
-
-    print(stopword_list[:5])
-
-    t1 = time.time()
-
-    dataset = pd.read_csv(
-        r"C:\Users\hahuy\code-projects\school\thesis-trend-detection\data\suc-khoe-articles-truncated.csv"
-    )
-    # dataset = dataset.dropna()
-    print(dataset.info())
-
-    test = Clean_data(dataset)
-    processed_data = test.preprocess_document(stopword_list=stopword_list)
-
-    processed_data.drop(
-        ["author", "excerpt", "content", "url", "comments", "tags", "likes"],
-        axis=1,
-        inplace=True,
-    )
-
-    processed_data.info()
-
-    processed_data.to_csv(
-        "./data/cleansed-tokenized-suc-khoe-articles-truncated.csv",
-        encoding="utf-8-sig",
-    )
-
-    print("Time taken:", time.time() - t1)
+        return {
+            "sentences": sentences,
+            "tokens": tokens,
+        }

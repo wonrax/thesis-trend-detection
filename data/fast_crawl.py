@@ -2,11 +2,11 @@ import sys
 
 sys.path.append("./data")
 
-from crawler.fast_tuoitre import FastTuoiTreCrawler
-from crawler.fast_vnexpress import FastVnExpressCrawler
-from crawler.fast_dantri import FastDanTriCrawler
-from crawler.fast_vietnamnet import FastVietnamnetCrawler
-from crawler.fast_base import Category
+from crawler.tuoitre import TuoiTreCrawler
+from crawler.vnexpress import VnExpressCrawler
+from crawler.dantri import DanTriCrawler
+from crawler.vietnamnet import VietnamnetCrawler
+from crawler.base import Category
 import json
 import datetime
 from zoneinfo import ZoneInfo
@@ -21,10 +21,10 @@ assert os.path.isdir(BASE_PATH)
 
 config = {"category": Category.THOI_SU, "do_crawl_comment": False, "delay": 0.5}
 
-ttcrawler = FastTuoiTreCrawler(**config)
-vncrawler = FastVnExpressCrawler(**config)
-dtcrawler = FastDanTriCrawler(**config)
-vnncrawler = FastVietnamnetCrawler(**config)
+ttcrawler = TuoiTreCrawler(**config)
+vncrawler = VnExpressCrawler(**config)
+dtcrawler = DanTriCrawler(**config)
+vnncrawler = VietnamnetCrawler(**config)
 
 crawler_engines = [ttcrawler, vncrawler, dtcrawler, vnncrawler]
 

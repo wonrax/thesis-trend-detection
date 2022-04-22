@@ -1,6 +1,6 @@
-from crawler.tuoitre import TuoiTreCrawler
-from crawler.vnexpress import VnExpressCrawler
-from crawler.base import Category
+from crawler.advanced_tuoitre import TuoiTreCrawler
+from crawler.advanced_vnexpress import VnExpressCrawler
+from crawler.advanced_base import Category
 from model.article import Article
 from serialization import FileStorage
 import argparse
