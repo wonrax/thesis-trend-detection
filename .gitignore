@@ -9,3 +9,4 @@ phobert-base
 *.csv
 
 scripts/
+tmp/
