@@ -10,13 +10,16 @@ articles = []
 with open(r"pipeline\tmp\preprocessed_articles.json", "r", encoding="utf-8") as f:
     articles = json.load(f)
 
+articles = list(filter(lambda x: x["title_segmented_tokens"], articles))
+articles = list(filter(lambda x: x["content_segmented_tokens"], articles))
+
 hdpmodel = TopicModel()
 
-tokens_list = [article["excerpt_segmented_tokens"] for article in articles]
+tokens_list = [article["content_segmented_tokens"] for article in articles]
 # lower all tokens
 tokens_list = [[token.lower() for token in doc] for doc in tokens_list]
 
-hdpmodel.train(tokens_list, initial_k=100, iteration=5000)
+hdpmodel.train(tokens_list, initial_k=100, iteration=1000)
 vecs = hdpmodel.vectorize(tokens_list)
 
 

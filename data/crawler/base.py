@@ -29,12 +29,13 @@ class Crawler:
 
     def __init__(
         self,
-        category: Category,
-        do_crawl_comment: bool,
+        category: Category = None,
+        do_crawl_comment: bool = True,
         delay: float = None,
     ):
 
         self.category = category
+        self.category_id = None
 
         if category in self.MAP_CATEGORY_TO_CATEGORY_ID:
             self.category_id = self.MAP_CATEGORY_TO_CATEGORY_ID[category]
