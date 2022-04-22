@@ -20,6 +20,8 @@ class TuoiTreCrawler(Crawler):
         Category.CONG_NGHE: 200029,
         Category.THE_THAO: 1209,
         Category.GIAO_DUC: 13,
+        Category.GIAI_TRI: 10,
+        Category.KINH_DOANH: 11,
     }
 
     def get_news_list_url(self, date: datetime.datetime, cursor: int = 1):

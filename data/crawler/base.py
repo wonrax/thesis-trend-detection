@@ -18,6 +18,8 @@ class Category(Enum):
     CONG_NGHE = 6
     THE_THAO = 7
     GIAO_DUC = 8
+    GIAI_TRI = 9
+    KINH_DOANH = 10
 
 
 class Crawler:

@@ -12,7 +12,6 @@ class VietnamnetCrawler(Crawler):
     SOURCE_NAME = "Vietnamnet"
     BASE_URL = "https://vietnamnet.vn"
     MAP_CATEGORY_TO_CATEGORY_ID = {
-        Category.MOI_NHAT: "000002",
         Category.THE_GIOI: "000005",
         Category.THOI_SU: "000002",
         Category.SUC_KHOE: "00000W",
@@ -20,6 +19,8 @@ class VietnamnetCrawler(Crawler):
         Category.CONG_NGHE: "00000Q",
         Category.THE_THAO: "000009",
         Category.GIAO_DUC: "000006",
+        Category.KINH_DOANH: "000003",
+        Category.GIAI_TRI: "000004",
     }
 
     def get_news_list_url(

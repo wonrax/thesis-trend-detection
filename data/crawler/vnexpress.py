@@ -15,12 +15,13 @@ class VnExpressCrawler(Crawler):
     API_URL = "https://usi-saas.vnexpress.net"
     MAP_CATEGORY_TO_CATEGORY_ID = {
         Category.SUC_KHOE: 1003750,
-        Category.MOI_NHAT: 1001005,
         Category.THE_GIOI: 1001002,
         Category.THOI_SU: 1001005,
         Category.CONG_NGHE: 1002592,
         Category.THE_THAO: 1002565,
         Category.GIAO_DUC: 1003497,
+        Category.GIAI_TRI: 1002691,
+        Category.KINH_DOANH: 1003159,
     }
 
     def get_news_list_url(

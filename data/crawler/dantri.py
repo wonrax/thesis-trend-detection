@@ -20,6 +20,8 @@ class DanTriCrawler(Crawler):
         Category.CONG_NGHE: "suc-manh-so",
         Category.THE_THAO: "the-thao",
         Category.GIAO_DUC: "giao-duc-huong-nghiep",
+        Category.GIAI_TRI: "giai-tri",
+        Category.KINH_DOANH: "kinh-doanh",
     }
 
     def get_news_list_url(self, cursor: int = 1):
