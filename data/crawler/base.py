@@ -1,6 +1,6 @@
 from enum import Enum
 from newspaper import Article as NewspaperArticle
-from model.article import Article, Comment
+from ..model.article import Article, Comment
 import time
 from typing import List
 import unicodedata
@@ -93,23 +93,13 @@ class Crawler:
             likes=None,
         )
 
-    def crawl(
-        self, start_date: datetime.datetime = None, end_date: datetime.datetime = None
-    ) -> "List[Article]":
+    def crawl_articles(self, urls: List[str]) -> "List[Article]":
         """
-        Crawl news given start date and end date.
-        Return a list of articles.
+        Crawl articles given a list of urls
         """
-
-        if self.category not in self.MAP_CATEGORY_TO_CATEGORY_ID:
-            print(f"Category not supported for {self.SOURCE_NAME}. Skipping...")
-            return []
-
-        print(f"Crawling urls for {self.SOURCE_NAME}...")
-        urls = self.crawl_urls(start_date, end_date)
-        articles = []
-
         print(f"Extracting {len(urls)} articles from {self.SOURCE_NAME}...")
+
+        articles = []
 
         for url in urls:
             article = self.extract_article(url)
@@ -127,6 +117,23 @@ class Crawler:
         articles = [article for article in articles if article is not None]
 
         return articles
+
+    def crawl(
+        self, start_date: datetime.datetime = None, end_date: datetime.datetime = None
+    ) -> "List[Article]":
+        """
+        Crawl news given start date and end date.
+        Return a list of articles.
+        """
+
+        if self.category not in self.MAP_CATEGORY_TO_CATEGORY_ID:
+            print(f"Category not supported for {self.SOURCE_NAME}. Skipping...")
+            return []
+
+        print(f"Crawling urls for {self.SOURCE_NAME}...")
+        urls = self.crawl_urls(start_date, end_date)
+
+        return self.crawl_articles(urls)
 
     def get_datetime_today_yesterday(self):
         """

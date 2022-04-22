@@ -1,10 +1,10 @@
-from crawler.base import Crawler, Category
+from .base import Crawler, Category
 import datetime
 import time
 import re
 import requests
 from bs4 import BeautifulSoup
-from model.article import Article
+from ..model.article import Article
 from dateutil.parser import parse
 
 

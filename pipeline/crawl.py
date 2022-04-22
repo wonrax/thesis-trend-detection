@@ -1,12 +1,12 @@
 import sys
 
-sys.path.append("./data")
+sys.path.append(".")
 
-from crawler.tuoitre import TuoiTreCrawler
-from crawler.vnexpress import VnExpressCrawler
-from crawler.dantri import DanTriCrawler
-from crawler.vietnamnet import VietnamnetCrawler
-from crawler.base import Category
+from data.crawler.tuoitre import TuoiTreCrawler
+from data.crawler.vnexpress import VnExpressCrawler
+from data.crawler.dantri import DanTriCrawler
+from data.crawler.vietnamnet import VietnamnetCrawler
+from data.crawler.base import Category
 import json
 import datetime
 from zoneinfo import ZoneInfo

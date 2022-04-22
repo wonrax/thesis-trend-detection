@@ -1,4 +1,4 @@
-from crawler.base import Crawler, Category
+from .base import Crawler, Category
 import datetime
 import time
 import re

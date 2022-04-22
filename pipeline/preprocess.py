@@ -1,8 +1,6 @@
-# add python root folder to os path
 import sys
 
-sys.path.append(r".")
-
+sys.path.append(".")
 
 from data.preprocess import Preprocess
 from typing import List

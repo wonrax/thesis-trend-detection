@@ -1,4 +1,4 @@
-from crawler.base import Crawler, Category, EmptyPageException
+from .base import Crawler, Category, EmptyPageException
 import datetime
 import time
 import re
