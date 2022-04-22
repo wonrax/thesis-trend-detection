@@ -1,5 +1,6 @@
 import sys
-sys.path.append('./data')
+
+sys.path.append("./data")
 
 from crawler.fast_tuoitre import FastTuoiTreCrawler
 from crawler.fast_vnexpress import FastVnExpressCrawler
@@ -15,9 +16,10 @@ import time
 
 BASE_PATH = "pipeline/tmp"
 import os
+
 assert os.path.isdir(BASE_PATH)
 
-config = {"category": Category.MOI_NHAT, "do_crawl_comment": False, "delay": 0.5}
+config = {"category": Category.THOI_SU, "do_crawl_comment": False, "delay": 0.5}
 
 ttcrawler = FastTuoiTreCrawler(**config)
 vncrawler = FastVnExpressCrawler(**config)
@@ -28,12 +30,16 @@ crawler_engines = [ttcrawler, vncrawler, dtcrawler, vnncrawler]
 
 # Date range to crawl
 end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-# start_date = end_date - datetime.timedelta(days=2)
-start_date = end_date
+start_date = end_date - datetime.timedelta(days=2)
+# start_date = end_date
 
 
 def start_crawl_thread(crawler, queue):
-    _articles = crawler.crawl(start_date, end_date)
+    _articles = []
+    try:
+        _articles = crawler.crawl(start_date, end_date)
+    except Exception as e:
+        print(f"Error when crawling {crawler.SOURCE_NAME}, skipping...: {e}")
     queue.put(_articles)
 
 

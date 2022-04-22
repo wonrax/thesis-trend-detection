@@ -121,7 +121,7 @@ class FastVietnamnetCrawler(FastCrawler):
 
     def extract_article(self, url):
         article = super().extract_article(url)
-        if not article.date:
+        if article and not article.date:
             try:
                 html = requests.get(url, timeout=self.timeout).text
 

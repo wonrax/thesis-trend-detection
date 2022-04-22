@@ -11,7 +11,7 @@ class Clean_data:
     def __init__(self, data_raw):
         self.data = data_raw.copy()
 
-    def f_base(self, s):
+    def deep_clean(self, s):
         """
         :param s: string to be processed
         :return: processed string: see comments in the source code for more info
@@ -20,10 +20,9 @@ class Clean_data:
         s = s.replace("\n", " ")
 
         # normalization 1: xxxThis is a --> xxx. This is a (missing delimiter)
-        # s = re.sub(r'([a-z])([A-Z])', r'\1\. \2', s)  # before lower case
+        s = re.sub(r"([a-z])([A-Z])", r"\1\. \2", s)  # before lower case
         # normalization 2: lower case
-
-        # s = s.lower()
+        s = s.lower()
         # normalization 3: "&gt", "&lt"
         s = re.sub(r"&gt|&lt", " ", s)
         # normalization 4: letter repetition (if more than 2)
@@ -44,7 +43,7 @@ class Clean_data:
         return s.strip()
 
     def job(self, x):
-        return self.f_base(x)
+        return self.deep_clean(x)
 
     def f_base_2(self, s=None):
         if s is None:
@@ -169,7 +168,8 @@ if __name__ == "__main__":
     processed_data.info()
 
     processed_data.to_csv(
-        "./data/cleansed-tokenized-suc-khoe-articles-truncated.csv", encoding="utf-8-sig"
+        "./data/cleansed-tokenized-suc-khoe-articles-truncated.csv",
+        encoding="utf-8-sig",
     )
 
     print("Time taken:", time.time() - t1)

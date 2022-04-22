@@ -4,8 +4,8 @@ import re
 # VnCoreNLP segmentizer
 rdrsegmenter = None
 
-class Preprocess:
 
+class Preprocess:
     @staticmethod
     def deep_clean(s: str):
         """Do an advanced deep clean of the string
@@ -44,7 +44,11 @@ class Preprocess:
 
     @staticmethod
     def segmentize(
-        text: str, do_deep_clean=False, do_sentences=True, do_tokens=True, stopword_list=[]
+        text: str,
+        do_deep_clean=False,
+        do_sentences=True,
+        do_tokens=True,
+        stopword_list=[],
     ) -> dict:
         """Segmentize text (aka "phân đoạn từ") using VnCoreNLP segmentizer.
 
@@ -58,7 +62,7 @@ class Preprocess:
         Returns:
             dict: a dictionary of the form {'tokens': [], 'sentences': []}
         """
-        
+
         if do_deep_clean:
             text = Preprocess.deep_clean(text)
 
@@ -89,6 +93,7 @@ class Preprocess:
                         "V",
                         "A",
                         "Np",
+                        "M",
                     ]:
                         tokens.append(word["form"])
 

@@ -7,3 +7,5 @@ phobert-base
 
 # Temporarily ignore all csv files
 *.csv
+
+scripts/

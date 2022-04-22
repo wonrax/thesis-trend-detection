@@ -13,7 +13,7 @@ class TopicModel:
         self.corpus: tp.utils.Corpus = None
         self.model: tp.HDPModel = None
 
-    def train(self, tokens_list: List[List[str]], initial_k=20):
+    def train(self, tokens_list: List[List[str]], initial_k=20, iteration=20000):
         """Train the topic model
 
         Args:
@@ -50,9 +50,10 @@ class TopicModel:
         )
 
         print("Removed top words:", model.removed_top_words)
-        for i in range(0, 50000, 100):
-            model.train(100)
-            if i % 5000 == 0:
+        batch_size = 100
+        for i in range(0, iteration, batch_size):
+            model.train(batch_size)
+            if i % int(iteration / 10) == 0:
                 print(
                     "Iteration: {}\tLog-likelihood: {}\tNum. of topics: {}".format(
                         i, model.ll_per_word, model.live_k
@@ -105,8 +106,11 @@ if __name__ == "__main__":
 
     hdpmodel = TopicModel()
 
-    tokens_list = [article["content_segmented_tokens"] for article in articles]
-    hdpmodel.train(tokens_list)
+    tokens_list = [article["excerpt_segmented_tokens"] for article in articles]
+    # lower all tokens
+    tokens_list = [[token.lower() for token in doc] for doc in tokens_list]
+
+    hdpmodel.train(tokens_list, initial_k=100, iteration=20000)
     vecs = hdpmodel.vectorize(tokens_list)
 
     from sklearn.cluster import KMeans
@@ -118,20 +122,22 @@ if __name__ == "__main__":
 
     for index, article in enumerate(articles):
         article["topic"] = cluster_model.labels_[index]
-    
+
     topic_articles = {}
-    
+
     for article in articles:
         if article["topic"] not in topic_articles:
             topic_articles[article["topic"]] = []
         topic_articles[article["topic"]].append(article)
-    
-    sorted_topic = sorted(topic_articles.items(), key=lambda x: len(x[1]), reverse=False)
-    
+
+    sorted_topic = sorted(
+        topic_articles.items(), key=lambda x: len(x[1]), reverse=False
+    )
+
     for topic in sorted_topic:
         print(f"\nTopic {topic[0]}")
         for article in topic[1]:
-            print("\t", article["source"], "-", article["title"])
+            print("\t", article["source"], "\t", article["title"])
 
     # articles.sort(key=lambda x: x["topic"])
     # current_topic = None

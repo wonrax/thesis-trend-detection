@@ -5,7 +5,6 @@ sys.path.append(r".")
 
 
 from pipeline.preprocess import Preprocess
-from data.model.article import Article
 from typing import List
 import json
 
@@ -44,9 +43,12 @@ class PreprocessedArticle:
 
 processed_articles = []
 
+# Stopword list used for excerpt to remove news source signature
+stopword_list_for_excerpt = stopword_list + ["TTO", "Dân_trí", "VnExpress"]
+
 for article in articles:
     excerpt_segmented = Preprocess.segmentize(
-        article["excerpt"], stopword_list=stopword_list
+        article["excerpt"], stopword_list=stopword_list_for_excerpt
     )
     content_segmented = Preprocess.segmentize(
         article["content"], stopword_list=stopword_list

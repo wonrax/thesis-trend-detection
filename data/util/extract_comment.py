@@ -1,4 +1,5 @@
 import sys, os
+
 # get absolute path of root directory
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -18,6 +19,8 @@ for a in articles:
 print(len(comments))
 print(comments[:10])
 
-pd.DataFrame(comments).to_csv("data/suc-khoe-comments-truncated.csv", index=False, encoding="utf-8-sig")
+pd.DataFrame(comments).to_csv(
+    "data/suc-khoe-comments-truncated.csv", index=False, encoding="utf-8-sig"
+)
 
 # load comments from csv using pandas

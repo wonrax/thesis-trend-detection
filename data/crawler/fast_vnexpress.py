@@ -113,7 +113,7 @@ class FastVnExpressCrawler(FastCrawler):
 
     def extract_article(self, url) -> Article:
         article = super().extract_article(url)
-        if not article.date:
+        if article and not article.date:
             try:
                 html = requests.get(url, timeout=self.timeout).text
                 soup = BeautifulSoup(html, "html.parser")
