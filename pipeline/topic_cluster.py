@@ -21,7 +21,7 @@ with open(r"pipeline\tmp\preprocessed_articles.json", "r", encoding="utf-8") as 
 # PREPROCESSING
 articles = list(filter(lambda x: x["title_segmented_tokens"], articles))
 articles = list(filter(lambda x: x["content_segmented_tokens"], articles))
-tokens_list = [article["excerpt_segmented_tokens"] for article in articles]
+tokens_list = [article["content_segmented_tokens"] for article in articles]
 # lower all tokens
 tokens_list = [[token.lower() for token in doc] for doc in tokens_list]
 
@@ -29,9 +29,21 @@ tokens_list = [[token.lower() for token in doc] for doc in tokens_list]
 hdpmodel = TopicModel()
 hdpmodel.train(tokens_list, initial_k=50, iteration=5000)
 vecs = hdpmodel.vectorize(tokens_list)
+num_topic = len(hdpmodel.model.get_topics())
+
+_vecs = []
+for vec in vecs:
+    _vec = [0] * num_topic
+    for topic_probability in vec:
+        topic_id = topic_probability[0]
+        probability = topic_probability[1]
+        _vec[topic_id] = probability
+    _vecs.append(_vec)
+
+vecs = _vecs
 
 # CLUSTERING
-k_cluster = hdpmodel.model.live_k
+k_cluster = num_topic
 # k_cluster = len(articles) / 4 # 4 is number of news sources
 cluster_model = KMeans(n_clusters=int(k_cluster))
 cluster_model.fit(vecs)
