@@ -58,13 +58,13 @@ class TuoiTreCrawler(Crawler):
             return [self.BASE_URL + url for url in urls]
         except EmptyPageException:
             # Forward the exception to caller
-            pass
-        except Exception as e:
-            print(
-                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}: {e}"
+            raise EmptyPageException
+        except Exception:
+            self.logger.exception(
+                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}."
             )
 
-        raise EmptyPageException
+        return []
 
     def crawl_urls(
         self, start_date: datetime.datetime = None, end_date: datetime.datetime = None

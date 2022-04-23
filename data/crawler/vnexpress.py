@@ -79,9 +79,9 @@ class VnExpressCrawler(Crawler):
 
                 return urls, next_page_url
 
-        except Exception as e:
-            print(
-                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}: {e}"
+        except Exception:
+            self.logger.exception(
+                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}."
             )
 
         print(f"Found 0 url in webpage at {self.SOURCE_NAME} with url {url}")
@@ -122,6 +122,8 @@ class VnExpressCrawler(Crawler):
                 date = soup.find("meta", {"name": "pubdate"})
                 if date:
                     article.date = parse(date["content"])
-            except Exception as e:
-                print(f"Error while getting date info of article with url {url}: {e}")
+            except Exception:
+                self.logger.exception(
+                    f"Error while getting date info of article with url {url}."
+                )
         return article

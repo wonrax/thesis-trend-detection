@@ -46,10 +46,10 @@ stopword_list_for_excerpt = stopword_list + ["TTO", "Dân_trí", "VnExpress"]
 
 for article in articles:
     excerpt_segmented = Preprocess.segmentize(
-        article["excerpt"], stopword_list=stopword_list_for_excerpt
+        article["excerpt"], stopword_list=stopword_list_for_excerpt, do_sentences=False
     )
     content_segmented = Preprocess.segmentize(
-        article["content"], stopword_list=stopword_list
+        article["content"], stopword_list=stopword_list, do_sentences=False
     )
     title_segmented = Preprocess.segmentize(
         article["title"], do_sentences=False, stopword_list=stopword_list

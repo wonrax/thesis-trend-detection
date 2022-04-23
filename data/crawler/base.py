@@ -7,6 +7,7 @@ import unicodedata
 from dateutil.parser import parse
 import datetime
 from zoneinfo import ZoneInfo
+import logging
 
 
 class Category(Enum):
@@ -33,6 +34,7 @@ class Crawler:
         category: Category = None,
         do_crawl_comment: bool = True,
         delay: float = None,
+        logger: logging.Logger = None,
     ):
 
         self.category = category
@@ -48,6 +50,13 @@ class Crawler:
         self.delay = delay
 
         self.timeout = 60
+
+        if logger is None:
+            self.logger = logging.getLogger(__name__)
+            # Do not log anything
+            self.logger.addHandler(logging.NullHandler())
+        else:
+            self.logger = logger
 
     def crawl_urls(self, start_date, end_date) -> "List[str]":
         """
@@ -73,8 +82,8 @@ class Crawler:
             article = NewspaperArticle(url)
             article.download()
             article.parse()
-        except Exception as e:
-            print(f"Error when extracting article from {url}: {e}")
+        except Exception:
+            self.logger.exception(f"Error when extracting article from {url}.")
             return None
 
         pub_date = article.publish_date
@@ -101,7 +110,7 @@ class Crawler:
         """
         Crawl articles given a list of urls
         """
-        print(f"Extracting {len(urls)} articles from {self.SOURCE_NAME}...")
+        self.logger.info(f"Extracting {len(urls)} articles from {self.SOURCE_NAME}...")
 
         articles = []
 
@@ -131,10 +140,12 @@ class Crawler:
         """
 
         if self.category not in self.MAP_CATEGORY_TO_CATEGORY_ID:
-            print(f"Category not supported for {self.SOURCE_NAME}. Skipping...")
+            self.logger.warning(
+                f"Category not supported for {self.SOURCE_NAME}. Skipping..."
+            )
             return []
 
-        print(f"Crawling urls for {self.SOURCE_NAME}...")
+        self.logger.info(f"Crawling urls for {self.SOURCE_NAME}...")
         urls = self.crawl_urls(start_date, end_date)
 
         return self.crawl_articles(urls)

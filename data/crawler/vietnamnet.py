@@ -87,9 +87,9 @@ class VietnamnetCrawler(Crawler):
 
                 return [self.BASE_URL + url for url in urls], next_page_url
 
-        except Exception as e:
-            print(
-                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}: {e}"
+        except Exception:
+            self.logger.exception(
+                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}."
             )
 
         return [], next_page_url
@@ -132,6 +132,8 @@ class VietnamnetCrawler(Crawler):
                 if match:
                     article.date = parse(match.group(1))
 
-            except Exception as e:
-                print(f"Error while getting date info of article with url {url}: {e}")
+            except Exception:
+                self.logger.exception(
+                    f"Error while getting date info of article with url {url}."
+                )
         return article

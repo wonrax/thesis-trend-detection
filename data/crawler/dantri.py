@@ -65,12 +65,12 @@ class DanTriCrawler(Crawler):
                 raise EmptyPageException
 
             return [self.BASE_URL + url for url in urls]
-        except Exception as e:
-            print(
-                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}: {e}"
+        except Exception:
+            self.logger.exception(
+                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}."
             )
 
-        raise EmptyPageException
+        return []
 
     def crawl_urls(
         self, start_date: datetime.datetime = None, end_date: datetime.datetime = None
@@ -117,6 +117,8 @@ class DanTriCrawler(Crawler):
                 if match:
                     article.date = parse(match.group(1))
 
-            except Exception as e:
-                print(f"Error while getting date info of article with url {url}: {e}")
+            except Exception:
+                self.logger.exception(
+                    f"Error while getting date info of article with url {url}."
+                )
         return article

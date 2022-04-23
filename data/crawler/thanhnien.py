@@ -66,9 +66,9 @@ class ThanhNienCrawler(Crawler):
                 raise EmptyPageException
 
             return urls
-        except Exception as e:
-            print(
-                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}: {e}"
+        except Exception:
+            self.logger.exception(
+                f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}."
             )
 
         raise EmptyPageException
