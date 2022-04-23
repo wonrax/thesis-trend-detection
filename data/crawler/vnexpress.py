@@ -22,6 +22,7 @@ class VnExpressCrawler(Crawler):
         Category.GIAO_DUC: 1003497,
         Category.GIAI_TRI: 1002691,
         Category.KINH_DOANH: 1003159,
+        Category.PHAP_LUAT: 1001007,
     }
 
     def get_news_list_url(

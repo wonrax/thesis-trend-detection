@@ -21,6 +21,7 @@ class ThanhNienCrawler(Crawler):
         Category.GIAO_DUC: "giao-duc",
         Category.GIAI_TRI: "giai-tri",
         Category.KINH_DOANH: "tai-chinh-kinh-doanh",
+        Category.PHAP_LUAT: "thoi-su/phap-luat",
     }
 
     def get_news_list_url(self, cursor: int = 1):

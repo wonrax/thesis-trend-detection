@@ -20,6 +20,7 @@ class Category(Enum):
     GIAO_DUC = 8
     GIAI_TRI = 9
     KINH_DOANH = 10
+    PHAP_LUAT = 11
 
 
 class Crawler:

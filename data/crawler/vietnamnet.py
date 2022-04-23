@@ -21,6 +21,7 @@ class VietnamnetCrawler(Crawler):
         Category.GIAO_DUC: "000006",
         Category.KINH_DOANH: "000003",
         Category.GIAI_TRI: "000004",
+        Category.PHAP_LUAT: "000008",
     }
 
     def get_news_list_url(
