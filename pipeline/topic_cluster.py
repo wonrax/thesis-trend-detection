@@ -5,29 +5,35 @@ sys.path.append(".")
 import json
 from models.topic import TopicModel
 from sklearn.cluster import KMeans
+from sklearn import metrics
 
 articles = []
 with open(r"pipeline\tmp\preprocessed_articles.json", "r", encoding="utf-8") as f:
     articles = json.load(f)
 
+# PREPROCESSING
 articles = list(filter(lambda x: x["title_segmented_tokens"], articles))
 articles = list(filter(lambda x: x["content_segmented_tokens"], articles))
-
-hdpmodel = TopicModel()
-
-tokens_list = [article["content_segmented_tokens"] for article in articles]
+tokens_list = [article["excerpt_segmented_tokens"] for article in articles]
 # lower all tokens
 tokens_list = [[token.lower() for token in doc] for doc in tokens_list]
 
-hdpmodel.train(tokens_list, initial_k=100, iteration=1000)
+# TRAIN MODEL
+hdpmodel = TopicModel()
+hdpmodel.train(tokens_list, initial_k=50, iteration=5000)
 vecs = hdpmodel.vectorize(tokens_list)
 
-
+# CLUSTERING
 k_cluster = hdpmodel.model.live_k
 # k_cluster = len(articles) / 4 # 4 is number of news sources
 cluster_model = KMeans(n_clusters=int(k_cluster))
 cluster_model.fit(vecs)
+silhouette_avg = metrics.silhouette_score(vecs, cluster_model.labels_)
+print("Number of clusters: %d" % k_cluster)
+print("Silhouette Coefficient: %0.3f" % silhouette_avg)
+print("----------------------")
 
+# PRINT OUT RESULT
 for index, article in enumerate(articles):
     article["topic"] = cluster_model.labels_[index]
 
