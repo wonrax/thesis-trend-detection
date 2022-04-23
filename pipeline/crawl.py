@@ -15,28 +15,18 @@ import threading
 from queue import Queue, Empty
 import time
 import logging
+from pipeline.logger import get_logger
+import os
 
 BASE_PATH = "pipeline"
 STORAGE_PATH = BASE_PATH + "/tmp"
-import os
 
 assert os.path.isdir(STORAGE_PATH)
 
-LOG_LEVEL = logging.DEBUG
+# Set up logger
 log_filename = f"{BASE_PATH}/logs/{__name__}.log"
-os.makedirs(os.path.dirname(log_filename), exist_ok=True)
-
-logger = logging.getLogger(__name__)
-logger.setLevel(LOG_LEVEL)
-file_handler = logging.FileHandler(log_filename, encoding="utf-8")
-stream_handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s:%(name)s:%(levelname)s:%(message)s")
-file_handler.setFormatter(formatter)
-stream_handler.setFormatter(formatter)
-file_handler.setLevel(logging.INFO)
-stream_handler.setLevel(LOG_LEVEL)
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+LOG_LEVEL = logging.DEBUG
+logger = get_logger(__name__, logging.DEBUG, log_filename)
 
 # Date range to crawl
 end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))

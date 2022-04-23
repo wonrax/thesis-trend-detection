@@ -6,6 +6,13 @@ import json
 from models.topic import TopicModel
 from sklearn.cluster import KMeans
 from sklearn import metrics
+from pipeline.logger import get_logger
+import logging
+
+# Set up logger
+log_filename = f"pipeline/logs/{__name__}.log"
+LOG_LEVEL = logging.DEBUG
+logger = get_logger(__name__, LOG_LEVEL, log_filename)
 
 articles = []
 with open(r"pipeline\tmp\preprocessed_articles.json", "r", encoding="utf-8") as f:
@@ -29,9 +36,8 @@ k_cluster = hdpmodel.model.live_k
 cluster_model = KMeans(n_clusters=int(k_cluster))
 cluster_model.fit(vecs)
 silhouette_avg = metrics.silhouette_score(vecs, cluster_model.labels_)
-print("Number of clusters: %d" % k_cluster)
-print("Silhouette Coefficient: %0.3f" % silhouette_avg)
-print("----------------------")
+logger.info(f"Number of clusters: {k_cluster}")
+logger.info(f"Silhouette Coefficient: {silhouette_avg}")
 
 # PRINT OUT RESULT
 for index, article in enumerate(articles):
@@ -47,6 +53,7 @@ for article in articles:
 sorted_topic = sorted(topic_articles.items(), key=lambda x: len(x[1]), reverse=False)
 
 for topic in sorted_topic:
-    print(f"\nTopic {topic[0]}")
+    log_string = f"Topic {topic[0]}: {len(topic[1])} articles\n"
     for article in topic[1]:
-        print("\t", article["source"], "\t", article["title"])
+        log_string += f'\t{article["source"]}\t{article["title"]}\n'
+    logger.info(log_string)
