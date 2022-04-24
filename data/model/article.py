@@ -32,6 +32,9 @@ class Comment:
     def __hash__(self):
         return hash(self.id)
 
+    def __eq__(self, __o: object) -> bool:
+        return self.id == __o.id
+
     def __getitem__(self, key):
         return self.replies[key]
 
