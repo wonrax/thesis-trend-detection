@@ -67,9 +67,6 @@ class Article:
         comments: List[Comment] = [],
         category=None,
         likes: int = None,
-        comment_negative_rate: float = None,
-        comment_positive_rate: float = None,
-        comment_neutral_rate: float = None,
     ):
 
         self.id = id
@@ -85,9 +82,6 @@ class Article:
         self.tags = tags
         self.category = category
         self.likes = likes  # Like count
-        self.comment_negative_rate = comment_negative_rate
-        self.comment_positive_rate = comment_positive_rate
-        self.comment_neutral_rate = comment_neutral_rate
 
     def __str__(self):
         return (
