@@ -48,9 +48,9 @@ for article in articles:
     excerpt_segmented = Preprocess.segmentize(
         article["excerpt"], stopword_list=stopword_list_for_excerpt, do_sentences=False
     )
-    content_segmented = Preprocess.segmentize(
-        article["content"], stopword_list=stopword_list, do_sentences=False
-    )
+    # content_segmented = Preprocess.segmentize(
+    #     article["content"], stopword_list=[], do_sentences=False
+    # )
     title_segmented = Preprocess.segmentize(
         article["title"], do_sentences=False, stopword_list=stopword_list
     )
@@ -62,10 +62,28 @@ for article in articles:
             title_segmented["tokens"],
             excerpt_segmented["tokens"],
             excerpt_segmented["sentences"],
-            content_segmented["tokens"],
-            content_segmented["sentences"],
+            # content_segmented["tokens"],
+            # content_segmented["sentences"],
         )
     )
+
+
+# Remove unimportant word using tfidf
+from gensim.models import TfidfModel
+from gensim.corpora import Dictionary
+
+tokens = [a.excerpt_segmented_tokens for a in processed_articles]
+dct = Dictionary(tokens)  # fit dictionary
+corpus = [dct.doc2bow(line) for line in tokens]  # convert corpus to BoW format
+model = TfidfModel(corpus)  # fit model
+THRESHOLD = 0.1
+
+for index, article in enumerate(tokens):
+    filtered_doc = []
+    for word_index, score in enumerate(model[corpus[index]]):
+        if score[1] > THRESHOLD:
+            filtered_doc.append(article[word_index])
+    processed_articles[index].excerpt_segmented_tokens = filtered_doc
 
 # dump processed_articles to json
 with open("pipeline/tmp/preprocessed_articles.json", "w", encoding="utf-8") as f:

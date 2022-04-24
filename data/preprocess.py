@@ -88,13 +88,21 @@ class Preprocess:
         if do_tokens:
             for paragraph in segmented:
                 for word in paragraph:
-                    if word["form"] not in stopword_list and word["posTag"] in [
-                        "N",
-                        "V",
-                        "A",
-                        "Np",
-                        "M",
-                    ]:
+                    if (
+                        word["form"] not in stopword_list
+                        and len(word["form"]) > 1
+                        and word["posTag"]
+                        in [
+                            "N",
+                            "V",
+                            # "A",
+                            "Np",
+                            "M",
+                            # "Ny",
+                            # "Nb",
+                            # "Vb"
+                        ]
+                    ):
                         tokens.append(word["form"])
 
         return {

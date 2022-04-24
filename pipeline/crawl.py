@@ -26,12 +26,12 @@ assert os.path.isdir(STORAGE_PATH)
 # Set up logger
 log_filename = f"{BASE_PATH}/logs/{__name__}.log"
 LOG_LEVEL = logging.DEBUG
-logger = get_logger(__name__, logging.DEBUG, log_filename)
+logger = get_logger("crawl", logging.DEBUG, log_filename)
 
 # Date range to crawl
 end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-start_date = end_date - datetime.timedelta(days=2)
-start_date = end_date
+start_date = end_date - datetime.timedelta(days=1)
+# start_date = end_date
 
 
 def start_crawl_thread(crawler, queue):
