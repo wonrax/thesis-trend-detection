@@ -1,6 +1,6 @@
-import sys
-
-sys.path.append(".")
+if __name__ == "__main__":
+    import sys
+    sys.path.append(".")
 
 from data.preprocess import Preprocess
 from typing import List
