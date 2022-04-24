@@ -11,7 +11,7 @@ import logging
 
 # Set up logger
 log_filename = f"pipeline/logs/{__name__}.log"
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.DEBUG # Log level for stdout
 logger = get_logger(__name__, LOG_LEVEL, log_filename)
 
 articles = []

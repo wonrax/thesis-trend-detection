@@ -17,8 +17,11 @@ import time
 import logging
 from pipeline.logger import get_logger
 
-BASE_PATH = "pipeline"  # For log files
 
+# Set up logger
+log_filename = f"pipeline/logs/{__name__}.log"
+LOG_LEVEL = logging.DEBUG # Log level for stdout
+logger = get_logger(__name__, LOG_LEVEL, log_filename)
 
 def crawl(
     crawler_engines,
@@ -28,10 +31,6 @@ def crawl(
     do_crawl_comment=False,
     do_db_store=False,
 ):
-
-    # Set up logger
-    log_filename = f"{BASE_PATH}/logs/{__name__}.log"
-    logger = get_logger("crawl", logging.DEBUG, log_filename)
 
     # Date range to crawl
     assert days > 0
@@ -53,8 +52,6 @@ def crawl(
             # Crawl all urls first
             urls = []
             for category in categories:
-                if category is Category.MOI_NHAT:
-                    continue
                 config = {
                     "category": category,
                     "do_crawl_comment": do_crawl_comment,
