@@ -1,6 +1,6 @@
-import sys
-
-sys.path.append(".")
+if __name__ == "__main__":
+    import sys
+    sys.path.append(".")
 
 from data.crawler.tuoitre import TuoiTreCrawler
 from data.crawler.vnexpress import VnExpressCrawler

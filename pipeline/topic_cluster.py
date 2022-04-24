@@ -1,6 +1,6 @@
-import sys
-
-sys.path.append(".")
+if __name__ == "__main__":
+    import sys
+    sys.path.append(".")
 
 import json
 from models.topic import TopicModel
