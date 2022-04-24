@@ -93,15 +93,17 @@ class Preprocess:
                         and len(word["form"]) > 1
                         and word["posTag"]
                         in [
-                            "N",
-                            "V",
-                            # "A",
-                            "Np",
-                            "M",
-                            # "Ny",
-                            # "Nb",
-                            # "Vb"
+                            "N",  # Noun
+                            "V",  # Verb
+                            "Np",  # Proper noun (e.g. "Việt Nam")
+                            "M",  # Numeric (e.g. "34")
+                            # "A",  # Adjective
+                            # "Ny", # Noun Abbreviation (e.g. "WTO")
+                            # "Nb", # Noun borrowed (e.g. Internet)
+                            # "Vb"  # Verb borrowed (e.g. "chat")
                         ]
+                        # See more POS tag description:
+                        # https://github.com/vncorenlp/VnCoreNLP/blob/master/VLSP2013_POS_tagset.pdf
                     ):
                         tokens.append(word["form"])
 

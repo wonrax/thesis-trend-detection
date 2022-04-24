@@ -27,3 +27,10 @@ def get_logger(
         logger.addHandler(file_handler)
 
     return logger
+
+
+def get_common_logger(name: str):
+    log_filename = f"pipeline/logs/{name}.log"
+    LOG_LEVEL = logging.DEBUG  # Log level for stdout
+    logger = get_logger(name, LOG_LEVEL, log_filename)
+    return logger

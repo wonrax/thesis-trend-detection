@@ -1,5 +1,6 @@
 if __name__ == "__main__":
     import sys
+
     sys.path.append(".")
 
 from data.crawler.tuoitre import TuoiTreCrawler
@@ -14,14 +15,12 @@ from zoneinfo import ZoneInfo
 import threading
 from queue import Queue, Empty
 import time
-import logging
-from pipeline.logger import get_logger
+from pipeline.logger import get_common_logger
 
 
 # Set up logger
-log_filename = f"pipeline/logs/{__name__}.log"
-LOG_LEVEL = logging.DEBUG # Log level for stdout
-logger = get_logger(__name__, LOG_LEVEL, log_filename)
+logger = get_common_logger(__name__)
+
 
 def crawl(
     crawler_engines,
