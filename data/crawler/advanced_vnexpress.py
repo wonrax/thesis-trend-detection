@@ -373,6 +373,8 @@ if __name__ == "__main__":
         a = crawler.get_article(a_url)
         if a is not None:
             with open(
-                "data/vnexpress_suc_khoe/{}.json".format(a.id), "w", encoding="utf8"
+                "data/vnexpress_suc_khoe/{}.json".format(a.id_source),
+                "w",
+                encoding="utf8",
             ) as f:
                 json.dump(a.to_dict(), f, ensure_ascii=False, indent=4)

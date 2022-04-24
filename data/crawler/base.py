@@ -91,18 +91,18 @@ class Crawler:
             pub_date = parse(pub_date)
 
         return Article(
-            id=self.get_id_by_url(url),
+            id_source=self.get_id_by_url(url),
             source=self.SOURCE_NAME,
             title=article.title,
             date=pub_date,
             tags=list(article.tags),
-            author=article.authors,
+            authors=article.authors,
             excerpt=article.meta_description,
             content=article.text,
             url=url,
             img_url=article.top_img,
             comments=[],
-            category=self.category,
+            category=str(self.category),
             likes=None,
         )
 

@@ -11,3 +11,4 @@ phobert-base
 scripts/
 tmp/
 logs/
+db-data/

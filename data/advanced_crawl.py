@@ -38,7 +38,7 @@ def crawl(
     if extend:
         write_mode = "a"
         loaded_articles: list[Article] = FileStorage.load(args.file)
-        crawled_ids = set([(a.source, a.id) for a in loaded_articles])
+        crawled_ids = set([(a.source, a.id_source) for a in loaded_articles])
 
     crawlers_engine = []
     if "tuoitre" in crawlers:
