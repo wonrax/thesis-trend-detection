@@ -20,7 +20,14 @@ from pipeline.logger import get_logger
 BASE_PATH = "pipeline"  # For log files
 
 
-def crawl(crawler_engines, categories, days=1, do_db_store=False):
+def crawl(
+    crawler_engines,
+    categories,
+    days=1,
+    delay=1,
+    do_crawl_comment=False,
+    do_db_store=False,
+):
 
     # Set up logger
     log_filename = f"{BASE_PATH}/logs/{__name__}.log"
@@ -50,8 +57,8 @@ def crawl(crawler_engines, categories, days=1, do_db_store=False):
                     continue
                 config = {
                     "category": category,
-                    "do_crawl_comment": False,
-                    "delay": 0.5,
+                    "do_crawl_comment": do_crawl_comment,
+                    "delay": delay,
                     "logger": logger,
                 }
                 _crawler = crawler(**config)
@@ -127,6 +134,11 @@ if __name__ == "__main__":
     categories = [category for category in Category]
     categories.remove(Category.MOI_NHAT)
 
-    categories = [Category.PHAP_LUAT]
-
-    crawl(crawler_engines, categories, days=1, do_db_store=True)
+    crawl(
+        crawler_engines,
+        categories,
+        days=3,
+        delay=1,
+        do_crawl_comment=False,
+        do_db_store=True,
+    )
