@@ -127,7 +127,7 @@ def main():
     connect(host=DATABASE_URL)
 
     end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-    start_date = end_date - datetime.timedelta(hours=8)
+    start_date = end_date - datetime.timedelta(days=1)
 
     articles = Article.objects.filter(date__gte=start_date, date__lte=end_date)
     processed_articles = preprocess_articles(articles)

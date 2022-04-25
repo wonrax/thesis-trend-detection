@@ -6,7 +6,7 @@ from datetime import datetime
 class CommentAnalysis(EmbeddedDocument):
     """Document that contains analysis on a comment."""
 
-    comment_id = ObjectIdField(required=True, unique=True)
+    comment_id = ObjectIdField(required=True)
     id_source = StringField(required=True, null=False)
     sentiment = IntField(null=True, choices=(-1, 0, 1))  # NEG, NEU, POS
     replies = ListField(ReferenceField("self"), null=True)
@@ -16,7 +16,7 @@ class ArticleAnalysis(EmbeddedDocument):
     """Document that contains analysis on an article."""
 
     original_article = ReferenceField(Article, required=True, null=False)
-    id_source = StringField(required=True, unique_with="source")
+    id_source = StringField(required=True)
     source = StringField(required=True)
     comments_negative_rate = FloatField(null=True)
     comments_positive_rate = FloatField(null=True)
