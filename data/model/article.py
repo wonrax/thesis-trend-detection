@@ -7,7 +7,7 @@ class Comment(EmbeddedDocument):
     User comment in an article.
     """
 
-    oid = ObjectIdField(required=True, default=ObjectId, unique=True, primary_key=True)
+    oid = ObjectIdField(default=ObjectId, null=False)
     # ID got from news source
     id_source = StringField(required=True, null=False)
     author = StringField(null=True)
