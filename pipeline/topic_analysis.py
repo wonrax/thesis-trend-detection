@@ -107,6 +107,7 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     average_positive_rate = None
 
     # TODO add distance to centroid as a factor
+    # TODO DO NOT sort if only one article
     for article in analysed_articles:
         score = 0
         articleObject: Article = article.original_article
@@ -143,6 +144,7 @@ def analyse_category(
         analysed_topics.append(analyse_topic(articles_of_a_topic))
 
     # TODO find another, smarter way to sort the topics by relevance
+    # TODO DO NOT sort if only one topic
     topic_scores: List[tuple[TopicAnalysis, int]] = []
     for topic in analysed_topics:
         topic_scores.append((topic, len(topic.articles)))
