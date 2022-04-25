@@ -14,7 +14,18 @@ from typing import List
 logger = get_common_logger(__name__)
 
 
-def topic_analysis(articles: List[PreprocessedArticle]):
+def topic_cluster(
+    articles: List[PreprocessedArticle],
+) -> dict[int, List[PreprocessedArticle]]:
+    """Cluster articles into topics using Topic model and KMeans.
+
+    Args:
+        articles (List[PreprocessedArticle]): List of articles to cluster.
+
+    Returns:
+        dict[int, List[PreprocessedArticle]]: Topic ids and associated articles.
+    """
+
     # FILTERING
     articles = list(filter(lambda x: x.excerpt_segmented_tokens, articles))
     corpus = [article.excerpt_segmented_tokens for article in articles]
@@ -66,7 +77,7 @@ if __name__ == "__main__":
     articles = Article.objects.filter(date__gte=start_date, date__lte=end_date)
     processed_articles = preprocess_articles(articles)
 
-    topic_articles = topic_analysis(processed_articles)
+    topic_articles = topic_cluster(processed_articles)
 
     sorted_topic = sorted(
         topic_articles.items(), key=lambda x: len(x[1]), reverse=False
