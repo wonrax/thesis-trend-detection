@@ -80,3 +80,8 @@ class TopicModel:
             docs_vector.append(self.model.infer(_doc)[0])
 
         return docs_vector
+
+    def evaluate(self, metric="u_mass"):
+        assert self.model
+        coherence = tp.coherence.Coherence(self.model, coherence=metric)
+        return coherence.get_score()

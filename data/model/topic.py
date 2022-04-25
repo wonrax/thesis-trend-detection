@@ -35,9 +35,17 @@ class TopicAnalysis(EmbeddedDocument):
     average_neutral_rate = FloatField(null=True)
 
 
+class Metrics(EmbeddedDocument):
+    """Document that contains metrics."""
+
+    silhouette_coefficient = FloatField(null=True)
+    topic_coherence = FloatField(null=True)
+
+
 class CategoryAnalysis(Document):
     """Document that contains analysed topics of a category (e.g. SUC_KHOE, PHAP_LUAT)."""
 
     topics = ListField(EmbeddedDocumentField(TopicAnalysis), required=True)
     category = StringField(required=True, null=False)
     creation_date = DateTimeField(required=True, default=datetime.utcnow)
+    metrics = EmbeddedDocumentField(Metrics, null=True)

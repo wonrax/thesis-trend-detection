@@ -11,7 +11,7 @@ from typing import List
 from bson.objectid import ObjectId
 
 # Set up logger
-logger = get_common_logger(__name__)
+logger = get_common_logger()
 
 
 class PreprocessedComment:

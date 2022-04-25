@@ -11,7 +11,7 @@ from pipeline.preprocess import PreprocessedArticle
 from typing import List
 
 # Set up logger
-logger = get_common_logger(__name__)
+logger = get_common_logger()
 
 
 def topic_cluster(
@@ -35,10 +35,14 @@ def topic_cluster(
     logger.info("Started training topic model.")
     hdpmodel = TopicModel(logger=logger)
     hdpmodel.train(corpus, initial_k=len(corpus), iteration=2000)
+    coherence_score = hdpmodel.evaluate("u_mass")
     vecs = hdpmodel.vectorize(corpus)
+    logger.info(
+        f"Finished training topic model. Coherence score (u_mass): {coherence_score}"
+    )
 
     # CLUSTERING
-    num_topics = min(hdpmodel.model.live_k, len(corpus))
+    num_topics = min(hdpmodel.model.live_k, len(corpus) - 1)
     logger.info("Started clustering articles.")
     logger.info(f"Number of clusters: {num_topics}")
     cluster_model = KMeans(n_clusters=num_topics)
@@ -57,7 +61,7 @@ def topic_cluster(
             topic_articles[label] = []
         topic_articles[label].append(article)
 
-    return topic_articles
+    return topic_articles, coherence_score, silhouette_avg
 
 
 # For testing purpose
@@ -66,7 +70,7 @@ def main():
 
     processed_articles, category = preprocess_main()
 
-    topic_articles = topic_cluster(processed_articles)
+    topic_articles, coherence_score, silhouette_avg = topic_cluster(processed_articles)
 
     sorted_topic = sorted(
         topic_articles.items(), key=lambda x: len(x[1]), reverse=False
@@ -78,7 +82,7 @@ def main():
             log_string += f"\t{article.source}\t{article.title}\n"
         logger.debug(log_string)
 
-    return topic_articles, category
+    return topic_articles, category, coherence_score, silhouette_avg
 
 
 if __name__ == "__main__":

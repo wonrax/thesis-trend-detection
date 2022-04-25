@@ -19,7 +19,7 @@ from pipeline.logger import get_common_logger
 
 
 # Set up logger
-logger = get_common_logger(__name__)
+logger = get_common_logger()
 
 
 def crawl(

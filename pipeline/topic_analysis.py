@@ -11,13 +11,14 @@ from data.model.topic import (
     TopicAnalysis,
     ArticleAnalysis,
     CommentAnalysis,
+    Metrics,
 )
 from data.model.article import Article, Comment
 from typing import List
 import datetime
 
 # Set up logger
-logger = get_common_logger(__name__)
+logger = get_common_logger()
 
 
 def analyse_comment(comment: Comment) -> CommentAnalysis:
@@ -160,9 +161,14 @@ def analyse_category(
 def main():
     from pipeline.topic_cluster import main as topic_cluster_main
 
-    topic_articles, category = topic_cluster_main()
+    topic_articles, category, coherence_score, silhouette_avg = topic_cluster_main()
     category_analysis = analyse_category(category, topic_articles)
 
+    metrics = Metrics(
+        silhouette_coefficient=silhouette_avg,
+        topic_coherence=coherence_score,
+    )
+    category_analysis.metrics = metrics
     category_analysis.save()
 
 
