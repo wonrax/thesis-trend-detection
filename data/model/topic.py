@@ -3,20 +3,19 @@ from data.model.article import Article, Comment
 from datetime import datetime
 
 
-class Comment(EmbeddedDocument):
+class CommentAnalysis(EmbeddedDocument):
     """Document that contains analysis on a comment."""
 
-    comment_id = ReferenceField(Comment, required=True, unique=True)
+    comment_id = ObjectIdField(required=True, unique=True)
     id_source = StringField(required=True, null=False)
-    negative_rate = FloatField(null=True)
-    positive_rate = FloatField(null=True)
-    neutral_rate = FloatField(null=True)
+    sentiment = IntField(null=True, choices=(-1, 0, 1))  # NEG, NEU, POS
+    replies = ListField(ReferenceField("self"), null=True)
 
 
 class ArticleAnalysis(EmbeddedDocument):
     """Document that contains analysis on an article."""
 
-    article_id = ReferenceField(Article, required=True, null=False)
+    original_article = ReferenceField(Article, required=True, null=False)
     id_source = StringField(required=True, unique_with="source")
     source = StringField(required=True)
     comments_negative_rate = FloatField(null=True)

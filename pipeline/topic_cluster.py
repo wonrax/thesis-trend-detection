@@ -60,22 +60,11 @@ def topic_cluster(
     return topic_articles
 
 
-if __name__ == "__main__":
-    from pipeline.constants import DATABASE_URL
-    from mongoengine import connect
-    from zoneinfo import ZoneInfo
-    from data.model.article import Article
-    from pipeline.preprocess import preprocess_articles
-    import datetime
+# For testing purpose
+def main():
+    from pipeline.preprocess import main as preprocess_main
 
-    assert DATABASE_URL
-    connect(host=DATABASE_URL)
-
-    end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-    start_date = end_date - datetime.timedelta(days=1)
-
-    articles = Article.objects.filter(date__gte=start_date, date__lte=end_date)
-    processed_articles = preprocess_articles(articles)
+    processed_articles, category = preprocess_main()
 
     topic_articles = topic_cluster(processed_articles)
 
@@ -88,3 +77,9 @@ if __name__ == "__main__":
         for article in topic[1]:
             log_string += f"\t{article.source}\t{article.title}\n"
         logger.debug(log_string)
+
+    return topic_articles, category
+
+
+if __name__ == "__main__":
+    main()

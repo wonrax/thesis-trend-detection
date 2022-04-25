@@ -37,7 +37,7 @@ class PreprocessedArticle:
         source: str,
         title: str,
         excerpt_segmented_tokens: List[str] = None,
-        content_segmented_tokens: List[str] = None,
+        content_segmented_sentences: str = None,
         comments: List[PreprocessedComment] = None,
     ) -> None:
         self.id_mongo = id_mongo
@@ -45,7 +45,7 @@ class PreprocessedArticle:
         self.source = source
         self.title = title
         self.excerpt_segmented_tokens = excerpt_segmented_tokens
-        self.content_segmented_tokens = content_segmented_tokens
+        self.content_segmented_sentences = content_segmented_sentences
 
         if comments is None:
             self.comments = []
@@ -72,9 +72,14 @@ def preprocess_articles(articles: List[Article]):
     logger.info(f"Segmentizing...")
     for article in articles:
         excerpt_segmented = Preprocess.segmentize(
-            article["excerpt"],
+            article.excerpt,
             stopword_list=stopword_list_for_excerpt,
             do_sentences=False,
+        )
+        content_segmented = Preprocess.segmentize(
+            article.content,
+            stopword_list=stopword_list,
+            do_tokens=False,
         )
         processed_articles.append(
             PreprocessedArticle(
@@ -83,6 +88,7 @@ def preprocess_articles(articles: List[Article]):
                 source=article.source,
                 title=article.title,
                 excerpt_segmented_tokens=excerpt_segmented["tokens"],
+                content_segmented_sentences=content_segmented["sentences"],
             )
         )
 
@@ -108,10 +114,12 @@ def preprocess_articles(articles: List[Article]):
     return processed_articles
 
 
-if __name__ == "__main__":
+# For testing purpose
+def main():
     from pipeline.constants import DATABASE_URL
     from mongoengine import connect
     from zoneinfo import ZoneInfo
+    from data.model.category import Category
     import datetime
     import json
 
@@ -119,7 +127,7 @@ if __name__ == "__main__":
     connect(host=DATABASE_URL)
 
     end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-    start_date = end_date - datetime.timedelta(days=1)
+    start_date = end_date - datetime.timedelta(hours=8)
 
     articles = Article.objects.filter(date__gte=start_date, date__lte=end_date)
     processed_articles = preprocess_articles(articles)
@@ -132,3 +140,9 @@ if __name__ == "__main__":
             default=str,
             ensure_ascii=False,
         )
+
+    return processed_articles, Category.MOI_NHAT
+
+
+if __name__ == "__main__":
+    main()
