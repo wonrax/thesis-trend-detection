@@ -133,7 +133,7 @@ if __name__ == "__main__":
     crawl(
         crawler_engines,
         categories,
-        days=3,
+        days=1,
         delay=1,
         do_crawl_comment=False,
         do_db_store=True,

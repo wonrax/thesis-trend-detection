@@ -1,6 +1,6 @@
-from enum import Enum
 from newspaper import Article as NewspaperArticle
 from ..model.article import Article, Comment
+from ..model.category import Category
 import time
 from typing import List
 import unicodedata
@@ -8,20 +8,6 @@ from dateutil.parser import parse
 import datetime
 from zoneinfo import ZoneInfo
 import logging
-
-
-class Category(Enum):
-    SUC_KHOE = 1
-    MOI_NHAT = 2
-    THE_GIOI = 3
-    THOI_SU = 4
-    VAN_HOA = 5
-    CONG_NGHE = 6
-    THE_THAO = 7
-    GIAO_DUC = 8
-    GIAI_TRI = 9
-    KINH_DOANH = 10
-    PHAP_LUAT = 11
 
 
 class Crawler:
