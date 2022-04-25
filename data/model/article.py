@@ -1,4 +1,5 @@
 from mongoengine import *
+from bson.objectid import ObjectId
 
 
 class Comment(EmbeddedDocument):
@@ -6,6 +7,7 @@ class Comment(EmbeddedDocument):
     User comment in an article.
     """
 
+    oid = ObjectIdField(required=True, default=ObjectId, unique=True, primary_key=True)
     # ID got from news source
     id_source = StringField(required=True, null=False)
     author = StringField(null=True)
