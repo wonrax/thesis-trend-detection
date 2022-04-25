@@ -4,7 +4,7 @@ export type Article = {
   title?: string;
   articleUrl?: string;
   description?: string;
-  publishDate?: Date;
+  publishDate?: string;
   sourceName?: string;
   sourceLogoUrl?: string;
   positiveRate?: number;

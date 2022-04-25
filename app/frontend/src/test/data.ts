@@ -48,7 +48,9 @@ function getRandomArticle(): Article {
     description:
       Math.random() > 0.1 ? loremGenerator.generateSentences(2) : undefined,
     publishDate:
-      Math.random() > 0.01 ? getRandomDate(oneDayAgo, now) : undefined,
+      Math.random() > 0.01
+        ? getRandomDate(oneDayAgo, now).toISOString()
+        : undefined,
     sourceName:
       Math.random() > 0.1
         ? formatTitleCase(

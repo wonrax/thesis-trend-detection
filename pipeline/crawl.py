@@ -39,7 +39,7 @@ def crawl(
     # Check database connection
     if do_db_store:
         from mongoengine import connect
-        from pipeline.constants import DATABASE_URL
+        from common.constants import DATABASE_URL
 
         assert DATABASE_URL
         connect(host=DATABASE_URL)

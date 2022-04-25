@@ -21,11 +21,11 @@ export const TopicSection = ({
       {articles &&
         articles.length > 0 &&
         articles.map((article, index) => (
-          <>
+          <div key={article.id}>
             {index == 0 && <Divider />}
-            <ArticleCard showThumbnail article={article} />
+            <ArticleCard article={article} />
             {(hasMore || index < articles.length - 1) && <Divider />}
-          </>
+          </div>
         ))}
       {hasMore && (
         <div className="py-4 group hover:cursor-pointer">

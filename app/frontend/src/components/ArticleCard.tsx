@@ -164,7 +164,7 @@ const NewsSourceBar = ({
 }: {
   sourceLogoUrl?: string;
   sourceName?: string;
-  publishDate?: Date;
+  publishDate?: string;
 }) => {
   return (
     <div className="flex flex-row items-center space-x-1">

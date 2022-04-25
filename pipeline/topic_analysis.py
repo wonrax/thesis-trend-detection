@@ -39,8 +39,7 @@ def analyse_comment(comment: Comment) -> CommentAnalysis:
     replies = [analyse_comment(reply) for reply in comment.replies]
 
     return CommentAnalysis(
-        comment_id=comment.id,
-        id_source=comment.id_source,
+        original_comment=comment,
         sentiment=None,
         replies=replies,
     )
@@ -74,8 +73,6 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
 
     return ArticleAnalysis(
         original_article=articleObject,
-        id_source=articleObject.id_source,
-        source=articleObject.source,
         comments_negative_rate=comments_negative_rate,
         comments_neutral_rate=comments_neutral_rate,
         comments_positive_rate=comments_positive_rate,
@@ -97,7 +94,7 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     now = datetime.datetime.utcnow()
 
     analysed_articles = [analyse_article(article) for article in articles]
-    article_scores: List[tuple[ArticleAnalysis, int]] = []
+    article_scores: List[tuple[ArticleAnalysis, float]] = []
 
     # TODO choose the most popular keywords from the articles' keywords
     keywords = None
@@ -110,7 +107,7 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     # TODO add distance to centroid as a factor
     # TODO DO NOT sort if only one article
     for article in analysed_articles:
-        score = 0
+        score: float = 0
         articleObject: Article = article.original_article
         likes = articleObject.likes
         date = articleObject.date
@@ -120,8 +117,8 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         if num_comments:
             score += num_comments * 2
         if date:
-            relative_minutes: int = int((now - date).seconds / 60) + 1
-            score += int(10000 / relative_minutes)
+            relative_minutes: float = (now - date).seconds / 60 + 1
+            score += 10000 / relative_minutes
         article_scores.append((article, score))
 
     # sort by score

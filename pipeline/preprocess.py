@@ -116,7 +116,7 @@ def preprocess_articles(articles: List[Article]):
 
 # For testing purpose
 def main():
-    from pipeline.constants import DATABASE_URL
+    from common.constants import DATABASE_URL
     from mongoengine import connect
     from zoneinfo import ZoneInfo
     from data.model.category import Category
@@ -127,7 +127,7 @@ def main():
     connect(host=DATABASE_URL)
 
     end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
-    start_date = end_date - datetime.timedelta(days=1)
+    start_date = end_date - datetime.timedelta(days=1.5)
 
     articles = Article.objects.filter(date__gte=start_date, date__lte=end_date)
     processed_articles = preprocess_articles(articles)
