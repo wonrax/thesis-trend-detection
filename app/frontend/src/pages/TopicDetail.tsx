@@ -7,13 +7,23 @@ import { useParams } from "react-router-dom";
 
 export const TopicDetail = () => {
   const [topic, setTopic] = useState<Topic>();
+  const [loading, setLoading] = useState<boolean>(true);
   const { id, index } = useParams();
 
   useEffect(() => {
     axios.get(`http://localhost:5000/topic/${id}/${index}`).then((res) => {
       setTopic(res.data);
+      setLoading(false);
     });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
+        <Text fontSize="lg">Đang tải...</Text>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-gray-0">

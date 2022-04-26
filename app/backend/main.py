@@ -19,10 +19,24 @@ from flask_cors import CORS
 from datetime import timezone
 
 
-category_mappings = {}
+CATEGORY_TO_ID = {}
 for category in Category:
     key = str(category).split(".")[-1].lower()
-    category_mappings[key] = category
+    CATEGORY_TO_ID[key] = category
+
+CATEGORY_TO_HUMAN_READABLE = {
+    "suc_khoe": "Sức khỏe",
+    "moi_nhat": "Mới nhất",
+    "the_gioi": "Thế giới",
+    "thoi_su": "Thời sự",
+    "van_hoa": "Văn hóa",
+    "cong_nghe": "Công nghệ",
+    "the_thao": "Thể thao",
+    "giao_duc": "Giáo dục",
+    "giai_tri": "Giải trí",
+    "kinh_doanh": "Kinh doanh",
+    "phap_luat": "Pháp luật",
+}
 
 app = Flask(__name__)
 api = Api(app)
@@ -60,6 +74,7 @@ class RestfulTrend:
     topics: List[RestfulTopic]
     creationDate: str
     categoryName: str
+    availableCategories: dict[str, str]  # e.g. {suc-khoe: "Sức khỏe"}
 
 
 def capitalize_first_letter(string) -> str:
@@ -68,11 +83,10 @@ def capitalize_first_letter(string) -> str:
 
 class Trending(Resource):
     def get(self, category):
-        if category.lower() in category_mappings:
+        category = category.lower().replace("-", "_")
+        if category in CATEGORY_TO_ID:
             category_analysis = (
-                CategoryAnalysis.objects.filter(
-                    category=str(category_mappings[category.lower()])
-                )
+                CategoryAnalysis.objects.filter(category=str(CATEGORY_TO_ID[category]))
                 .order_by("-creation_date")
                 .first()
             )
@@ -119,11 +133,20 @@ class Trending(Resource):
                 if len(topics) > 35:
                     break
 
+            categories = CategoryAnalysis.objects.distinct(field="category")
+            availableCategories = {}
+            for c in categories:
+                c = c.split(".")[-1].lower()
+                availableCategories[
+                    c.replace("_", "-")
+                ] = CATEGORY_TO_HUMAN_READABLE[c]
+
             result = RestfulTrend(
                 id=str(category_analysis.id),
                 topics=topics,
                 creationDate=category_analysis.creation_date.isoformat(),
-                categoryName=category.lower(),
+                categoryName=CATEGORY_TO_HUMAN_READABLE[category],
+                availableCategories=availableCategories,
             )
 
             return dataclasses.asdict(result)

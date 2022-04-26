@@ -1,5 +1,6 @@
 import React from "react";
-import { Homepage } from "./pages/Homepage";
+import { useState } from "react";
+import { TrendPage } from "./pages/TrendPage";
 import "./App.css";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
@@ -8,6 +9,7 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TopicDetail } from "./pages/TopicDetail";
+import Trend from "./models/Trend";
 
 // Need init only once
 dayjs.locale("vi");
@@ -15,11 +17,29 @@ dayjs.extend(relativeTime);
 dayjs.extend(timezone);
 dayjs.extend(utc);
 
+function RedirectToHomepage() {
+  location.href = "/moi-nhat";
+  return null;
+}
+
 function App() {
+  const [trend, setTrend] = useState<Trend>();
+  const [scrollPosition, setScrollPosition] = useState(0);
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Homepage />} />
+        <Route path="/" element={<RedirectToHomepage />} />
+        <Route
+          path="/:trendCategory"
+          element={
+            <TrendPage
+              trend={trend}
+              setTrend={setTrend}
+              scrollPosition={scrollPosition}
+              setScrollPosition={setScrollPosition}
+            />
+          }
+        />
         <Route path="/topic/:id/:index" element={<TopicDetail />} />
       </Routes>
     </BrowserRouter>

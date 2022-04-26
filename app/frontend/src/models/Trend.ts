@@ -5,6 +5,7 @@ export type Trend = {
   topics: Topic[];
   creationDate: Date;
   categoryName: string;
+  availableCategories?: { [key: string]: string };
 };
 
 export default Trend;
