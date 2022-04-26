@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import Text from "./Text";
 import Article from "../models/Article";
 import classNames from "classnames";
+import { capitalizeFirstLetter } from "../utils/string";
 
 export const ArticleCard = ({
   article,
@@ -195,8 +196,5 @@ const NewsSourceBar = ({
     </div>
   );
 };
-
-const capitalizeFirstLetter = (str: string) =>
-  str.charAt(0).toUpperCase() + str.slice(1);
 
 export default ArticleCard;

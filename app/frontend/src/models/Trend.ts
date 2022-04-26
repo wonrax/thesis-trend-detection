@@ -1,9 +1,10 @@
 import Topic from "./Topic";
 
-export type Category = {
+export type Trend = {
+  id: string;
   topics: Topic[];
   creationDate: Date;
   categoryName: string;
 };
 
-export default Category;
+export default Trend;

@@ -134,7 +134,7 @@ if __name__ == "__main__":
         crawler_engines,
         categories,
         days=1,
-        delay=1,
+        delay=0.5,
         do_crawl_comment=False,
         do_db_store=True,
     )

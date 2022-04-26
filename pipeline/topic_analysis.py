@@ -103,7 +103,7 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     article_scores: List[tuple[ArticleAnalysis, float]] = []
 
     # Choose the most popular keyword for each n_gram from the articles' keywords
-    keywords = []
+    topic_keywords = []
     n_gram_keywords: dict[int, dict[str, int]] = {}  # {n_gram: {keyword: count}}
     for article in analysed_articles:
         for keyword in article.keywords:
@@ -117,9 +117,19 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         sorted_keywords = sorted(
             n_gram_keywords[n_gram].items(), key=lambda x: x[1], reverse=True
         )
-        keywords.append(
+        topic_keywords.append(
             sorted_keywords[0][0]
         )  # Get the most popular keyword for each n_gram
+
+    # List of the most popular keywords in 2_grams
+    # This will be used for calculating the relevance score for each article
+    if 2 in n_gram_keywords:
+        two_grams_keywords = sorted(
+            n_gram_keywords[2].items(), key=lambda x: x[1], reverse=True
+        )
+        two_grams_keywords = [k for k, _ in two_grams_keywords][:6]
+    else:
+        two_grams_keywords = topic_keywords
 
     # TODO compute average sentiment rate for this topic
     average_negative_rate = None
@@ -141,6 +151,10 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         if date:
             relative_minutes: float = (now - date).seconds / 60 + 1
             score += 10000 / relative_minutes
+        if article.keywords:
+            for keyword in article.keywords:
+                if keyword in two_grams_keywords:
+                    score += 3000
         article_scores.append((article, score))
 
     # sort by score
@@ -148,7 +162,7 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
 
     return TopicAnalysis(
         articles=[article for article, _ in article_scores],
-        keywords=keywords,
+        keywords=topic_keywords,
         average_negative_rate=average_negative_rate,
         average_neutral_rate=average_neutral_rate,
         average_positive_rate=average_positive_rate,
@@ -158,16 +172,34 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
 def analyse_category(
     category: Category, topic_articles: dict[int, List[PreprocessedArticle]]
 ) -> CategoryAnalysis:
+
+    logger.info(f"Analyzing {len(topic_articles)} topics in {category}")
     analysed_topics = []
+
     for key in topic_articles:
         articles_of_a_topic = topic_articles[key]
         analysed_topics.append(analyse_topic(articles_of_a_topic))
+        if len(analysed_topics) % int(len(topic_articles) / 10) == 0:
+            logger.info(f"{len(analysed_topics)} topics analysed")
 
     # TODO find another, smarter way to sort the topics by relevance
     # TODO DO NOT sort if only one topic
+    now = datetime.datetime.utcnow()
     topic_scores: List[tuple[TopicAnalysis, int]] = []
     for topic in analysed_topics:
-        topic_scores.append((topic, len(topic.articles)))
+        score: float = 0
+
+        # get datetime median of topic.articles
+        datetimes = [article.original_article.date for article in topic.articles]
+        datetimes.sort()
+        delta = datetimes[-1] - datetimes[0]
+        median_datetime = datetimes[0] + delta / 2
+
+        relative_minutes: float = (now - median_datetime).seconds / 60 + 1
+        score += 1000 / relative_minutes
+        score += len(topic.articles) * 100
+
+        topic_scores.append((topic, score))
 
     topic_scores.sort(key=lambda x: x[1], reverse=True)
 
