@@ -129,7 +129,16 @@ def main():
     end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
     start_date = end_date - datetime.timedelta(days=1.5)
 
-    articles = Article.objects.filter(date__gte=start_date, date__lte=end_date)
+    categories = [Category.SUC_KHOE]
+    categories = [c for c in Category]
+    categories.remove(Category.MOI_NHAT)
+
+    articles = []
+    for category in categories:
+        articles += Article.objects.filter(
+            category=str(category), date__gte=start_date, date__lte=end_date
+        )
+
     processed_articles = preprocess_articles(articles)
 
     with open("pipeline/tmp/preprocessed_articles.json", "w", encoding="utf-8") as f:
@@ -141,7 +150,9 @@ def main():
             ensure_ascii=False,
         )
 
-    return processed_articles, Category.MOI_NHAT
+    trend_category = Category.MOI_NHAT if len(categories) > 1 else categories[0]
+
+    return processed_articles, trend_category
 
 
 if __name__ == "__main__":

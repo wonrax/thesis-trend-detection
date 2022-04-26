@@ -48,9 +48,8 @@ def crawl(
         logger.info(f"Started crawling articles from {crawler}")
         _articles = []
         try:
-            # Crawl all urls first
-            urls = []
             for category in categories:
+                urls = []
                 config = {
                     "category": category,
                     "do_crawl_comment": do_crawl_comment,
@@ -64,12 +63,17 @@ def crawl(
                     logger.exception(
                         f"Error when crawling {_crawler.SOURCE_NAME} with category {_crawler.category}, skipping..."
                     )
-            urls = list(set(urls))
+                urls = list(set(urls))
 
-            # Crawl articles
-            _articles = _crawler.crawl_articles(urls)
+                try:
+                    # Crawl articles
+                    _articles += _crawler.crawl_articles(urls)
+                except:
+                    logger.exception(
+                        f"Error when extracting articles for {categories} of {_crawler.SOURCE_NAME}"
+                    )
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error when crawling {crawler}, skipping...")
 
         queue.put(_articles)
@@ -133,8 +137,8 @@ if __name__ == "__main__":
     crawl(
         crawler_engines,
         categories,
-        days=1,
-        delay=0.5,
+        days=2,
+        delay=0.1,
         do_crawl_comment=False,
         do_db_store=True,
     )
