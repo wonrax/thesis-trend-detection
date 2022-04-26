@@ -8,6 +8,8 @@ from data.crawler.vnexpress import VnExpressCrawler
 from data.crawler.dantri import DanTriCrawler
 from data.crawler.vietnamnet import VietnamnetCrawler
 from data.crawler.thanhnien import ThanhNienCrawler
+from data.crawler.nguoilaodong import NguoiLaoDongCrawler
+from data.crawler.zingnews import ZingNewsCrawler
 from data.crawler.base import Category
 from data.model.article import Article
 import datetime
@@ -19,7 +21,7 @@ from pipeline.logger import get_common_logger
 
 
 # Set up logger
-logger = get_common_logger()
+logger = get_common_logger("crawler")
 
 
 def crawl(
@@ -29,6 +31,7 @@ def crawl(
     delay=1,
     do_crawl_comment=False,
     do_db_store=False,
+    queue_timeout=30 * 60,  # 15 minutes
 ):
 
     # Date range to crawl
@@ -45,10 +48,10 @@ def crawl(
         connect(host=DATABASE_URL)
 
     def start_crawl_thread(crawler, queue):
-        logger.info(f"Started crawling articles from {crawler}")
         _articles = []
         try:
             for category in categories:
+                logger.info(f"Started crawling articles from {crawler} at {category}")
                 urls = []
                 config = {
                     "category": category,
@@ -83,7 +86,7 @@ def crawl(
     t1 = time.time()
 
     for crawler in crawler_engines:
-        threading.Thread(
+        t = threading.Thread(
             target=start_crawl_thread, args=(crawler, crawler_result_queue)
         ).start()
 
@@ -91,7 +94,7 @@ def crawl(
 
     for _ in crawler_engines:
         try:
-            articles += crawler_result_queue.get(timeout=15 * 60)
+            articles += crawler_result_queue.get(timeout=queue_timeout)
         except Empty:
             logger.exception(f"Timeout for {crawler.SOURCE_NAME}")
 
@@ -99,6 +102,7 @@ def crawl(
     logger.info(f"Got a total of {len(articles)} articles.")
 
     if do_db_store:
+        logger.info("Started storing articles to database...")
         for article in articles:
             try:
                 Article.objects(
@@ -129,6 +133,8 @@ if __name__ == "__main__":
         TuoiTreCrawler,
         VietnamnetCrawler,
         VnExpressCrawler,
+        NguoiLaoDongCrawler,
+        ZingNewsCrawler,
     ]
 
     categories = [category for category in Category]
@@ -138,7 +144,7 @@ if __name__ == "__main__":
         crawler_engines,
         categories,
         days=2,
-        delay=0.1,
+        delay=0.5,
         do_crawl_comment=False,
         do_db_store=True,
     )

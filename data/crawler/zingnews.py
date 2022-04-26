@@ -3,24 +3,23 @@ import datetime
 import time
 import re
 import requests
-from bs4 import BeautifulSoup
 
 
-class ThanhNienCrawler(Crawler):
+class ZingNewsCrawler(Crawler):
 
-    SOURCE_NAME = "Thanh Niên"
-    BASE_URL = "https://thanhnien.vn"
+    SOURCE_NAME = "Zing News"
+    BASE_URL = "https://zingnews.vn/"
     MAP_CATEGORY_TO_CATEGORY_ID = {
         Category.THE_GIOI: "the-gioi",
-        Category.THOI_SU: "thoi-su",
         Category.SUC_KHOE: "suc-khoe",
-        Category.VAN_HOA: "van-hoa",
-        Category.CONG_NGHE: "cong-nghe-game/tin-tuc",
+        Category.THOI_SU: "thoi-su",
+        Category.VAN_HOA: "du-lich",
+        Category.CONG_NGHE: "cong-nghe",
         Category.THE_THAO: "the-thao",
         Category.GIAO_DUC: "giao-duc",
         Category.GIAI_TRI: "giai-tri",
-        Category.KINH_DOANH: "tai-chinh-kinh-doanh",
-        Category.PHAP_LUAT: "thoi-su/phap-luat",
+        Category.KINH_DOANH: "kinh-doanh-tai-chinh",
+        Category.PHAP_LUAT: "phap-luat",
     }
 
     def get_news_list_url(self, cursor: int = 1):
@@ -30,7 +29,7 @@ class ThanhNienCrawler(Crawler):
 
         assert self.category_id is not None
 
-        return self.BASE_URL + "/{}/?trang={}".format(self.category_id, cursor)
+        return self.BASE_URL + "/{}/trang{}.html".format(self.category_id, cursor)
 
     def get_id_by_url(self, url):
         match = re.search(r"\/.*?post(\d{7,})\.html", url)
@@ -47,24 +46,15 @@ class ThanhNienCrawler(Crawler):
 
         try:
             html = requests.get(url, timeout=self.timeout).text
-            soup = BeautifulSoup(html, "html.parser")
 
-            # Get the urls in 3 sections
-            highlight_section = soup.select_one(".highlight .story")
-            feature_section = soup.select_one(".l-content .feature")
-            news_list_section = soup.select_one(".zone--timeline")
+            pattern = r"href=\"(\/.*?post\d{7,}\.html)\""
 
-            pattern = r"href=\"(https:\/\/thanhnien.vn\/.*?post\d{7,}\.html)\""
-
-            urls = []
-            for section in [highlight_section, news_list_section, feature_section]:
-                if section:
-                    urls += re.findall(pattern, str(section))
+            urls = re.findall(pattern, html)
 
             if not urls:
                 raise EmptyPageException
 
-            return urls
+            return [self.BASE_URL + url for url in urls]
         except Exception:
             self.logger.exception(
                 f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}."

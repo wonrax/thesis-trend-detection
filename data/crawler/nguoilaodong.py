@@ -3,24 +3,23 @@ import datetime
 import time
 import re
 import requests
-from bs4 import BeautifulSoup
 
 
-class ThanhNienCrawler(Crawler):
+class NguoiLaoDongCrawler(Crawler):
 
-    SOURCE_NAME = "Thanh Niên"
-    BASE_URL = "https://thanhnien.vn"
+    SOURCE_NAME = "Người Lao Động"
+    BASE_URL = "https://nld.com.vn"
     MAP_CATEGORY_TO_CATEGORY_ID = {
-        Category.THE_GIOI: "the-gioi",
-        Category.THOI_SU: "thoi-su",
-        Category.SUC_KHOE: "suc-khoe",
-        Category.VAN_HOA: "van-hoa",
-        Category.CONG_NGHE: "cong-nghe-game/tin-tuc",
-        Category.THE_THAO: "the-thao",
-        Category.GIAO_DUC: "giao-duc",
-        Category.GIAI_TRI: "giai-tri",
-        Category.KINH_DOANH: "tai-chinh-kinh-doanh",
-        Category.PHAP_LUAT: "thoi-su/phap-luat",
+        Category.THE_GIOI: "1006",
+        Category.SUC_KHOE: "1050",
+        Category.THOI_SU: "1002",
+        Category.VAN_HOA: "1020",
+        Category.CONG_NGHE: "1317",
+        Category.THE_THAO: "1026",
+        Category.GIAO_DUC: "1017",
+        Category.GIAI_TRI: "1588",
+        Category.KINH_DOANH: "1014",
+        Category.PHAP_LUAT: "1019",
     }
 
     def get_news_list_url(self, cursor: int = 1):
@@ -30,10 +29,12 @@ class ThanhNienCrawler(Crawler):
 
         assert self.category_id is not None
 
-        return self.BASE_URL + "/{}/?trang={}".format(self.category_id, cursor)
+        return self.BASE_URL + "/loadmorecategory-{}-{}.htm".format(
+            self.category_id, cursor
+        )
 
     def get_id_by_url(self, url):
-        match = re.search(r"\/.*?post(\d{7,})\.html", url)
+        match = re.search(r"\/.*?(\d{8,})\.htm", url)
         if match:
             return match.group(1)
         else:
@@ -47,24 +48,15 @@ class ThanhNienCrawler(Crawler):
 
         try:
             html = requests.get(url, timeout=self.timeout).text
-            soup = BeautifulSoup(html, "html.parser")
 
-            # Get the urls in 3 sections
-            highlight_section = soup.select_one(".highlight .story")
-            feature_section = soup.select_one(".l-content .feature")
-            news_list_section = soup.select_one(".zone--timeline")
+            pattern = r"href=\"(\/.*?\d{8,}\.htm)\""
 
-            pattern = r"href=\"(https:\/\/thanhnien.vn\/.*?post\d{7,}\.html)\""
-
-            urls = []
-            for section in [highlight_section, news_list_section, feature_section]:
-                if section:
-                    urls += re.findall(pattern, str(section))
+            urls = re.findall(pattern, html)
 
             if not urls:
                 raise EmptyPageException
 
-            return urls
+            return [self.BASE_URL + url for url in urls]
         except Exception:
             self.logger.exception(
                 f"Error when crawling urls in webpage at {self.SOURCE_NAME} with url {url}."

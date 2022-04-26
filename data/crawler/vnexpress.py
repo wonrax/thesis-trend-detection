@@ -24,6 +24,17 @@ class VnExpressCrawler(Crawler):
         Category.KINH_DOANH: 1003159,
         Category.PHAP_LUAT: 1001007,
     }
+    MAP_CATEGORY_TO_CATEGORY = {
+        Category.SUC_KHOE: "suc-khoe",
+        Category.THE_GIOI: "the-gioi",
+        Category.THOI_SU: "thoi-su",
+        Category.CONG_NGHE: "so-hoa",
+        Category.THE_THAO: "the-thao",
+        Category.GIAO_DUC: "giao-duc",
+        Category.GIAI_TRI: "giai-tri",
+        Category.KINH_DOANH: "kinh-doanh",
+        Category.PHAP_LUAT: "phap-luat",
+    }
 
     def get_news_list_url(
         self,
@@ -97,6 +108,20 @@ class VnExpressCrawler(Crawler):
 
         if start_date is None or end_date is None:
             start_date, end_date = self.get_datetime_today_yesterday()
+
+        if True:  # Temporarily fix for VnExpress not returning articles
+            category_str = self.MAP_CATEGORY_TO_CATEGORY[self.category]
+            index_url_base = "https://vnexpress.net/{}-p{}"
+            days = (end_date - start_date).days + 1
+            urls = []
+            for i in range(days):
+                index_url = index_url_base.format(category_str, i + 1)
+                html = requests.get(index_url, timeout=self.timeout).text
+                urls += re.findall(
+                    r"href=\"(https?:\/\/vnexpress.net\/[^\/\.]*?\d{7,}\.html)\"",
+                    html,
+                )
+            return list(set(urls))
 
         urls = []
 

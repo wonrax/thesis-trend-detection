@@ -116,7 +116,7 @@ class Trending(Resource):
                     )
                 )
 
-                if len(topics) > 15:
+                if len(topics) > 35:
                     break
 
             result = RestfulTrend(
