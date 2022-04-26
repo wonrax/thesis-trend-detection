@@ -16,6 +16,7 @@ from data.model.topic import (
 from data.model.article import Article, Comment
 from typing import List
 import datetime
+from yake import KeywordExtractor
 
 # Set up logger
 logger = get_common_logger()
@@ -68,8 +69,13 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
         # TODO: calculate sentiment rate for this post
 
     if article.content_segmented_sentences:
-        # TODO extract keywords
-        pass
+        for n in range(1, 4):
+            kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=3, top=3)
+            _keywords = kw_extractor.extract_keywords(
+                article.content_segmented_sentences
+            )
+            _keywords.sort(key=lambda s: s[1], reverse=False)
+            keywords += [k for k, _ in _keywords]
 
     return ArticleAnalysis(
         original_article=articleObject,
@@ -96,8 +102,24 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     analysed_articles = [analyse_article(article) for article in articles]
     article_scores: List[tuple[ArticleAnalysis, float]] = []
 
-    # TODO choose the most popular keywords from the articles' keywords
-    keywords = None
+    # Choose the most popular keyword for each n_gram from the articles' keywords
+    keywords = []
+    n_gram_keywords: dict[int, dict[str, int]] = {}  # {n_gram: {keyword: count}}
+    for article in analysed_articles:
+        for keyword in article.keywords:
+            n_gram = len(keyword.split())
+            if (n_gram) not in n_gram_keywords:
+                n_gram_keywords[n_gram] = {}
+            if keyword not in n_gram_keywords[n_gram]:
+                n_gram_keywords[n_gram][keyword] = 0
+            n_gram_keywords[n_gram][keyword] += 1
+    for n_gram in n_gram_keywords:
+        sorted_keywords = sorted(
+            n_gram_keywords[n_gram].items(), key=lambda x: x[1], reverse=True
+        )
+        keywords.append(
+            sorted_keywords[0][0]
+        )  # Get the most popular keyword for each n_gram
 
     # TODO compute average sentiment rate for this topic
     average_negative_rate = None

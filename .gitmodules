@@ -1,3 +1,7 @@
 [submodule "report/external/vietnamese-bibtex"]
 	path = report/external/vietnamese-bibtex
 	url = https://github.com/wonrax/vietnamese-bibtex
+[submodule "lib/yake_vietnamese"]
+	path = lib/yake_vietnamese
+	url = https://github.com/wonrax/yake-vietnamese.git
+	ignore = all
