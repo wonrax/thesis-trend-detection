@@ -12,6 +12,3 @@ scripts/
 tmp/
 logs/
 db-data/
-.eggs/
-*.egg-info/
-dist/
