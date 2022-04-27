@@ -39,6 +39,7 @@ export const TrendPage = ({
         });
     } else if (passedTrend) {
       setTrend(passedTrend);
+      navigate(location.pathname, {}); // Clear location state
       setNavigating(false);
     }
   }, [trendCategory]);
