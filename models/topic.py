@@ -63,7 +63,7 @@ class TopicModel:
                     )
                 )
 
-        model.summary()
+        # model.summary()
         self.logger.info(f"HDP model took: {round(time.time() - t1, 1)} seconds")
 
     def vectorize(self, tokens_list):

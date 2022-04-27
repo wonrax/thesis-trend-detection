@@ -1,4 +1,6 @@
 import logging
+from discord_handler import DiscordHandler
+import os
 
 
 def get_logger(
@@ -9,17 +11,16 @@ def get_logger(
     # Check if logger already has handlers
     if not len(logger.handlers):
         logger.setLevel(log_level)
+        formatter = logging.Formatter("%(asctime)s:%(name)s:%(levelname)s:%(message)s")
 
         # stdout logger
         stream_handler = logging.StreamHandler()
-        formatter = logging.Formatter("%(asctime)s:%(name)s:%(levelname)s:%(message)s")
         stream_handler.setFormatter(formatter)
         stream_handler.setLevel(log_level)
         logger.addHandler(stream_handler)
 
         # file logger
         if log_file is not None:
-            import os
 
             # Make sure the path exist
             os.makedirs(os.path.dirname(log_file), exist_ok=True)
@@ -28,6 +29,18 @@ def get_logger(
             file_handler.setFormatter(formatter)
             file_handler.setLevel(logging.INFO)
             logger.addHandler(file_handler)
+
+        # Discord logger
+        discord_webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
+        if discord_webhook_url is not None:
+            discord_handler = DiscordHandler(
+                discord_webhook_url, emit_as_code_block=False, max_size=20000
+            )
+            discord_handler.setLevel(logging.CRITICAL)
+            discord_handler.setFormatter(formatter)
+            logger.addHandler(discord_handler)
+        else:
+            logger.warning("Discord webhook url not found for logger")
 
     return logger
 

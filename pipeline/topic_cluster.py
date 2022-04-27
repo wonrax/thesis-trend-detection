@@ -16,14 +16,15 @@ logger = get_common_logger()
 
 def topic_cluster(
     articles: List[PreprocessedArticle],
-) -> dict[int, List[PreprocessedArticle]]:
+) -> tuple[List[List[PreprocessedArticle]], float, float]:
     """Cluster articles into topics using Topic model and KMeans.
 
     Args:
         articles (List[PreprocessedArticle]): List of articles to cluster.
 
     Returns:
-        dict[int, List[PreprocessedArticle]]: Topic ids and associated articles.
+        tuple(dict[int, List[PreprocessedArticle]], float, float):
+            Topic ids and associated articles, coherence score, and silhouette score.
     """
 
     # FILTERING

@@ -180,7 +180,7 @@ def analyse_category(
         articles_of_a_topic = topic_articles[key]
         analysed_topics.append(analyse_topic(articles_of_a_topic))
         if len(analysed_topics) % int(len(topic_articles) / 10) == 0:
-            logger.info(f"{len(analysed_topics)} topics analysed")
+            logger.info(f"{len(analysed_topics)}/{len(topic_articles)} topics analysed")
 
     # TODO find another, smarter way to sort the topics by relevance
     # TODO DO NOT sort if only one topic
