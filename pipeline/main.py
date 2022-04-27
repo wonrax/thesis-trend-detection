@@ -96,7 +96,7 @@ def perform_analysis_on_category(category: Category, days=1.5) -> None:
     start_date = end_date - datetime.timedelta(days=days)
     for _c in categories:
         articles += Article.objects.filter(
-            category=str(_c), date__gte=start_date, date__lte=end_date
+            category=str(_c.name), date__gte=start_date, date__lte=end_date
         )
 
     # Perform preprocessing on articles

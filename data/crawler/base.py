@@ -88,7 +88,7 @@ class Crawler:
             url=url,
             img_url=article.top_img,
             comments=[],
-            category=str(self.category),
+            category=self.category.name,
             likes=None,
         )
 

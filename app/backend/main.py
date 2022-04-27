@@ -19,38 +19,40 @@ from flask_cors import CORS
 from datetime import timezone
 
 
-CATEGORY_TO_ID = {}
+DB_CATEGORY_TO_URL = {}  # e.g. {"moi_nhat": "moi-nhat"}
 for category in Category:
-    key = str(category).split(".")[-1].lower()
-    CATEGORY_TO_ID[key] = category
+    key = category.name
+    DB_CATEGORY_TO_URL[key] = category.name.lower().replace("_", "-")
+
+URL_TO_DB_CATEGORY = {v: k for k, v in DB_CATEGORY_TO_URL.items()}
 
 CATEGORY_TO_HUMAN_READABLE = {
-    "suc_khoe": "Sức khỏe",
-    "moi_nhat": "Mới nhất",
-    "the_gioi": "Thế giới",
-    "thoi_su": "Thời sự",
-    "van_hoa": "Văn hóa",
-    "cong_nghe": "Công nghệ",
-    "the_thao": "Thể thao",
-    "giao_duc": "Giáo dục",
-    "giai_tri": "Giải trí",
-    "kinh_doanh": "Kinh doanh",
-    "phap_luat": "Pháp luật",
+    "suc-khoe": "Sức khỏe",
+    "moi-nhat": "Mới nhất",
+    "the-gioi": "Thế giới",
+    "thoi-su": "Thời sự",
+    "van-hoa": "Văn hóa",
+    "cong-nghe": "Công nghệ",
+    "the-thao": "Thể thao",
+    "giao-duc": "Giáo dục",
+    "giai-tri": "Giải trí",
+    "kinh-doanh": "Kinh doanh",
+    "phap-luat": "Pháp luật",
 }
 
 # Used to display on the frontend
 CATEGORY_ORDER = [
-    "moi_nhat",
-    "the_gioi",
-    "thoi_su",
-    "van_hoa",
-    "cong_nghe",
-    "the_thao",
-    "giao_duc",
-    "giai_tri",
-    "kinh_doanh",
-    "phap_luat",
-    "suc_khoe",
+    "moi-nhat",
+    "the-gioi",
+    "thoi-su",
+    "van-hoa",
+    "cong-nghe",
+    "the-thao",
+    "giao-duc",
+    "giai-tri",
+    "kinh-doanh",
+    "phap-luat",
+    "suc-khoe",
 ]
 
 app = Flask(__name__)
@@ -98,72 +100,77 @@ def capitalize_first_letter(string) -> str:
 
 class Trending(Resource):
     def get(self, category):
-        category = category.lower().replace("-", "_")
-        if category in CATEGORY_TO_ID:
-            category_analysis = (
-                CategoryAnalysis.objects.filter(category=str(CATEGORY_TO_ID[category]))
-                .order_by("-creation_date")
-                .first()
-            )
-            topics: List[RestfulTopic] = []
-            for topic in category_analysis.topics:
-                articles = []
-                for article in topic.articles:
-                    original_article = article.original_article
-                    articles.append(
-                        RestfulArticle(
-                            id=str(original_article.id),
-                            thumbnailUrl=original_article.img_url,
-                            articleUrl=original_article.url,
-                            description=original_article.excerpt,
-                            negativeRate=article.comments_negative_rate,
-                            positiveRate=article.comments_positive_rate,
-                            neutralRate=article.comments_neutral_rate,
-                            publishDate=original_article.date.replace(
-                                tzinfo=timezone.utc
-                            ).isoformat(),
-                            sourceLogoUrl=None,  # TODO: get source logo url
-                            sourceName=original_article.source,
-                            title=original_article.title,
-                        )
+        db_category_name = URL_TO_DB_CATEGORY[category]
+        category_analysis = (
+            CategoryAnalysis.objects.filter(category=db_category_name)
+            .order_by("-creation_date")
+            .first()
+        )
+
+        if not category_analysis:
+            return {"error": "No trending data available"}, 404
+
+        topics: List[RestfulTopic] = []
+        for topic in category_analysis.topics:
+            articles = []
+            for article in topic.articles:
+                original_article = article.original_article
+                articles.append(
+                    RestfulArticle(
+                        id=str(original_article.id),
+                        thumbnailUrl=original_article.img_url,
+                        articleUrl=original_article.url,
+                        description=original_article.excerpt,
+                        negativeRate=article.comments_negative_rate,
+                        positiveRate=article.comments_positive_rate,
+                        neutralRate=article.comments_neutral_rate,
+                        publishDate=original_article.date.replace(
+                            tzinfo=timezone.utc
+                        ).isoformat(),
+                        sourceLogoUrl=None,  # TODO: get source logo url
+                        sourceName=original_article.source,
+                        title=original_article.title,
                     )
-                    if len(articles) == 5:
-                        break
+                )
+                if len(articles) == 5:
+                    break
 
                 keywords = [
                     capitalize_first_letter(k).replace("_", " ") for k in topic.keywords
                 ]
 
-                topics.append(
-                    RestfulTopic(
-                        articles=articles,
-                        keywords=keywords,
-                        averagePositiveRate=topic.average_positive_rate,
-                        averageNegativeRate=topic.average_negative_rate,
-                        averageNeutralRate=topic.average_neutral_rate,
-                        hasMoreArticles=len(topic.articles) > len(articles),
-                    )
+            topics.append(
+                RestfulTopic(
+                    articles=articles,
+                    keywords=keywords,
+                    averagePositiveRate=topic.average_positive_rate,
+                    averageNegativeRate=topic.average_negative_rate,
+                    averageNeutralRate=topic.average_neutral_rate,
+                    hasMoreArticles=len(topic.articles) > len(articles),
                 )
-
-                if len(topics) > 35:
-                    break
-
-            categories = CategoryAnalysis.objects.distinct(field="category")
-            categories = sorted(categories, key=lambda x: CATEGORY_ORDER.index(x.split(".")[-1].lower()))
-            availableCategories = {}
-            for c in categories:
-                c = c.split(".")[-1].lower()
-                availableCategories[c.replace("_", "-")] = CATEGORY_TO_HUMAN_READABLE[c]
-
-            result = RestfulTrend(
-                id=str(category_analysis.id),
-                topics=topics,
-                creationDate=category_analysis.creation_date.isoformat(),
-                categoryName=CATEGORY_TO_HUMAN_READABLE[category],
-                availableCategories=availableCategories,
             )
 
-            return dataclasses.asdict(result)
+            if len(topics) > 35:
+                break
+
+        categories = CategoryAnalysis.objects.distinct(field="category")
+        categories = [DB_CATEGORY_TO_URL[c] for c in categories]
+        categories.sort(key=lambda x: CATEGORY_ORDER.index(x))
+        availableCategories = {}
+        for c in categories:
+            availableCategories[c] = CATEGORY_TO_HUMAN_READABLE[c]
+
+        result = RestfulTrend(
+            id=str(category_analysis.id),
+            topics=topics,
+            creationDate=category_analysis.creation_date.isoformat(),
+            categoryName=CATEGORY_TO_HUMAN_READABLE[
+                DB_CATEGORY_TO_URL[db_category_name]
+            ],
+            availableCategories=availableCategories,
+        )
+
+        return dataclasses.asdict(result)
 
 
 class TopicDetail(Resource):
