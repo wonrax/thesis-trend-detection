@@ -3,21 +3,27 @@ import { useEffect, useState } from "react";
 import TopicSection from "../components/TopicSection";
 import axios from "axios";
 import Topic from "../models/Topic";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
+import Overlay from "../components/Overlay";
 
 export const TopicDetail = () => {
   const [topic, setTopic] = useState<Topic>();
   const [loading, setLoading] = useState<boolean>(true);
   const { id, index } = useParams();
+  const { passedTopic } = useLocation().state as { passedTopic: Topic };
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/topic/${id}/${index}`).then((res) => {
-      setTopic(res.data);
-      setLoading(false);
-    });
+    if (passedTopic) {
+      setTopic(passedTopic);
+    } else {
+      axios.get(`http://localhost:5000/topic/${id}/${index}`).then((res) => {
+        setTopic(res.data);
+        setLoading(false);
+      });
+    }
   }, []);
 
-  if (loading) {
+  if (loading && !passedTopic) {
     return (
       <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
         <Text fontSize="lg">Đang tải...</Text>
@@ -50,6 +56,7 @@ export const TopicDetail = () => {
           />
         )}
       </div>
+      {<Overlay enabled={!topic} />}
     </div>
   );
 };

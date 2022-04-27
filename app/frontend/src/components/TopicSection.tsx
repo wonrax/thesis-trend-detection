@@ -2,7 +2,6 @@ import ArticleCard from "./ArticleCard";
 import Article from "../models/Article";
 import Text from "./Text";
 import Divider from "./Divider";
-import { useNavigate } from "react-router-dom";
 
 export const TopicSection = ({
   spotlightArticle,
@@ -12,6 +11,7 @@ export const TopicSection = ({
   hasMore,
   trendId = undefined,
   topicIndex = undefined,
+  navigateToTopic = undefined,
 }: {
   spotlightArticle: Article;
   articles?: Array<Article>;
@@ -20,8 +20,8 @@ export const TopicSection = ({
   hasMore?: boolean;
   trendId?: string;
   topicIndex?: number;
+  navigateToTopic?: () => void;
 }) => {
-  const navigate = useNavigate();
   if (!spotlightArticle) return null;
   return (
     <div className="w-full rounded-lg bg-white">
@@ -59,7 +59,9 @@ export const TopicSection = ({
       {hasMore && (
         <div
           className="py-4 group hover:cursor-pointer"
-          onClick={() => navigate(`/topic/${trendId}/${topicIndex}`)}
+          onClick={() => {
+            if (navigateToTopic) navigateToTopic();
+          }}
         >
           <Text
             className="px-3 py-1 m-auto rounded-md bg-gray-0 w-fit group-hover:underline"

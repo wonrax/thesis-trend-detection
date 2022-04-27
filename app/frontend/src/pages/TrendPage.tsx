@@ -1,9 +1,10 @@
 import Text from "../components/Text";
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TopicSection from "../components/TopicSection";
 import axios from "axios";
 import Trend from "../models/Trend";
 import { useNavigate, useParams } from "react-router-dom";
+import Overlay from "../components/Overlay";
 
 export const TrendPage = ({
   trend,
@@ -14,6 +15,7 @@ export const TrendPage = ({
 }) => {
   const { trendCategory } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
+  const [navigating, setNavigating] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const memorized =
@@ -36,9 +38,11 @@ export const TrendPage = ({
 
   if (loading && !memorized) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
-        <Text fontSize="lg">Đang tải...</Text>
-      </div>
+      <>
+        <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
+          <Text fontSize="lg">Đang tải...</Text>
+        </div>
+      </>
     );
   }
 
@@ -88,10 +92,21 @@ export const TrendPage = ({
               hasMore={topic.hasMoreArticles}
               trendId={trend.id}
               topicIndex={index}
+              navigateToTopic={() => {
+                setNavigating(true);
+                axios
+                  .get(`http://localhost:5000/topic/${trend.id}/${index}`)
+                  .then((res) => {
+                    navigate(`/topic/${trend.id}/${index}`, {
+                      state: { passedTopic: res.data },
+                    });
+                  });
+              }}
             />
           ))}
         </div>
       </div>
+      {<Overlay enabled={navigating} />}
     </div>
   );
 };
