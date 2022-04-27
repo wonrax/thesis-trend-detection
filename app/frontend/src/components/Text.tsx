@@ -5,10 +5,12 @@ const MAP_FONT_SIZE_TO_TAG = {
   body: "p",
   lg: "h4",
   xl: "h3",
+  xxl: "h2",
 };
 
 export const Text = ({
   className,
+  onClick,
   fontSize = "body",
   fontWeight = "normal",
   color = "gray-100",
@@ -23,7 +25,8 @@ export const Text = ({
   ...props
 }: {
   className?: string;
-  fontSize?: "sm" | "body" | "lg" | "xl";
+  onClick?: () => void;
+  fontSize?: "sm" | "body" | "lg" | "xl" | "xxl";
   fontWeight?: "normal" | "bold" | "medium";
   color?:
     | "gray-100"
@@ -64,7 +67,7 @@ export const Text = ({
     (MAP_FONT_SIZE_TO_TAG[fontSize] as keyof JSX.IntrinsicElements);
 
   return (
-    <Tag className={classNames} {...props}>
+    <Tag className={classNames} onClick={onClick} {...props}>
       {children}
     </Tag>
   );

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import TopicSection from "../components/TopicSection";
 import axios from "axios";
 import Trend from "../models/Trend";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Overlay from "../components/Overlay";
 
 export const TrendPage = ({
@@ -17,12 +17,16 @@ export const TrendPage = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [navigating, setNavigating] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { passedTrend } = (useLocation().state as { passedTrend?: Trend }) || {
+    passedTrend: undefined,
+  };
 
   const memorized =
-    trend &&
-    trend.availableCategories &&
-    trendCategory &&
-    trend.categoryName == trend.availableCategories[trendCategory];
+    passedTrend ||
+    (trend &&
+      trend.availableCategories &&
+      trendCategory &&
+      trend.categoryName == trend.availableCategories[trendCategory]);
 
   useEffect(() => {
     if (!memorized) {
@@ -33,6 +37,9 @@ export const TrendPage = ({
           setTrend(res.data);
           setLoading(false);
         });
+    } else if (passedTrend) {
+      setTrend(passedTrend);
+      setNavigating(false);
     }
   }, [trendCategory]);
 
@@ -40,7 +47,9 @@ export const TrendPage = ({
     return (
       <>
         <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
-          <Text fontSize="lg">Đang tải...</Text>
+          <Text fontSize="xxl" fontWeight="bold" className="animate-pulse">
+            Xu hướng
+          </Text>
         </div>
       </>
     );
@@ -50,10 +59,14 @@ export const TrendPage = ({
     <div className="w-full bg-gray-0">
       <div className="min-h-screen m-auto py-8 p-2 sm:w-[512px]">
         <div className="p-8 flex flex-col justify-center items-center">
-          <h3 className="text-xl inline text-gray-100">Xu hướng trong</h3>
-          <h3 className="text-xl inline font-bold text-gray-100">
-            {trend?.categoryName}
-          </h3>
+          <Text
+            fontSize="xxl"
+            fontWeight="bold"
+            className="hover:underline cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            Xu hướng
+          </Text>
         </div>
         <div className="flex flex-row flex-wrap mb-4 gap-x-4 gap-y-2 justify-center">
           {trend?.availableCategories &&
@@ -65,7 +78,18 @@ export const TrendPage = ({
                   </Text>
                 );
               return (
-                <div onClick={() => navigate(`/${key}`)}>
+                <div
+                  onClick={() => {
+                    setNavigating(true);
+                    axios
+                      .get(`http://localhost:5000/trending/category/${key}`)
+                      .then((res) => {
+                        navigate(`/${key}`, {
+                          state: { passedTrend: res.data },
+                        });
+                      });
+                  }}
+                >
                   <Text
                     fontSize="body"
                     fontWeight="medium"
@@ -90,8 +114,6 @@ export const TrendPage = ({
               articles={topic.articles.slice(1)}
               keywords={topic.keywords}
               hasMore={topic.hasMoreArticles}
-              trendId={trend.id}
-              topicIndex={index}
               navigateToTopic={() => {
                 setNavigating(true);
                 axios

@@ -9,8 +9,6 @@ export const TopicSection = ({
   showThumbnail = false,
   keywords = undefined,
   hasMore,
-  trendId = undefined,
-  topicIndex = undefined,
   navigateToTopic = undefined,
 }: {
   spotlightArticle: Article;
@@ -18,8 +16,6 @@ export const TopicSection = ({
   showThumbnail?: boolean;
   keywords?: Array<string>;
   hasMore?: boolean;
-  trendId?: string;
-  topicIndex?: number;
   navigateToTopic?: () => void;
 }) => {
   if (!spotlightArticle) return null;

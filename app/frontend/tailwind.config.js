@@ -33,6 +33,13 @@ module.exports = {
           lineHeight: "1.25em",
         },
       ],
+      xxl: [
+        "36px",
+        {
+          letterSpacing: "-0.04em",
+          lineHeight: "1.25em",
+        },
+      ],
     },
     colors: {
       white: "#ffffff",
@@ -60,7 +67,7 @@ module.exports = {
       pattern: /text-(gray|white|red|green)(-(100|80|60|40|20|0))?/,
     },
     {
-      pattern: /text-(sm|body|lg|xl)/,
+      pattern: /text-(sm|body|lg|xl|xxl)/,
     },
     {
       pattern: /text-(left|center|right)/,

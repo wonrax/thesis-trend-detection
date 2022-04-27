@@ -38,6 +38,21 @@ CATEGORY_TO_HUMAN_READABLE = {
     "phap_luat": "Pháp luật",
 }
 
+# Used to display on the frontend
+CATEGORY_ORDER = [
+    "moi_nhat",
+    "the_gioi",
+    "thoi_su",
+    "van_hoa",
+    "cong_nghe",
+    "the_thao",
+    "giao_duc",
+    "giai_tri",
+    "kinh_doanh",
+    "phap_luat",
+    "suc_khoe",
+]
+
 app = Flask(__name__)
 api = Api(app)
 cors = CORS(app)
@@ -134,12 +149,11 @@ class Trending(Resource):
                     break
 
             categories = CategoryAnalysis.objects.distinct(field="category")
+            categories = sorted(categories, key=lambda x: CATEGORY_ORDER.index(x.split(".")[-1].lower()))
             availableCategories = {}
             for c in categories:
                 c = c.split(".")[-1].lower()
-                availableCategories[
-                    c.replace("_", "-")
-                ] = CATEGORY_TO_HUMAN_READABLE[c]
+                availableCategories[c.replace("_", "-")] = CATEGORY_TO_HUMAN_READABLE[c]
 
             result = RestfulTrend(
                 id=str(category_analysis.id),
