@@ -1,5 +1,5 @@
 import Text from "../components/Text";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import TopicSection from "../components/TopicSection";
 import axios from "axios";
 import Trend from "../models/Trend";
@@ -8,39 +8,22 @@ import { useNavigate, useParams } from "react-router-dom";
 export const TrendPage = ({
   trend,
   setTrend,
-  scrollPosition,
-  setScrollPosition,
 }: {
   trend: Trend | undefined;
   setTrend: React.Dispatch<React.SetStateAction<Trend | undefined>>;
-  scrollPosition: number;
-  setScrollPosition: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const { trendCategory } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  const handleScroll = () => {
-    const position = window.pageYOffset;
-    setScrollPosition(position);
-    console.log(position);
-  };
+  const memorized =
+    trend &&
+    trend.availableCategories &&
+    trendCategory &&
+    trend.categoryName == trend.availableCategories[trendCategory];
 
   useEffect(() => {
-    const oldScrollPosition = scrollPosition;
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    if (
-      trend &&
-      trend.availableCategories &&
-      trendCategory &&
-      trend.categoryName == trend.availableCategories[trendCategory]
-    ) {
-      setLoading(false);
-      if (oldScrollPosition) {
-        console.log("setting scroll at", oldScrollPosition);
-        window.scrollTo(0, oldScrollPosition);
-      }
-    } else {
+    if (!memorized) {
       setLoading(true);
       axios
         .get(`http://localhost:5000/trending/category/${trendCategory}`)
@@ -49,12 +32,9 @@ export const TrendPage = ({
           setLoading(false);
         });
     }
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, [trendCategory]);
 
-  if (loading) {
+  if (loading && !memorized) {
     return (
       <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
         <Text fontSize="lg">Đang tải...</Text>

@@ -24,21 +24,13 @@ function RedirectToHomepage() {
 
 function App() {
   const [trend, setTrend] = useState<Trend>();
-  const [scrollPosition, setScrollPosition] = useState(0);
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<RedirectToHomepage />} />
         <Route
           path="/:trendCategory"
-          element={
-            <TrendPage
-              trend={trend}
-              setTrend={setTrend}
-              scrollPosition={scrollPosition}
-              setScrollPosition={setScrollPosition}
-            />
-          }
+          element={<TrendPage trend={trend} setTrend={setTrend} />}
         />
         <Route path="/topic/:id/:index" element={<TopicDetail />} />
       </Routes>
