@@ -8,7 +8,7 @@ import requests
 class ZingNewsCrawler(Crawler):
 
     SOURCE_NAME = "Zing News"
-    BASE_URL = "https://zingnews.vn/"
+    BASE_URL = "https://zingnews.vn"
     MAP_CATEGORY_TO_CATEGORY_ID = {
         Category.THE_GIOI: "the-gioi",
         Category.SUC_KHOE: "suc-khoe",
