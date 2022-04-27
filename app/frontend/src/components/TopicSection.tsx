@@ -34,7 +34,10 @@ export const TopicSection = ({
           </Text>
           <div className="flex flex-row flex-wrap gap-2">
             {keywords.map((keyword, index) => (
-              <div className="bg-gray-0 px-3 py-2 rounded-md min-w-0">
+              <div
+                key={index}
+                className="bg-gray-0 px-3 py-2 rounded-md min-w-0"
+              >
                 <Text key={index} fontWeight="medium" color="gray-40" ellipsis>
                   {keyword}
                 </Text>

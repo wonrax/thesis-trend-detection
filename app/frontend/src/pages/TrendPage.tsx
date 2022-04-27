@@ -73,12 +73,18 @@ export const TrendPage = ({
             Object.entries(trend?.availableCategories).map(([key, value]) => {
               if (trendCategory == key)
                 return (
-                  <Text fontSize="body" fontWeight="medium" color="gray-20">
+                  <Text
+                    key={key}
+                    fontSize="body"
+                    fontWeight="medium"
+                    color="gray-20"
+                  >
                     {value}
                   </Text>
                 );
               return (
                 <div
+                  key={key}
                   onClick={() => {
                     setNavigating(true);
                     axios
@@ -109,7 +115,7 @@ export const TrendPage = ({
         <div className="space-y-4">
           {trend?.topics.map((topic, index) => (
             <TopicSection
-              key={index}
+              key={`${trend.id}-${index}`}
               spotlightArticle={topic.articles[0]}
               articles={topic.articles.slice(1)}
               keywords={topic.keywords}
