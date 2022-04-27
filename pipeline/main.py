@@ -133,6 +133,9 @@ def perform_analysis(days=1.5, do_crawl_beforehand=False) -> None:
     for category in Category:
         try:
             perform_analysis_on_category(category, days)
+        except KeyboardInterrupt:
+            logger.error("Keyboard interrupt")
+            return
         except:
             logger.error(f"Failed to perform analysis on {category}")
 

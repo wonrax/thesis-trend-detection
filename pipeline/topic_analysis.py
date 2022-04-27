@@ -70,7 +70,7 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
 
     if article.content_segmented_sentences:
         for n in range(1, 4):
-            kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=3, top=3)
+            kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=1, top=3)
             _keywords = kw_extractor.extract_keywords(
                 article.content_segmented_sentences
             )
@@ -103,7 +103,13 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     article_scores: List[tuple[ArticleAnalysis, float]] = []
 
     # Choose the most popular keyword for each n_gram from the articles' keywords
+    # This is the representation of a topic on frontend
     topic_keywords = []
+
+    # List of the most popular keywords in all grams
+    # This will be used for calculating the relevance score for each article
+    relevance_keywords = []
+
     n_gram_keywords: dict[int, dict[str, int]] = {}  # {n_gram: {keyword: count}}
     for article in analysed_articles:
         for keyword in article.keywords:
@@ -121,15 +127,10 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
             sorted_keywords[0][0]
         )  # Get the most popular keyword for each n_gram
 
-    # List of the most popular keywords in 2_grams
-    # This will be used for calculating the relevance score for each article
-    if 2 in n_gram_keywords:
-        two_grams_keywords = sorted(
-            n_gram_keywords[2].items(), key=lambda x: x[1], reverse=True
-        )
-        two_grams_keywords = [k for k, _ in two_grams_keywords][:6]
-    else:
-        two_grams_keywords = topic_keywords
+        if len(sorted_keywords) >= 3:
+            relevance_keywords += [k for k, _ in sorted_keywords[:3]]
+        else:
+            relevance_keywords += [k for k, _ in sorted_keywords]
 
     # TODO compute average sentiment rate for this topic
     average_negative_rate = None
@@ -153,8 +154,8 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
             score += 10000 / relative_minutes
         if article.keywords:
             for keyword in article.keywords:
-                if keyword in two_grams_keywords:
-                    score += 3000
+                if keyword in relevance_keywords:
+                    score += 1000
         article_scores.append((article, score))
 
     # sort by score
@@ -190,13 +191,16 @@ def analyse_category(
         score: float = 0
 
         # get datetime median of topic.articles
-        datetimes = [article.original_article.date for article in topic.articles]
-        datetimes.sort()
-        delta = datetimes[-1] - datetimes[0]
-        median_datetime = datetimes[0] + delta / 2
+        if len(topic.articles) == 1:
+            median_datetime = topic.articles[0].original_article.date
+        else:
+            datetimes = [article.original_article.date for article in topic.articles]
+            datetimes.sort()
+            delta = datetimes[-1] - datetimes[0]
+            median_datetime = datetimes[0] + delta / 2
 
         relative_minutes: float = (now - median_datetime).seconds / 60 + 1
-        score += 1000 / relative_minutes
+        score += 10000 / relative_minutes
         score += len(topic.articles) * 100
 
         topic_scores.append((topic, score))
