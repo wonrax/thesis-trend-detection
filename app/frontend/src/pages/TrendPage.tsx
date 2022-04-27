@@ -15,6 +15,7 @@ export const TrendPage = ({
 }) => {
   const { trendCategory } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
   const [navigating, setNavigating] = useState<boolean>(false);
   const navigate = useNavigate();
   const { passedTrend } = (useLocation().state as { passedTrend?: Trend }) || {
@@ -36,6 +37,9 @@ export const TrendPage = ({
         .then((res) => {
           setTrend(res.data);
           setLoading(false);
+        })
+        .catch(() => {
+          setError("Không thể tải dữ liệu. Vui lòng thử tải lại trang.");
         });
     } else if (passedTrend) {
       setTrend(passedTrend);
@@ -47,10 +51,11 @@ export const TrendPage = ({
   if (loading && !memorized) {
     return (
       <>
-        <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
+        <div className="w-screen h-screen flex flex-col gap-2 items-center justify-center bg-gray-0">
           <Text fontSize="xxl" fontWeight="bold" className="animate-pulse">
             Xu hướng
           </Text>
+          {error && <Text color="red">{error}</Text>}
         </div>
       </>
     );
