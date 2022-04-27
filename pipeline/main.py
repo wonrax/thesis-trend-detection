@@ -115,6 +115,8 @@ def perform_analysis_on_category(category: Category, days=1.5) -> None:
         topic_coherence=coherence_score,
     )
     category_analysis.metrics = metrics
+
+    logger.info(f"Saving analysis for {category.name} to database")
     category_analysis.save()
 
 
@@ -137,7 +139,7 @@ def perform_analysis(days=1.5, do_crawl_beforehand=False) -> None:
             logger.error("Keyboard interrupt")
             return
         except:
-            logger.error(f"Failed to perform analysis on {category}")
+            logger.exception(f"Failed to perform analysis on {category}")
 
 
 if __name__ == "__main__":

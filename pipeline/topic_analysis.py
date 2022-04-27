@@ -17,6 +17,7 @@ from data.model.article import Article, Comment
 from typing import List
 import datetime
 from yake import KeywordExtractor
+import math
 
 # Set up logger
 logger = get_common_logger()
@@ -190,18 +191,18 @@ def analyse_category(
     for topic in analysed_topics:
         score: float = 0
 
-        # get datetime median of topic.articles
-        if len(topic.articles) == 1:
-            median_datetime = topic.articles[0].original_article.date
-        else:
-            datetimes = [article.original_article.date for article in topic.articles]
-            datetimes.sort()
-            delta = datetimes[-1] - datetimes[0]
-            median_datetime = datetimes[0] + delta / 2
+        score += len(topic.articles) * 10
 
-        relative_minutes: float = (now - median_datetime).seconds / 60 + 1
-        score += 10000 / relative_minutes
-        score += len(topic.articles) * 100
+        # Calculate the average time of the articles
+        datetimes = [article.original_article.date for article in topic.articles]
+        avg_time = datetime.datetime.fromtimestamp(
+            sum(map(datetime.datetime.timestamp, datetimes)) / len(datetimes)
+        )
+
+        relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
+        time_score = math.sinh(1 / relative_hours) * 25
+
+        score += score * time_score
 
         topic_scores.append((topic, score))
 
