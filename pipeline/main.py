@@ -1,19 +1,14 @@
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(".")
-
 from data.crawler.base import Category
 from data.model.article import Article
 from typing import List
 import argparse
-from pipeline.logger import get_common_logger
+from logger import get_common_logger
 
 # Set up logger
 logger = get_common_logger()
 
 
-def perform_crawl(days: int = 1) -> List[Article]:
+def perform_crawl(category: Category, days: int = 1) -> List[Article]:
     """Crawl articles from the past days and store to the database
 
     Args:
@@ -32,7 +27,7 @@ def perform_crawl(days: int = 1) -> List[Article]:
     from data.crawler.thanhnien import ThanhNienCrawler
     from data.crawler.nguoilaodong import NguoiLaoDongCrawler
     from data.crawler.zingnews import ZingNewsCrawler
-    from pipeline.crawl import crawl
+    from crawl import crawl
 
     crawler_engines = [
         DanTriCrawler,
@@ -44,8 +39,12 @@ def perform_crawl(days: int = 1) -> List[Article]:
         ZingNewsCrawler,
     ]
 
-    categories = [category for category in Category]
-    categories.remove(Category.MOI_NHAT)
+    categories = []
+    if category == Category.MOI_NHAT:
+        categories = [c for c in Category]
+        categories.remove(Category.MOI_NHAT)
+    else:
+        categories = [category]
 
     articles = crawl(
         crawler_engines,
@@ -120,7 +119,9 @@ def perform_analysis_on_category(category: Category, days=1.5) -> None:
     category_analysis.save()
 
 
-def perform_analysis(days=1.5, do_crawl_beforehand=False) -> None:
+def perform_analysis(
+    category: Category = Category.MOI_NHAT, days=1.5, do_crawl_beforehand=False
+) -> None:
     """Perform analysis on all available categories.
 
     Args:
@@ -130,9 +131,11 @@ def perform_analysis(days=1.5, do_crawl_beforehand=False) -> None:
     if do_crawl_beforehand:
         import math
 
-        perform_crawl(math.ceil(days))
+        perform_crawl(category, math.ceil(days))
 
-    for category in Category:
+    categories = [category]
+
+    for category in categories:
         try:
             perform_analysis_on_category(category, days)
         except KeyboardInterrupt:
@@ -143,6 +146,10 @@ def perform_analysis(days=1.5, do_crawl_beforehand=False) -> None:
 
 
 if __name__ == "__main__":
+    MAP_STRING_TO_CATEGORY = {}
+    for category in Category:
+        MAP_STRING_TO_CATEGORY[category.name.lower()] = category
+
     try:
         parser = argparse.ArgumentParser("Trending analysis pipeline.")
 
@@ -160,6 +167,12 @@ if __name__ == "__main__":
             action="store_true",
             help="Perform analysis on all categories.",
         )
+        parser.add_argument(
+            "--category",
+            type=str,
+            default="moi_nhat",
+            help="The category to perform analysis on.",
+        )
 
         args = parser.parse_args()
 
@@ -167,9 +180,21 @@ if __name__ == "__main__":
             parser.print_help()
             exit(1)
 
+        if args.category.lower() not in MAP_STRING_TO_CATEGORY:
+            logger.error(
+                f"Invalid category {args.category}. Available categories: {[c.name for c in Category]}"
+            )
+            exit(1)
+
+        category = MAP_STRING_TO_CATEGORY[args.category.lower()]
+
         if args.analysis:
-            perform_analysis(args.days, do_crawl_beforehand=args.crawl)
+            perform_analysis(
+                category=category, days=args.days, do_crawl_beforehand=args.crawl
+            )
         else:
-            perform_crawl(args.days)
+            perform_crawl(category=category, days=args.days)
     except:
+        import sys
+
         logger.critical(f"Unexpected error: {sys.exc_info()}")

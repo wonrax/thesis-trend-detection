@@ -1,8 +1,3 @@
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(".")
-
 from data.crawler.tuoitre import TuoiTreCrawler
 from data.crawler.vnexpress import VnExpressCrawler
 from data.crawler.dantri import DanTriCrawler
@@ -17,7 +12,7 @@ from zoneinfo import ZoneInfo
 import threading
 from queue import Queue, Empty
 import time
-from pipeline.logger import get_common_logger
+from logger import get_common_logger
 
 
 # Set up logger

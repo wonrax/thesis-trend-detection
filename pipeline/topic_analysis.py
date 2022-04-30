@@ -1,10 +1,5 @@
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(".")
-
-from pipeline.logger import get_common_logger
-from pipeline.preprocess import PreprocessedArticle
+from logger import get_common_logger
+from preprocess import PreprocessedArticle
 from data.model.category import Category
 from data.model.topic import (
     CategoryAnalysis,
@@ -199,8 +194,9 @@ def analyse_category(
             sum(map(datetime.datetime.timestamp, datetimes)) / len(datetimes)
         )
 
-        relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
-        time_score = math.sinh(1 / relative_hours) * 15
+        relative_minutes: float = (now - avg_time).total_seconds() / 60 + 1
+        time_score = math.sinh(1 / relative_minutes) * 100
+        time_score = min(time_score, 100)
 
         score += score * time_score
 

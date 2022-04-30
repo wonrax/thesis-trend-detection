@@ -5,20 +5,27 @@ import Divider from "./Divider";
 
 export const TopicSection = ({
   spotlightArticle,
-  articles = undefined,
+  articles,
   showThumbnail = false,
-  keywords = undefined,
+  keywords,
+  rank,
   hasMore,
-  navigateToTopic = undefined,
+  navigateToTopic,
 }: {
   spotlightArticle: Article;
   articles?: Array<Article>;
   showThumbnail?: boolean;
   keywords?: Array<string>;
+  rank?: number;
   hasMore?: boolean;
   navigateToTopic?: () => void;
 }) => {
   if (!spotlightArticle) return null;
+
+  let _kws = undefined;
+  if (keywords && keywords?.length <= 2) _kws = keywords;
+  else _kws = keywords?.slice(0, 2);
+
   return (
     <div className="w-full rounded-lg bg-white">
       {spotlightArticle && (
@@ -27,13 +34,13 @@ export const TopicSection = ({
           <Divider />
         </>
       )}
-      {keywords && (
+      {_kws && (
         <div className="flex flex-row items-center gap-2 px-4 py-2">
           <Text fontSize="lg" color="gray-40" fontWeight="medium">
-            #
+            #{rank || ""}
           </Text>
           <div className="flex flex-row flex-wrap gap-2">
-            {keywords.map((keyword, index) => (
+            {_kws.map((keyword, index) => (
               <div
                 key={index}
                 className="bg-gray-0 px-3 py-2 rounded-md min-w-0"

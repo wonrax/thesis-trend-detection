@@ -1,7 +1,4 @@
 if __name__ == "__main__":
-    import sys
-
-    sys.path.append(".")
     from common.constants import DATABASE_URL
     from mongoengine import connect
 

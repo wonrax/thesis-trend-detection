@@ -1,5 +1,5 @@
 from mongoengine import *
-from data.model.article import Article, Comment
+from .article import Article
 from datetime import datetime
 
 

@@ -1,13 +1,8 @@
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(".")
-
 from models.topic import TopicModel
 from sklearn.cluster import KMeans
 from sklearn import metrics
-from pipeline.logger import get_common_logger
-from pipeline.preprocess import PreprocessedArticle
+from logger import get_common_logger
+from preprocess import PreprocessedArticle
 from typing import List
 
 # Set up logger

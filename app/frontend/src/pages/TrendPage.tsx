@@ -5,6 +5,14 @@ import axios from "axios";
 import Trend from "../models/Trend";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Overlay from "../components/Overlay";
+import Masonry from "react-masonry-css";
+import styles from "./TrendPage.module.css";
+
+const breakpointColumnsObj = {
+  default: 3,
+  1280: 2,
+  768: 1,
+};
 
 export const TrendPage = ({
   trend,
@@ -35,7 +43,8 @@ export const TrendPage = ({
       axios
         .get(`http://localhost:5000/trending/category/${trendCategory}`)
         .then((res) => {
-          setTrend(res.data);
+          const data: Trend = res.data;
+          setTrend(data);
           setLoading(false);
         })
         .catch(() => {
@@ -63,7 +72,7 @@ export const TrendPage = ({
 
   return (
     <div className="w-full bg-gray-0">
-      <div className="min-h-screen m-auto py-8 p-2 sm:w-[512px]">
+      <div className="min-h-screen m-auto py-8 px-2 sm:px-16 md:px-4 xl:px-0 xl:w-[1280px]">
         <div className="p-8 flex flex-col justify-center items-center">
           <Text
             fontSize="xxl"
@@ -118,7 +127,12 @@ export const TrendPage = ({
             Hôm nay không có tin gì mới, mời bạn quay lại sau.
           </Text>
         )}
-        <div className="space-y-4">
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className={styles["my-masonry-grid"]}
+          columnClassName={styles["my-masonry-grid_column"]}
+        >
+          {/* array of JSX items */}
           {trend?.topics.map((topic, index) => (
             <TopicSection
               key={`${trend.id}-${index}`}
@@ -126,6 +140,7 @@ export const TrendPage = ({
               articles={topic.articles.slice(1)}
               keywords={topic.keywords}
               hasMore={topic.hasMoreArticles}
+              rank={index + 1}
               navigateToTopic={() => {
                 setNavigating(true);
                 axios
@@ -138,7 +153,7 @@ export const TrendPage = ({
               }}
             />
           ))}
-        </div>
+        </Masonry>
       </div>
       {<Overlay enabled={navigating} />}
     </div>

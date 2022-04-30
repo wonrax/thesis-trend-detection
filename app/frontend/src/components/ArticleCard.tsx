@@ -56,6 +56,7 @@ const ArticleCardSpotlight = ({
     >
       {article.thumbnailUrl && showThumbnail && (
         <img
+          loading="lazy"
           className="w-full h-64 rounded-lg object-cover"
           src={article.thumbnailUrl}
           alt={`Hình ảnh cho bài viết ${article.title}`}
@@ -149,6 +150,7 @@ const ArticleCardDefault = ({
       </div>
       {article.thumbnailUrl && showThumbnail && (
         <img
+          loading="lazy"
           className="rounded-md object-cover h-24 w-24 hidden mobile:block"
           src={article.thumbnailUrl}
           alt={`Hình ảnh cho bài viết ${article.title}`}
@@ -172,6 +174,7 @@ const NewsSourceBar = ({
       <div className="flex flex-row items-center space-x-2 min-w-0">
         {sourceLogoUrl && (
           <img
+            loading="lazy"
             src={sourceLogoUrl}
             className="h-4 rounded-xs"
             alt={`${sourceName} logo`}

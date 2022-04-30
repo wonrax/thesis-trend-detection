@@ -1,12 +1,7 @@
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(".")
-
 from data.preprocess import Preprocess
-from typing import List
 from data.model.article import Article
-from pipeline.logger import get_common_logger
+from typing import List
+from logger import get_common_logger
 from typing import List
 from bson.objectid import ObjectId
 
