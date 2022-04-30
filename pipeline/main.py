@@ -169,7 +169,7 @@ if __name__ == "__main__":
         parser.add_argument(
             "--category",
             type=str,
-            default="moi_nhat",
+            default="all",
             help="The category to perform analysis on.",
         )
 
@@ -179,18 +179,25 @@ if __name__ == "__main__":
             parser.print_help()
             exit(1)
 
-        if args.category.lower() not in MAP_STRING_TO_CATEGORY:
-            logger.error(
-                f"Invalid category {args.category}. Available categories: {[c.name for c in Category]}"
-            )
-            exit(1)
-
-        category = MAP_STRING_TO_CATEGORY[args.category.lower()]
+        if args.category.lower() == "all":
+            category = Category.MOI_NHAT
+        else:
+            if args.category.lower() not in MAP_STRING_TO_CATEGORY:
+                logger.error(
+                    f"Invalid category {args.category}. Available categories: {[c.name for c in Category]}"
+                )
+                exit(1)
+            category = MAP_STRING_TO_CATEGORY[args.category.lower()]
 
         if args.analysis:
-            perform_analysis(
-                category=category, days=args.days, do_crawl_beforehand=args.crawl
-            )
+            if args.category.lower() == "all":
+                categories = [c for c in Category]
+            else:
+                categories = [category]
+            for _category in categories:
+                perform_analysis(
+                    category=_category, days=args.days, do_crawl_beforehand=args.crawl
+                )
         else:
             perform_crawl(category=category, days=args.days)
     except:
