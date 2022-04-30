@@ -81,11 +81,11 @@ class VietnamnetCrawler(Crawler):
 
             if main_content:
                 urls = re.findall(
-                    r"href=\"(\/.*?\d{7,}\.html)\"",
+                    r"href=\"(http.*?\d{7,}\.html)\"",
                     str(main_content),
                 )
 
-                return [self.BASE_URL + url for url in urls], next_page_url
+                return urls, next_page_url
 
         except Exception:
             self.logger.exception(

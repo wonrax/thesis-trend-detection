@@ -96,7 +96,9 @@ class Crawler:
         """
         Crawl articles given a list of urls
         """
-        self.logger.info(f"Extracting {len(urls)} articles from {self.SOURCE_NAME}...")
+        self.logger.info(
+            f"Extracting {len(urls)} articles from {self.SOURCE_NAME} at {self.category.name}..."
+        )
 
         articles = []
 

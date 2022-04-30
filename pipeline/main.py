@@ -53,7 +53,6 @@ def perform_crawl(category: Category, days: int = 1) -> List[Article]:
         delay=0.25,
         do_crawl_comment=False,
         do_db_store=True,
-        queue_timeout=None,
     )
 
     return articles
