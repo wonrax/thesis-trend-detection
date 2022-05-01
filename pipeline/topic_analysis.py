@@ -33,10 +33,12 @@ def analyse_comment(comment: Comment) -> CommentAnalysis:
     # Repeat for the replies
     # Return the result
 
-    replies = [analyse_comment(reply) for reply in comment.replies]
+    replies = None
+    if comment.replies:
+        replies = [analyse_comment(reply) for reply in comment.replies]
 
     return CommentAnalysis(
-        original_comment=comment,
+        comment_id=comment.oid,
         sentiment=None,
         replies=replies,
     )

@@ -8,6 +8,8 @@ from dateutil.parser import parse
 import datetime
 from zoneinfo import ZoneInfo
 import logging
+import threading
+from typing import List
 
 
 class Crawler:
@@ -35,7 +37,7 @@ class Crawler:
         # (to avoid overloading the server).
         self.delay = delay
 
-        self.timeout = 60
+        self.timeout = 10
 
         if logger is None:
             self.logger = logging.getLogger(__name__)
@@ -92,30 +94,41 @@ class Crawler:
             likes=None,
         )
 
+    def comment_crawl_thread_target(self, url: str, result: List[Comment]):
+        """
+        Target wrapper to work with threads
+        """
+        try:
+            result[0] = self.extract_comments(url)
+        except NotImplementedError:
+            pass
+
     def crawl_articles(self, urls: List[str]) -> "List[Article]":
         """
         Crawl articles given a list of urls
         """
-        self.logger.info(
-            f"Extracting {len(urls)} articles from {self.SOURCE_NAME} at {self.category.name}..."
-        )
-
         articles = []
 
         for url in urls:
+            if self.do_crawl_comment:
+                comments_result = [None]
+                t = threading.Thread(
+                    target=self.comment_crawl_thread_target, args=(url, comments_result)
+                )
+                t.start()
+
             article = self.extract_article(url)
 
             if self.do_crawl_comment:
-                comments = self.crawl_comments(url)
-                article.comments = comments
+                t.join()
+                if article:
+                    article.comments = comments_result[0]
 
-            articles.append(article)
+            if article:
+                articles.append(article)
 
             if self.delay is not None:
                 time.sleep(self.delay)
-
-        # Filter None articles
-        articles = [article for article in articles if article is not None]
 
         return articles
 

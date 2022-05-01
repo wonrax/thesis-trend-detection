@@ -3,12 +3,15 @@ from data.model.article import Article
 from typing import List
 import argparse
 from logger import get_common_logger
+from typing import List
 
 # Set up logger
 logger = get_common_logger()
 
 
-def perform_crawl(category: Category, days: int = 1) -> List[Article]:
+def perform_crawl(
+    category: Category, days: int = 1, source: str = "all", do_crawl_comment=True
+) -> List[Article]:
     """Crawl articles from the past days and store to the database
 
     Args:
@@ -29,15 +32,31 @@ def perform_crawl(category: Category, days: int = 1) -> List[Article]:
     from data.crawler.zingnews import ZingNewsCrawler
     from crawl import crawl
 
-    crawler_engines = [
-        DanTriCrawler,
-        ThanhNienCrawler,
-        TuoiTreCrawler,
-        VietnamnetCrawler,
-        VnExpressCrawler,
-        NguoiLaoDongCrawler,
-        ZingNewsCrawler,
-    ]
+    MAP_STRING_TO_SOURCE = {
+        "dantri": DanTriCrawler,
+        "vnexpress": VnExpressCrawler,
+        "tuoitre": TuoiTreCrawler,
+        "vietnamnet": VietnamnetCrawler,
+        "thanhnien": ThanhNienCrawler,
+        "nguoilaodong": NguoiLaoDongCrawler,
+        "zingnews": ZingNewsCrawler,
+    }
+
+    if source == "all":
+        crawler_engines = [
+            DanTriCrawler,
+            ThanhNienCrawler,
+            TuoiTreCrawler,
+            VietnamnetCrawler,
+            VnExpressCrawler,
+            NguoiLaoDongCrawler,
+            ZingNewsCrawler,
+        ]
+    elif source in MAP_STRING_TO_SOURCE:
+        crawler_engines = [MAP_STRING_TO_SOURCE[source]]
+    else:
+        logger.error(f"Invalid source: {source}")
+        return
 
     categories = []
     if category == Category.MOI_NHAT:
@@ -51,7 +70,7 @@ def perform_crawl(category: Category, days: int = 1) -> List[Article]:
         categories,
         days=days,
         delay=0.25,
-        do_crawl_comment=False,
+        do_crawl_comment=do_crawl_comment,
         do_db_store=True,
     )
 
@@ -118,19 +137,12 @@ def perform_analysis_on_category(category: Category, days=1.5) -> None:
     category_analysis.save()
 
 
-def perform_analysis(
-    category: Category = Category.MOI_NHAT, days=1.5, do_crawl_beforehand=False
-) -> None:
+def perform_analysis(category: Category = Category.MOI_NHAT, days=1.5) -> None:
     """Perform analysis on all available categories.
 
     Args:
         days (float, optional): The range of articles to perform analysis on. Defaults to 1.5.
     """
-
-    if do_crawl_beforehand:
-        import math
-
-        perform_crawl(category, math.ceil(days))
 
     categories = [category]
 
@@ -138,8 +150,7 @@ def perform_analysis(
         try:
             perform_analysis_on_category(category, days)
         except KeyboardInterrupt:
-            logger.error("Keyboard interrupt")
-            return
+            raise KeyboardInterrupt
         except:
             logger.exception(f"Failed to perform analysis on {category}")
 
@@ -172,6 +183,12 @@ if __name__ == "__main__":
             default="all",
             help="The category to perform analysis on.",
         )
+        parser.add_argument(
+            "--source",
+            type=str,
+            default="all",
+            help="The source to crawl articles from.",
+        )
 
         args = parser.parse_args()
 
@@ -192,14 +209,18 @@ if __name__ == "__main__":
         if args.analysis:
             if args.category.lower() == "all":
                 categories = [c for c in Category]
+                categories.remove(Category.MOI_NHAT)
             else:
                 categories = [category]
             for _category in categories:
-                perform_analysis(
-                    category=_category, days=args.days, do_crawl_beforehand=args.crawl
-                )
-        else:
-            perform_crawl(category=category, days=args.days)
+                perform_analysis(category=_category, days=args.days)
+        elif args.crawl:
+            perform_crawl(
+                category=category,
+                days=args.days,
+                source=args.source,
+                do_crawl_comment=True,
+            )
     except:
         import sys
 

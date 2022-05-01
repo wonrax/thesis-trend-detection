@@ -10,7 +10,6 @@ from data.model.article import Article
 import datetime
 from zoneinfo import ZoneInfo
 import threading
-from queue import Queue, Empty
 import time
 from logger import get_common_logger
 
@@ -45,7 +44,6 @@ def crawl(
         total_crawled = 0
         try:
             for category in categories:
-                logger.info(f"Started crawling articles from {crawler} at {category}")
                 config = {
                     "category": category,
                     "do_crawl_comment": do_crawl_comment,
@@ -53,15 +51,21 @@ def crawl(
                     "logger": logger,
                 }
                 _crawler = crawler(**config)
+                logger.info(
+                    f"Started crawling articles from ({_crawler.SOURCE_NAME}/{category.name})"
+                )
                 try:
                     urls = _crawler.crawl_urls(start_date, end_date)
                     urls = list(set(urls))
+                    logger.info(
+                        f"Extracting {len(urls)} articles from ({_crawler.SOURCE_NAME}/{category.name})..."
+                    )
                     _articles = _crawler.crawl_articles(urls)
                     total_crawled += len(_articles)
 
                     if do_db_store:
                         logger.info(
-                            f"Storing {len(_articles)} articles to database ({crawler}/{category.name})..."
+                            f"Storing {len(_articles)} articles to database ({_crawler.SOURCE_NAME}/{category.name})..."
                         )
                         for article in _articles:
                             try:
@@ -85,13 +89,9 @@ def crawl(
                                     f"Couldn't save article to database: {article.url}"
                                 )
 
-                    logger.info(
-                        f"Crawled {len(_articles)} articles from {crawler} at {category.name}"
-                    )
-
                 except:
                     logger.exception(
-                        f"Error when crawling {_crawler.SOURCE_NAME} with category {_crawler.category}, skipping..."
+                        f"Error when crawling ({_crawler.SOURCE_NAME}/{_crawler.category.name}), skipping..."
                     )
 
         except Exception:

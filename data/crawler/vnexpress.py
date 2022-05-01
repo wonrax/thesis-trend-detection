@@ -4,8 +4,9 @@ import time
 import re
 import requests
 from bs4 import BeautifulSoup
-from ..model.article import Article
+from ..model.article import Article, Comment
 from dateutil.parser import parse
+import json
 
 
 class VnExpressCrawler(Crawler):
@@ -152,3 +153,39 @@ class VnExpressCrawler(Crawler):
                     f"Error while getting date info of article with url {url}."
                 )
         return article
+
+    def extract_comments(self, url: str):
+        """
+        Crawl comments of the given articles.
+        """
+
+        id = self.get_id_by_url(url)
+        comments_endpoint = (
+            self.API_URL
+            + f"/index/get?offset=0&limit=200&sort=like&objectid={id}&objecttype=1&siteid=1003750"
+        )
+
+        try:
+            response = requests.get(comments_endpoint, timeout=self.timeout)
+            data = json.loads(response.text)
+            assert data["error"] != "0"
+
+            comments = []
+            for comment in data["data"]["items"]:
+                comments.append(
+                    Comment(
+                        id_source=comment["comment_id"],
+                        author=comment["full_name"],
+                        content=BeautifulSoup(comment["content"], "html.parser").text,
+                        date=datetime.datetime.utcfromtimestamp(
+                            int(comment["creation_time"])
+                        ).astimezone(datetime.timezone.utc),
+                        replies=None,
+                        likes=int(comment["userlike"]),
+                    )
+                )
+            return comments
+        except:
+            self.logger.exception(
+                f"Error while crawling comment of {self.SOURCE_NAME}/{self.category.name}/comment/{id}"
+            )
