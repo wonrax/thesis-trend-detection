@@ -11,7 +11,7 @@ logger = get_common_logger()
 
 def topic_cluster(
     articles: List[PreprocessedArticle],
-) -> tuple[List[List[PreprocessedArticle]], float, float]:
+) -> tuple[dict[int, List[PreprocessedArticle]], float, float]:
     """Cluster articles into topics using Topic model and KMeans.
 
     Args:
@@ -34,16 +34,14 @@ def topic_cluster(
     coherence_score = hdpmodel.evaluate("u_mass")
     vecs = hdpmodel.vectorize(corpus)
     logger.info(
-        f"Finished training topic model. Coherence score (u_mass): {coherence_score}"
+        f"Coherence score (u_mass): {coherence_score}"
     )
 
     # CLUSTERING
     num_topics = min(hdpmodel.model.live_k, len(corpus) - 1)
-    logger.info("Started clustering articles.")
-    logger.info(f"Number of clusters: {num_topics}")
+    logger.info(f"Clustering {num_topics} clusters...")
     cluster_model = KMeans(n_clusters=num_topics)
     cluster_model.fit(vecs)
-    logger.info("Finished clustering articles.")
     silhouette_avg = metrics.silhouette_score(vecs, cluster_model.labels_)
     logger.info(f"Silhouette Coefficient: {silhouette_avg}")
 

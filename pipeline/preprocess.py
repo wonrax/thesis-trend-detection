@@ -32,6 +32,7 @@ class PreprocessedArticle:
         source: str,
         title: str,
         excerpt_segmented_tokens: List[str] = None,
+        excerpt_segmented_sentences: str = None,
         content_segmented_sentences: str = None,
         comments: List[PreprocessedComment] = None,
     ) -> None:
@@ -40,6 +41,7 @@ class PreprocessedArticle:
         self.source = source
         self.title = title
         self.excerpt_segmented_tokens = excerpt_segmented_tokens
+        self.excerpt_segmented_sentences = excerpt_segmented_sentences
         self.content_segmented_sentences = content_segmented_sentences
 
         if comments is None:
@@ -47,6 +49,23 @@ class PreprocessedArticle:
         else:
             self.comments = comments
 
+def tfidf_filter(tokenized_docs: List[List[str]], threshold: float = 0.1):
+    from gensim.models import TfidfModel
+    from gensim.corpora import Dictionary
+
+    dct = Dictionary(tokenized_docs)  # fit dictionary
+    corpus = [dct.doc2bow(line) for line in tokenized_docs]  # convert corpus to BoW format
+    model = TfidfModel(corpus)  # fit model
+
+    filtered_docs = []
+    for index, article in enumerate(tokenized_docs):
+        filtered_doc = []
+        for word_index, score in enumerate(model[corpus[index]]):
+            if score[1] > threshold:
+                filtered_doc.append(article[word_index])
+        filtered_docs.append(filtered_doc)
+
+    return filtered_docs
 
 def preprocess_articles(articles: List[Article]):
 
@@ -69,7 +88,6 @@ def preprocess_articles(articles: List[Article]):
         excerpt_segmented = Preprocess.segmentize(
             article.excerpt,
             stopword_list=stopword_list_for_excerpt,
-            do_sentences=False,
         )
         content_segmented = Preprocess.segmentize(
             article.content,
@@ -83,28 +101,25 @@ def preprocess_articles(articles: List[Article]):
                 source=article.source,
                 title=article.title,
                 excerpt_segmented_tokens=excerpt_segmented["tokens"],
+                excerpt_segmented_sentences=excerpt_segmented["sentences"],
                 content_segmented_sentences=content_segmented["sentences"],
             )
         )
 
     # Remove unimportant words using tfidf
     logger.info(f"Removing unimportant words using tfidf...")
-    from gensim.models import TfidfModel
-    from gensim.corpora import Dictionary
+    THRESHOLD = 0.05
+    tokenized_excerpts = [a.excerpt_segmented_tokens for a in processed_articles]
+    # lower
+    tokenized_excerpts = [[word.lower() for word in line] for line in tokenized_excerpts]
+    filtered_excerpts = tfidf_filter(tokenized_excerpts, threshold=THRESHOLD)
+    
+    logger.debug(f"Before TF-IDF: {tokenized_excerpts[:10]}")
 
-    THRESHOLD = 0.1
+    for index, filtered_text in enumerate(filtered_excerpts):
+        processed_articles[index].excerpt_segmented_tokens = filtered_text
 
-    tokens = [a.excerpt_segmented_tokens for a in processed_articles]
-    dct = Dictionary(tokens)  # fit dictionary
-    corpus = [dct.doc2bow(line) for line in tokens]  # convert corpus to BoW format
-    model = TfidfModel(corpus)  # fit model
-
-    for index, article in enumerate(tokens):
-        filtered_doc = []
-        for word_index, score in enumerate(model[corpus[index]]):
-            if score[1] > THRESHOLD:
-                filtered_doc.append(article[word_index])
-        processed_articles[index].excerpt_segmented_tokens = filtered_doc
+    logger.debug(f"After TF-IDF: {filtered_excerpts[:10]}")
 
     return processed_articles
 

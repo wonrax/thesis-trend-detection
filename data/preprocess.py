@@ -89,7 +89,7 @@ class Preprocess:
             for paragraph in segmented:
                 for word in paragraph:
                     if (
-                        word["form"] not in stopword_list
+                        word["form"].lower() not in stopword_list
                         and len(word["form"]) > 1
                         and word["posTag"]
                         in [
