@@ -173,8 +173,7 @@ def analyse_category(
 ) -> CategoryAnalysis:
 
     TOPIC_ARTICLES_THRESHOLD = (
-        7  # the minimum number of articles for a topic to be considered qualified
-        # currently set to 7 because there are 7 news sources
+        5  # the minimum number of articles for a topic to be considered qualified
     )
 
     filtered_topics = {
@@ -217,8 +216,8 @@ def analyse_category(
         )
 
         relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
-        time_score = math.sinh(1 / relative_hours) * 100
-        time_score = min(time_score, 30)
+        time_score = math.sinh(1 / relative_hours) * 200
+        time_score = min(time_score, 60)
 
         score += score * time_score
 
