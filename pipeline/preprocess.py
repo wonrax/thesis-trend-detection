@@ -107,19 +107,19 @@ def preprocess_articles(articles: List[Article]):
         )
 
     # Remove unimportant words using tfidf
-    logger.info(f"Removing unimportant words using tfidf...")
-    THRESHOLD = 0.05
-    tokenized_excerpts = [a.excerpt_segmented_tokens for a in processed_articles]
+    # logger.info(f"Removing unimportant words using tfidf...")
+    # THRESHOLD = 0.05
+    # tokenized_excerpts = [a.excerpt_segmented_tokens for a in processed_articles]
     # lower
-    tokenized_excerpts = [[word.lower() for word in line] for line in tokenized_excerpts]
-    filtered_excerpts = tfidf_filter(tokenized_excerpts, threshold=THRESHOLD)
+    # tokenized_excerpts = [[word.lower() for word in line] for line in tokenized_excerpts]
+    # filtered_excerpts = tfidf_filter(tokenized_excerpts, threshold=THRESHOLD)
     
-    logger.debug(f"Before TF-IDF: {tokenized_excerpts[:10]}")
+    # logger.debug(f"Before TF-IDF: {tokenized_excerpts[:10]}")
 
-    for index, filtered_text in enumerate(filtered_excerpts):
-        processed_articles[index].excerpt_segmented_tokens = filtered_text
+    # for index, filtered_text in enumerate(filtered_excerpts):
+    #     processed_articles[index].excerpt_segmented_tokens = filtered_text
 
-    logger.debug(f"After TF-IDF: {filtered_excerpts[:10]}")
+    # logger.debug(f"After TF-IDF: {filtered_excerpts[:10]}")
 
     return processed_articles
 

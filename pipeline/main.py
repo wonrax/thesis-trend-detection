@@ -127,6 +127,9 @@ def perform_analysis_on_category(category: Category, days=1.5) -> None:
 
     category_analysis = analyse_category(category, topic_articles)
 
+    if category_analysis is None:
+        return
+
     metrics = Metrics(
         silhouette_coefficient=silhouette_avg,
         topic_coherence=coherence_score,

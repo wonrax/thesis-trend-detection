@@ -172,14 +172,34 @@ def analyse_category(
     category: Category, topic_articles: dict[int, List[PreprocessedArticle]]
 ) -> CategoryAnalysis:
 
-    logger.info(f"Analyzing {len(topic_articles)} topics in {category}")
+    TOPIC_ARTICLES_THRESHOLD = (
+        7  # the minimum number of articles for a topic to be considered qualified
+        # currently set to 7 because there are 7 news sources
+    )
+
+    filtered_topics = {
+        topic_id: topic_articles[topic_id]
+        for topic_id in topic_articles.keys()
+        if len(topic_articles[topic_id]) >= TOPIC_ARTICLES_THRESHOLD
+    }
+
+    if len(filtered_topics) == 0:
+        logger.warning(f"No qualified topics for category {category.name}")
+        return None
+
+    logger.info(f"Analyzing {len(filtered_topics)} topics in {category.name}")
     analysed_topics = []
 
-    for key in topic_articles:
-        articles_of_a_topic = topic_articles[key]
+    for key in filtered_topics:
+        articles_of_a_topic = filtered_topics[key]
         analysed_topics.append(analyse_topic(articles_of_a_topic))
-        if len(analysed_topics) % int(len(topic_articles) / 10) == 0:
-            logger.info(f"{len(analysed_topics)}/{len(topic_articles)} topics analysed")
+        if (
+            int(len(filtered_topics) / 10) == 0
+            or len(analysed_topics) % int(len(filtered_topics) / 10) == 0
+        ):
+            logger.info(
+                f"{len(analysed_topics)}/{len(filtered_topics)} topics analysed"
+            )
 
     # TODO find another, smarter way to sort the topics by relevance
     # TODO DO NOT sort if only one topic
@@ -196,9 +216,9 @@ def analyse_category(
             sum(map(datetime.datetime.timestamp, datetimes)) / len(datetimes)
         )
 
-        relative_minutes: float = (now - avg_time).total_seconds() / 60 + 1
-        time_score = math.sinh(1 / relative_minutes) * 100
-        time_score = min(time_score, 100)
+        relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
+        time_score = math.sinh(1 / relative_hours) * 100
+        time_score = min(time_score, 30)
 
         score += score * time_score
 
