@@ -43,9 +43,41 @@ class Preprocess:
         return s.strip()
 
     @staticmethod
+    def teen_code_decode(text: str) -> str:
+        """Replace teen codes with formal ones
+
+        Args:
+            text (str): text to be decoded
+
+        Returns:
+            str: decoded text
+        """
+        # TODO use a teen code list
+        rep = {
+            "k": "không",
+            "ko": "không",
+            "kh": "không",
+            "đc": "được",
+            "dc": "được",
+            "a": "anh",
+            "e": "em",
+            "v": "vậy",
+            "vs": "với",
+            "m": "mình",
+        }  # define desired replacements here
+
+        rep_ = dict((r"\b{}\b".format(k), v) for k, v in rep.items())
+        pattern = re.compile("|".join(rep_.keys()), flags=re.I)
+
+        result = pattern.sub(lambda m: rep[re.escape(m.group(0)).lower()], text)
+
+        return result
+
+    @staticmethod
     def segmentize(
         text: str,
         do_deep_clean=False,
+        do_teen_code=False,
         do_sentences=False,
         do_tokens=False,
         stopword_list=[],
@@ -65,6 +97,9 @@ class Preprocess:
 
         if do_deep_clean:
             text = Preprocess.deep_clean(text)
+
+        if do_teen_code:
+            text = Preprocess.teen_code_decode(text)
 
         global rdrsegmenter
 

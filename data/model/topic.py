@@ -7,7 +7,9 @@ class CommentAnalysis(EmbeddedDocument):
     """Document that contains analysis on a comment."""
 
     comment_id = ObjectIdField(required=True, null=False)
-    sentiment = IntField(null=True, choices=(-1, 0, 1))  # NEG, NEU, POS
+    sentiment = StringField(
+        null=True, choices=("NEGATIVE", "POSITIVE", "NEUTRAL", "UNSURE")
+    )
     replies = ListField(ReferenceField("self"), null=True)
 
 

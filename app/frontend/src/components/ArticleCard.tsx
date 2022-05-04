@@ -4,6 +4,10 @@ import Article from "../models/Article";
 import classNames from "classnames";
 import { capitalizeFirstLetter } from "../utils/string";
 
+const formatSentimentRate = (rate: number) => {
+  return (rate * 100).toFixed(0);
+};
+
 export const ArticleCard = ({
   article,
   spotlight = false,
@@ -15,38 +19,25 @@ export const ArticleCard = ({
   showThumbnail?: boolean;
   mobile?: boolean;
 }) => {
-  const maxSentimentValue = Math.max(
-    article.positiveRate || 0,
-    article.negativeRate || 0,
-    article.neutralRate || 0
-  );
-
   if (!spotlight)
     return (
       <ArticleCardDefault
         article={article}
-        maxSentimentValue={maxSentimentValue}
         showThumbnail={showThumbnail}
         mobile={mobile}
       />
     );
   else
     return (
-      <ArticleCardSpotlight
-        article={article}
-        maxSentimentValue={maxSentimentValue}
-        showThumbnail={showThumbnail}
-      />
+      <ArticleCardSpotlight article={article} showThumbnail={showThumbnail} />
     );
 };
 
 const ArticleCardSpotlight = ({
   article,
-  maxSentimentValue,
   showThumbnail,
 }: {
   article: Article;
-  maxSentimentValue: number;
   showThumbnail: boolean;
 }) => {
   return (
@@ -80,18 +71,18 @@ const ArticleCardSpotlight = ({
         <Text color="gray-60" fontSize="body">
           {article.description}
         </Text>
-        {maxSentimentValue == article.positiveRate && (
+        {article.positiveRate ? (
           <Text color="green" fontSize="sm" fontWeight="medium">
-            {`${article.positiveRate.toFixed(0)}% `}
+            {`${formatSentimentRate(article.positiveRate)}% `}
             tích cực
           </Text>
-        )}
-        {maxSentimentValue == article.negativeRate && (
+        ) : null}
+        {article.negativeRate ? (
           <Text color="red" fontSize="sm" fontWeight="medium">
-            {`${article.negativeRate.toFixed(0)}% `}
+            {`${formatSentimentRate(article.negativeRate)}% `}
             tiêu cực
           </Text>
-        )}
+        ) : null}
       </div>
     </a>
   );
@@ -99,12 +90,10 @@ const ArticleCardSpotlight = ({
 
 const ArticleCardDefault = ({
   article,
-  maxSentimentValue,
   showThumbnail,
   mobile,
 }: {
   article: Article;
-  maxSentimentValue: number;
   showThumbnail: boolean;
   mobile: boolean;
 }) => {
@@ -135,18 +124,18 @@ const ArticleCardDefault = ({
             {article.title}
           </Text>
         </div>
-        {maxSentimentValue == article.positiveRate && (
+        {article.positiveRate ? (
           <Text color="green" fontSize="sm" fontWeight="medium">
-            {`${article.positiveRate.toFixed(0)}% `}
+            {`${formatSentimentRate(article.positiveRate)}% `}
             tích cực
           </Text>
-        )}
-        {maxSentimentValue == article.negativeRate && (
+        ) : null}
+        {article.negativeRate ? (
           <Text color="red" fontSize="sm" fontWeight="medium">
-            {`${article.negativeRate.toFixed(0)}% `}
+            {`${formatSentimentRate(article.negativeRate)}% `}
             tiêu cực
           </Text>
-        )}
+        ) : null}
       </div>
       {article.thumbnailUrl && showThumbnail && (
         <img

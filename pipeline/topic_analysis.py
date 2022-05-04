@@ -13,9 +13,22 @@ from typing import List
 import datetime
 from yake import KeywordExtractor
 import math
+from data.preprocess import Preprocess
+from models.sentiment import Sentiment, get_sentiment
+from bson.objectid import ObjectId
 
 # Set up logger
 logger = get_common_logger()
+
+
+def find_comment_by_id(id: ObjectId, comments: List[Comment]) -> Comment:
+    for comment in comments:
+        if comment.oid == id:
+            return comment
+        if comment.replies:
+            found = find_comment_by_id(id, comment.replies)
+            if found:
+                return found
 
 
 def analyse_comment(comment: Comment) -> CommentAnalysis:
@@ -27,19 +40,21 @@ def analyse_comment(comment: Comment) -> CommentAnalysis:
     Returns:
         CommentAnalysis: Analysed comment.
     """
-    # TODO
-    # Preprocess the comment
-    # Do sentiment analysis
-    # Repeat for the replies
-    # Return the result
+
+    comment_content_segmented = Preprocess.segmentize(
+        text=comment.content, do_teen_code=True, do_sentences=True
+    )["sentences"]
+
+    sentiment = get_sentiment(comment_content_segmented)
 
     replies = None
-    if comment.replies:
-        replies = [analyse_comment(reply) for reply in comment.replies]
+    # TODO currently only support one level of replies
+    # if comment.replies:
+    #     replies = [analyse_comment(reply) for reply in comment.replies]
 
     return CommentAnalysis(
         comment_id=comment.oid,
-        sentiment=None,
+        sentiment=sentiment.name,
         replies=replies,
     )
 
@@ -54,7 +69,7 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
         ArticleAnalysis: Analysed article.
     """
 
-    articleObject: Article = Article.objects.get(id=article.id_mongo)
+    original_article: Article = Article.objects.get(id=article.id_mongo)
 
     comments = []
     comments_positive_rate = None
@@ -62,9 +77,46 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
     comments_negative_rate = None
     keywords = []
 
-    if articleObject.comments:
-        comments = [analyse_comment(comment) for comment in articleObject.comments]
-        # TODO: calculate sentiment rate for this post
+    if original_article.comments and len(original_article.comments) > 5:
+        # The number of comments also needs to be above 5 to be considered "statistically significant"
+        comments = [analyse_comment(comment) for comment in original_article.comments]
+        ratings: List[tuple[str, int]] = []  # [(sentiment, count)]
+        for comment in comments:
+            original_comment: Comment = find_comment_by_id(
+                comment.comment_id, original_article.comments
+            )
+            if original_comment:
+                weight = original_comment.likes if original_comment.likes else 1
+            else:
+                weight = 1
+            ratings.append((comment.sentiment, weight))
+
+        # Compute the sentiment rate for this article
+        total = sum(weight for _, weight in ratings)
+        comments_negative_rate = (
+            sum(
+                weight
+                for sentiment, weight in ratings
+                if sentiment == Sentiment.NEGATIVE.name
+            )
+            / total
+        )
+        comments_positive_rate = (
+            sum(
+                weight
+                for sentiment, weight in ratings
+                if sentiment == Sentiment.POSITIVE.name
+            )
+            / total
+        )
+        comments_neutral_rate = (
+            sum(
+                weight
+                for sentiment, weight in ratings
+                if sentiment == Sentiment.NEUTRAL.name
+            )
+            / total
+        )
 
     if article.excerpt_segmented_sentences:
         for n in range(1, 4):
@@ -76,7 +128,7 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
             keywords += [k for k, _ in _keywords]
 
     return ArticleAnalysis(
-        original_article=articleObject,
+        original_article=original_article,
         comments_negative_rate=comments_negative_rate,
         comments_neutral_rate=comments_neutral_rate,
         comments_positive_rate=comments_positive_rate,
@@ -144,9 +196,9 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         date = articleObject.date
         num_comments = len(articleObject.comments) if articleObject.comments else 0
         if likes:
-            score += likes
+            score += likes * 20
         if num_comments:
-            score += num_comments * 2
+            score += num_comments * 30
         if date:
             relative_minutes: float = (now - date).seconds / 60 + 1
             score += 10000 / relative_minutes
