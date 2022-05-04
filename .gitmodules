@@ -5,3 +5,6 @@
 	path = lib/yake_vietnamese
 	url = https://github.com/wonrax/yake-vietnamese.git
 	ignore = all
+[submodule "lib/VnCoreNLP"]
+	path = lib/VnCoreNLP
+	url = https://github.com/vncorenlp/VnCoreNLP.git
