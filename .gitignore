@@ -3,12 +3,12 @@ code_examples/
 
 .vscode/
 
-phobert-base
+phobert-base/
+phobert-base-vietnamese-sentiment/
 
 # Temporarily ignore all csv files
 *.csv
 
-scripts/
 tmp/
 logs/
 db-data/
