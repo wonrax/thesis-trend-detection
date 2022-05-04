@@ -49,12 +49,15 @@ class PreprocessedArticle:
         else:
             self.comments = comments
 
+
 def tfidf_filter(tokenized_docs: List[List[str]], threshold: float = 0.1):
     from gensim.models import TfidfModel
     from gensim.corpora import Dictionary
 
     dct = Dictionary(tokenized_docs)  # fit dictionary
-    corpus = [dct.doc2bow(line) for line in tokenized_docs]  # convert corpus to BoW format
+    corpus = [
+        dct.doc2bow(line) for line in tokenized_docs
+    ]  # convert corpus to BoW format
     model = TfidfModel(corpus)  # fit model
 
     filtered_docs = []
@@ -66,6 +69,7 @@ def tfidf_filter(tokenized_docs: List[List[str]], threshold: float = 0.1):
         filtered_docs.append(filtered_doc)
 
     return filtered_docs
+
 
 def preprocess_articles(articles: List[Article]):
 
@@ -113,7 +117,7 @@ def preprocess_articles(articles: List[Article]):
     # lower
     # tokenized_excerpts = [[word.lower() for word in line] for line in tokenized_excerpts]
     # filtered_excerpts = tfidf_filter(tokenized_excerpts, threshold=THRESHOLD)
-    
+
     # logger.debug(f"Before TF-IDF: {tokenized_excerpts[:10]}")
 
     # for index, filtered_text in enumerate(filtered_excerpts):

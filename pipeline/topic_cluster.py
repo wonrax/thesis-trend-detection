@@ -33,9 +33,7 @@ def topic_cluster(
     hdpmodel.train(corpus, initial_k=len(corpus), iteration=2000)
     coherence_score = hdpmodel.evaluate("u_mass")
     vecs = hdpmodel.vectorize(corpus)
-    logger.info(
-        f"Coherence score (u_mass): {coherence_score}"
-    )
+    logger.info(f"Coherence score (u_mass): {coherence_score}")
 
     # CLUSTERING
     num_topics = min(hdpmodel.model.live_k, len(corpus) - 1)
