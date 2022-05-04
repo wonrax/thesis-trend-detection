@@ -13,3 +13,5 @@ tmp/
 logs/
 db-data/
 *.egg-info
+
+.env

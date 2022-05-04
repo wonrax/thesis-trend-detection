@@ -46,8 +46,8 @@ class Preprocess:
     def segmentize(
         text: str,
         do_deep_clean=False,
-        do_sentences=True,
-        do_tokens=True,
+        do_sentences=False,
+        do_tokens=False,
         stopword_list=[],
     ) -> dict:
         """Segmentize text (aka "phân đoạn từ") using VnCoreNLP segmentizer.
@@ -70,7 +70,7 @@ class Preprocess:
 
         if not rdrsegmenter:
             rdrsegmenter = VnCoreNLP(
-                "./notebooks/VnCoreNLP/VnCoreNLP-1.1.1.jar",
+                "lib/VnCoreNLP/VnCoreNLP-1.1.1.jar",
                 annotators="wseg,pos",
                 max_heap_size="-Xmx2g",
             )
@@ -81,7 +81,11 @@ class Preprocess:
         if do_sentences:
             paragraphs = []
             for paragraph in segmented:
-                paragraphs.append(" ".join([x["form"] for x in paragraph]))
+                words = []
+                for x in paragraph:
+                    if x["form"].lower() not in stopword_list:
+                        words.append(x["form"])
+                paragraphs.append(" ".join(words))
             sentences = " ".join(paragraphs)
 
         tokens = []

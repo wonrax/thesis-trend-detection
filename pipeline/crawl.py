@@ -84,12 +84,12 @@ def crawl(
                                     set__tags=article.tags,
                                     set__category=article.category,
                                 )
-                            except:
+                            except Exception:
                                 logger.exception(
                                     f"Couldn't save article to database: {article.url}"
                                 )
 
-                except:
+                except Exception:
                     logger.exception(
                         f"Error when crawling ({_crawler.SOURCE_NAME}/{_crawler.category.name}), skipping..."
                     )

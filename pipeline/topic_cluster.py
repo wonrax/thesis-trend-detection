@@ -28,10 +28,11 @@ def topic_cluster(
     corpus = [[token.lower() for token in doc] for doc in corpus]
 
     # TRAIN MODEL
-    logger.info("Started training topic model.")
+    logger.info("Started training topic model...")
     hdpmodel = TopicModel(logger=logger)
     hdpmodel.train(corpus, initial_k=len(corpus), iteration=2000)
     coherence_score = hdpmodel.evaluate("u_mass")
+    logger.info("Vectorizing corpus...")
     vecs = hdpmodel.vectorize(corpus)
     logger.info(f"Coherence score (u_mass): {coherence_score}")
 
