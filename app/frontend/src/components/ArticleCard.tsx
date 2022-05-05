@@ -3,6 +3,8 @@ import Text from "./Text";
 import Article from "../models/Article";
 import classNames from "classnames";
 import { capitalizeFirstLetter } from "../utils/string";
+import { ReactComponent as ThumbsUp } from "./icons/ThumbsUp.svg";
+import { ReactComponent as ThumbsDown } from "./icons/ThumbsDown.svg";
 
 const formatSentimentRate = (rate: number) => {
   return (rate * 100).toFixed(0);
@@ -71,18 +73,10 @@ const ArticleCardSpotlight = ({
         <Text color="gray-60" fontSize="body">
           {article.description}
         </Text>
-        {article.positiveRate ? (
-          <Text color="green" fontSize="sm" fontWeight="medium">
-            {`${formatSentimentRate(article.positiveRate)}% `}
-            tích cực
-          </Text>
-        ) : null}
-        {article.negativeRate ? (
-          <Text color="red" fontSize="sm" fontWeight="medium">
-            {`${formatSentimentRate(article.negativeRate)}% `}
-            tiêu cực
-          </Text>
-        ) : null}
+        <SentimentBar
+          positiveRate={article.positiveRate}
+          negativeRate={article.negativeRate}
+        />
       </div>
     </a>
   );
@@ -124,18 +118,10 @@ const ArticleCardDefault = ({
             {article.title}
           </Text>
         </div>
-        {article.positiveRate ? (
-          <Text color="green" fontSize="sm" fontWeight="medium">
-            {`${formatSentimentRate(article.positiveRate)}% `}
-            tích cực
-          </Text>
-        ) : null}
-        {article.negativeRate ? (
-          <Text color="red" fontSize="sm" fontWeight="medium">
-            {`${formatSentimentRate(article.negativeRate)}% `}
-            tiêu cực
-          </Text>
-        ) : null}
+        <SentimentBar
+          positiveRate={article.positiveRate}
+          negativeRate={article.negativeRate}
+        />
       </div>
       {article.thumbnailUrl && showThumbnail && (
         <img
@@ -185,6 +171,42 @@ const NewsSourceBar = ({
           </Text>
         </>
       )}
+    </div>
+  );
+};
+
+const SentimentChip = ({
+  rate,
+  negative,
+}: {
+  rate: number;
+  negative?: boolean;
+}) => {
+  return (
+    <div
+      className={`flex flex-row w-fit items-center gap-1 rounded-md px-2 py-1 bg-opacity-10 ${
+        negative ? "bg-red" : "bg-green"
+      }`}
+    >
+      {negative ? <ThumbsDown /> : <ThumbsUp />}
+      <Text fontSize="sm" color={negative ? "red" : "green"}>
+        {`${formatSentimentRate(rate)}%`}
+      </Text>
+    </div>
+  );
+};
+
+const SentimentBar = ({
+  positiveRate,
+  negativeRate,
+}: {
+  positiveRate?: number;
+  negativeRate?: number;
+}) => {
+  return (
+    <div className="flex flex-row gap-2">
+      {positiveRate ? <SentimentChip rate={positiveRate} /> : null}
+      {negativeRate ? <SentimentChip rate={negativeRate} negative /> : null}
     </div>
   );
 };
