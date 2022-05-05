@@ -6,6 +6,7 @@ import { capitalizeFirstLetter } from "../utils/string";
 import { ReactComponent as ThumbsUp } from "./icons/ThumbsUp.svg";
 import { ReactComponent as ThumbsDown } from "./icons/ThumbsDown.svg";
 import ReactTooltip from "react-tooltip";
+import styles from "./ArticleCard.module.css";
 
 const formatSentimentRate = (rate: number) => {
   return (rate * 100).toFixed(0);
@@ -235,6 +236,8 @@ const SentimentBar = ({
         id={`sentiment-bar-${randomUuid}`}
         effect="solid"
         place="bottom"
+        className={styles.tooltip}
+        arrowColor="rgba(0,0,0,0)"
       >
         <div className="flex flex-col gap-1">
           {positiveRate != undefined ? (
