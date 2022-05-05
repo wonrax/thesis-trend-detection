@@ -7,6 +7,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Overlay from "../components/Overlay";
 import Masonry from "react-masonry-css";
 import styles from "./TrendPage.module.css";
+import { API_URL } from "../constants";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -41,7 +42,7 @@ export const TrendPage = ({
     if (!memorized) {
       setLoading(true);
       axios
-        .get(`http://localhost:5000/trending/category/${trendCategory}`)
+        .get(`${API_URL}/trending/category/${trendCategory}`)
         .then((res) => {
           const data: Trend = res.data;
           setTrend(data);
@@ -103,7 +104,7 @@ export const TrendPage = ({
                   onClick={() => {
                     setNavigating(true);
                     axios
-                      .get(`http://localhost:5000/trending/category/${key}`)
+                      .get(`${API_URL}/trending/category/${key}`)
                       .then((res) => {
                         navigate(`/${key}`, {
                           state: { passedTrend: res.data },
@@ -144,7 +145,7 @@ export const TrendPage = ({
               navigateToTopic={() => {
                 setNavigating(true);
                 axios
-                  .get(`http://localhost:5000/topic/${trend.id}/${index}`)
+                  .get(`${API_URL}/topic/${trend.id}/${index}`)
                   .then((res) => {
                     navigate(`/topic/${trend.id}/${index}`, {
                       state: { passedTopic: res.data },

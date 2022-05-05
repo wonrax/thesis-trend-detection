@@ -5,6 +5,7 @@ import axios from "axios";
 import Topic from "../models/Topic";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Overlay from "../components/Overlay";
+import { API_URL } from "../constants";
 
 export const TopicDetail = () => {
   const [topic, setTopic] = useState<Topic>();
@@ -19,7 +20,7 @@ export const TopicDetail = () => {
     if (passedTopic) {
       setTopic(passedTopic);
     } else {
-      axios.get(`http://localhost:5000/topic/${id}/${index}`).then((res) => {
+      axios.get(`${API_URL}/topic/${id}/${index}`).then((res) => {
         setTopic(res.data);
         setLoading(false);
       });
