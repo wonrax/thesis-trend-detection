@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { capitalizeFirstLetter } from "../utils/string";
 import { ReactComponent as ThumbsUp } from "./icons/ThumbsUp.svg";
 import { ReactComponent as ThumbsDown } from "./icons/ThumbsDown.svg";
+import ReactTooltip from "react-tooltip";
 
 const formatSentimentRate = (rate: number) => {
   return (rate * 100).toFixed(0);
@@ -73,10 +74,15 @@ const ArticleCardSpotlight = ({
         <Text color="gray-60" fontSize="body">
           {article.description}
         </Text>
-        <SentimentBar
-          positiveRate={article.positiveRate}
-          negativeRate={article.negativeRate}
-        />
+        {(article.positiveRate ||
+          article.negativeRate ||
+          article.neutralRate) && (
+          <SentimentBar
+            positiveRate={article.positiveRate}
+            negativeRate={article.negativeRate}
+            neutralRate={article.neutralRate}
+          />
+        )}
       </div>
     </a>
   );
@@ -118,10 +124,15 @@ const ArticleCardDefault = ({
             {article.title}
           </Text>
         </div>
-        <SentimentBar
-          positiveRate={article.positiveRate}
-          negativeRate={article.negativeRate}
-        />
+        {(article.positiveRate ||
+          article.negativeRate ||
+          article.neutralRate) && (
+          <SentimentBar
+            positiveRate={article.positiveRate}
+            negativeRate={article.negativeRate}
+            neutralRate={article.neutralRate}
+          />
+        )}
       </div>
       {article.thumbnailUrl && showThumbnail && (
         <img
@@ -199,15 +210,59 @@ const SentimentChip = ({
 const SentimentBar = ({
   positiveRate,
   negativeRate,
+  neutralRate,
 }: {
   positiveRate?: number;
   negativeRate?: number;
+  neutralRate?: number;
 }) => {
+  const randomUuid = Math.random().toString(36).substring(2, 15);
   return (
-    <div className="flex flex-row gap-2">
-      {positiveRate ? <SentimentChip rate={positiveRate} /> : null}
-      {negativeRate ? <SentimentChip rate={negativeRate} negative /> : null}
-    </div>
+    <>
+      <div
+        data-tip
+        data-for={`sentiment-bar-${randomUuid}`}
+        className="flex flex-row gap-2 w-fit"
+      >
+        {positiveRate ? <SentimentChip rate={positiveRate} /> : null}
+        {negativeRate ? <SentimentChip rate={negativeRate} negative /> : null}
+      </div>
+      <ReactTooltip
+        id={`sentiment-bar-${randomUuid}`}
+        effect="solid"
+        place="bottom"
+      >
+        <div className="flex flex-col gap-1">
+          {positiveRate != undefined ? (
+            <Text color="white">{`Tích cực: ${formatSentimentRate(
+              positiveRate
+            )}%`}</Text>
+          ) : null}
+          {negativeRate != undefined ? (
+            <Text color="white">{`Tiêu cực: ${formatSentimentRate(
+              negativeRate
+            )}%`}</Text>
+          ) : null}
+          {neutralRate != undefined ? (
+            <Text color="white">{`Trung lập: ${formatSentimentRate(
+              neutralRate
+            )}%`}</Text>
+          ) : null}
+          {positiveRate != undefined &&
+            negativeRate != undefined &&
+            neutralRate != undefined && (
+              <Text color="white">{`Không chắc: ${formatSentimentRate(
+                1 - positiveRate - negativeRate - neutralRate
+              )}%`}</Text>
+            )}
+          {/* {neutralRate}
+          {positiveRate &&
+            negativeRate &&
+            neutralRate &&
+            1 - positiveRate - negativeRate - neutralRate} */}
+        </div>
+      </ReactTooltip>
+    </>
   );
 };
 
