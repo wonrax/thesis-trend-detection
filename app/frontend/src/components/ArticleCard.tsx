@@ -224,8 +224,12 @@ const SentimentBar = ({
         data-for={`sentiment-bar-${randomUuid}`}
         className="flex flex-row gap-2 w-fit"
       >
-        {positiveRate ? <SentimentChip rate={positiveRate} /> : null}
-        {negativeRate ? <SentimentChip rate={negativeRate} negative /> : null}
+        {positiveRate != undefined ? (
+          <SentimentChip rate={positiveRate} />
+        ) : null}
+        {negativeRate != undefined ? (
+          <SentimentChip rate={negativeRate} negative />
+        ) : null}
       </div>
       <ReactTooltip
         id={`sentiment-bar-${randomUuid}`}
