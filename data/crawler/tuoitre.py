@@ -1,8 +1,12 @@
 from .base import Crawler, Category, EmptyPageException
+from ..model.article import Comment
 import datetime
 import time
 import re
 import requests
+import json
+from bs4 import BeautifulSoup
+from zoneinfo import ZoneInfo
 
 
 class TuoiTreCrawler(Crawler):
@@ -97,3 +101,67 @@ class TuoiTreCrawler(Crawler):
                     time.sleep(self.delay)
 
         return list(set(urls))
+
+    def json_to_comment(self, json_comment: dict):
+        """
+        Convert a JSON comment to a Comment object.
+        """
+
+        id = json_comment["id"]
+        author = json_comment["sender_fullname"]
+        content = BeautifulSoup(json_comment["content"], "html.parser").text
+        likes = int(json_comment["likes"])
+
+        # E.g. 2021-11-12T09:32:32
+        str_date = json_comment["created_date"]
+        date = datetime.datetime.strptime(str_date, "%Y-%m-%dT%H:%M:%S").astimezone(
+            ZoneInfo("Asia/Ho_Chi_Minh")
+        )
+
+        replies = []
+        if json_comment["child_comments"] is not None:
+            replies = [
+                self.json_to_comment(reply) for reply in json_comment["child_comments"]
+            ]
+
+        return Comment(
+            id_source=id,
+            author=author,
+            content=content,
+            date=date,
+            replies=replies,
+            likes=likes,
+        )
+
+    def extract_comments(self, url: str, cursor=1, limit=200):
+        """
+        Get comments of an article given its ID.
+        Return a set of Comment objects.
+        """
+
+        id = self.get_id_by_url(url)
+        api_url = self.API_URL + "/getlist-comment.api?"
+
+        url = api_url + "objId={}&pageindex={}&pagesize={}&objType=1&sort=1".format(
+            id, cursor, limit
+        )
+
+        try:
+            response = requests.get(url)
+            response_json = response.json()
+
+            assert response_json["Success"] == True
+
+            data = json.loads(response_json["Data"])
+
+            comments = []
+
+            for comment in data:
+                comments.append(self.json_to_comment(comment))
+
+            return comments
+
+        except Exception:
+            self.logger.exception(f"Error when extracting comments from {url}.")
+
+        return []
