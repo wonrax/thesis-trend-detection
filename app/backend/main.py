@@ -1,9 +1,8 @@
-if __name__ == "__main__":
-    from common.constants import DATABASE_URL
-    from mongoengine import connect
+from common.constants import DATABASE_URL
+from mongoengine import connect
 
-    assert DATABASE_URL
-    connect(host=DATABASE_URL)
+assert DATABASE_URL
+connect(host=DATABASE_URL)
 
 from flask import Flask
 from flask_restful import Resource, Api
