@@ -1,0 +1,12 @@
+services:
+  mongo-container:
+    image: mongo:5
+    environment:
+        - MONGO_INITDB_ROOT_USERNAME
+        - MONGO_INITDB_ROOT_PASSWORD
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./app/db-data:/data/db
+      - ./app/db-config:/data/configdb
+    command: mongod
