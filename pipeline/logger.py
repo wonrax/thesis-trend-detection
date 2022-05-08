@@ -1,6 +1,7 @@
 import logging
 from discord_handler import DiscordHandler
 import os
+from common.constants import DISCORD_WEBHOOK_URL
 
 
 def get_logger(
@@ -31,10 +32,9 @@ def get_logger(
             logger.addHandler(file_handler)
 
         # Discord logger
-        discord_webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
-        if discord_webhook_url is not None:
+        if DISCORD_WEBHOOK_URL is not None:
             discord_handler = DiscordHandler(
-                discord_webhook_url, emit_as_code_block=False, max_size=20000
+                DISCORD_WEBHOOK_URL, emit_as_code_block=False, max_size=20000
             )
             discord_handler.setLevel(logging.CRITICAL)
             discord_handler.setFormatter(formatter)

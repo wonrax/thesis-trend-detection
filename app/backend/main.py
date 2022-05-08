@@ -146,8 +146,8 @@ class Trending(Resource):
                 )
             )
 
-            # if len(topics) > 35:
-            #     break
+            if len(topics) > 30:
+                break
 
         categories = CategoryAnalysis.objects.distinct(field="category")
         categories = [DB_CATEGORY_TO_URL[c] for c in categories]
