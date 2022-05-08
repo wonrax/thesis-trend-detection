@@ -11,6 +11,9 @@ if __name__ == "__main__":
 
     try:
         while True:
+            logger.critical(
+                "Deamon started performing analysis at {}".format(time.ctime())
+            )
             perform_crawl(
                 category=Category.MOI_NHAT,
                 days=1,
