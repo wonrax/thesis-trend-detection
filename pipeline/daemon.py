@@ -28,4 +28,5 @@ if __name__ == "__main__":
             time.sleep(2 * 60 * 60)
     except Exception:
         logger.exception("Exception occurred while running deamon")
-        logger.critical("Daemon stopped")
+
+    logger.critical("Daemon stopped")
