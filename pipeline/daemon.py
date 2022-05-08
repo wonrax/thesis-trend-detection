@@ -24,6 +24,7 @@ if __name__ == "__main__":
             for _category in categories:
                 perform_analysis(category=_category, days=3)
 
+            logger.info("Sleeping for 6 hours...")
             time.sleep(6 * 60 * 60)  # sleep for 6 hours
     except Exception:
         logger.exception("Exception occurred while running deamon")
