@@ -1,6 +1,7 @@
 import torch
 from transformers import RobertaForSequenceClassification, AutoTokenizer
 from enum import Enum
+import torch
 
 
 class Sentiment(Enum):
@@ -36,7 +37,11 @@ def get_sentiment(sentence: str) -> Sentiment:
             cache_dir="models/phobert-base-vietnamese-sentiment",
         )
 
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    model.to(device)
+
     input_ids = torch.tensor([tokenizer.encode(sentence, max_length=256)])
+    input_ids = input_ids.to(device)
 
     with torch.no_grad():
         out = model(input_ids)
