@@ -268,7 +268,7 @@ def analyse_category(
         )
 
         relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
-        time_score = math.sinh(1 / relative_hours) * 100
+        time_score = math.sinh(1 / relative_hours) * 200
         time_score = min(time_score, 200)
 
         score += math.sqrt(len(topic.articles)) * time_score
