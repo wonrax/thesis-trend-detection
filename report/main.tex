@@ -9,25 +9,37 @@
 
 \input{util/command-utils.tex}
 
+% To include title page
+% \usepackage{pdfpages}
+
+\usepackage{tikz} % Page border for title page
+
+\usepackage[acronym]{glossaries}
+\input{glossaries.tex}
+\makeglossaries
+\renewcommand{\acronymname}{Danh mục viết tắt}
+
 \begin{document}
 
 % ========= TITLE ========= %
-
 \include{pages/1-title.tex}
+% \includepdf[pages={1}, noautoscale]{pages/BiaBaoCao.pdf}
 
 % ========= ABSTRACT ========= %
+\include{pages/2-abstract.tex}
 
-% \include{pages/2-abstract.tex}
-
+% ========= ToC ========= %
 \tableofcontents
 \clearpage
 
-% ========= MAIN CONTENT ========= %
+% ========= Glossaries ========= %
+\printglossary[type=\acronymtype]
+\clearpage
 
+% ========= MAIN CONTENT ========= %
 \include{pages/3-main/main.tex}
 
 % ========= BIBLIOGRAPHY ========= %
-
 % \nocite{*} % TODO IMPORTANT Comment this when publishing
 \include{pages/4-bibliography.tex}
 

@@ -1,21 +1,11 @@
 \chapter{Thực nghiệm và đánh giá}
 \label{chap:experiments}
 
-Báo cáo này tập trung thử nghiệm phân cụm dữ liệu văn bản dựa trên mô hình chủ
-đề và cách kết hợp các mô hình do Nguyễn Văn Quyền Lâm đề
-xuất~\cite{lamGomCumVan2021}.
+Báo cáo này tập trung thử nghiệm phân cụm dữ liệu văn bản dựa trên mô hình chủ đề và cách kết hợp các mô hình do Nguyễn Văn Quyền Lâm đề xuất~\cite{lamGomCumVan2021}.
 
-Mô hình được đề xuất (hình~\ref{fig:main_architect}) sử dụng véc-tơ xác suất
-được LDA sinh ra để xác định các chủ đề chính yếu, sau đó chúng được kết hợp
-với véc-tơ sentence embedding của PhoBERT để khai thác ngữ nghĩa, qua đó tạo ra
-không gian véc-tơ mới. Không gian véc-tơ này sẽ được đi qua Autoencoder để giảm
-chiều, mục đích là để loại bỏ các đặc trưng nhiễu và chỉ tập trung vào các đặc
-trưng quan trọng, và vừa có thể giảm chi phí và thời gian tính toán. Cuối cùng,
-các véc-tơ này sẽ được đi qua bộ phân cụm \textit{k}-means++ để phân thành
-\textit{k} chủ đề.
+Mô hình được đề xuất (hình~\ref{fig:main_architect}) sử dụng véc-tơ xác suất được LDA sinh ra để xác định các chủ đề chính yếu, sau đó chúng được kết hợp với véc-tơ sentence embedding của PhoBERT để khai thác ngữ nghĩa, qua đó tạo ra không gian véc-tơ mới. Không gian véc-tơ này sẽ được đi qua Autoencoder để giảm chiều, mục đích là để loại bỏ các đặc trưng nhiễu và chỉ tập trung vào các đặc trưng quan trọng, và vừa có thể giảm chi phí và thời gian tính toán. Cuối cùng, các véc-tơ này sẽ được đi qua bộ phân cụm \textit{k}-means++ để phân thành \textit{k} chủ đề.
 
-\image[0.7]{img/main-architect/proposed-architect.pdf}{Minh hoạ kiến trúc mô
-hình được đề xuất.}{fig:main_architect}
+\image[0.7]{img/main-architect/proposed-architect.pdf}{Minh hoạ kiến trúc mô hình được đề xuất.}{fig:main_architect}
 
 \section{Kiến trúc mô hình thực nghiệm}
 \subsection{Đầu vào dữ liệu}
@@ -42,11 +32,7 @@ sentence = "Câu_chuyện của chị Trần_Nga , một bệnh_nhân , hôm_qua
 \end{minted}
 
 \subsection{Khối LDA}
-Mô hình LDA (hình~\ref{fig:visual_lda}) nhận đầu vào là \textit{token\_list} để
-xây dựng kho từ vựng (vocabulary), các túi từ bao gồm mỗi từ gán với mỗi id và
-tần suất của từ đó.  LDA huấn luyện với tham số $k$ với $k$ là số chủ đề mà mô
-hình sẽ cố gắng phân tách. Đầu ra của LDA là một ma trận $N \times k$ với $N$
-là số văn bản đầu vào.
+Mô hình LDA (hình~\ref{fig:visual_lda}) nhận đầu vào là \textit{token\_list} để xây dựng kho từ vựng (vocabulary), các túi từ bao gồm mỗi từ gán với mỗi id và tần suất của từ đó.  LDA huấn luyện với tham số $k$ với $k$ là số chủ đề mà mô hình sẽ cố gắng phân tách. Đầu ra của LDA là một ma trận $N \times k$ với $N$ là số văn bản đầu vào.
 
 \begin{minted}
     [
@@ -62,121 +48,56 @@ document2 = 0.04 * topic0 + 0.65 * topic1 + ...
 ...
 \end{minted}
 
-\image[0.8]{img/lda/visual_lda.png}{Minh hoạ đầu vào - đầu ra của LDA. Ảnh: C.
-Doig, Introduction to Topic Modeling in Python.}{fig:visual_lda}
+\image[0.8]{img/lda/visual_lda.png}{Minh hoạ đầu vào - đầu ra của LDA. Ảnh: C.  Doig, Introduction to Topic Modeling in Python.}{fig:visual_lda}
 
 \subsection{Khối PhoBERT}
-Bài viết sử dụng mô hình PhoBERT đã được huấn luyện sẵn, từ đó chỉ cần đưa dữ
-liệu đầu vào, mô hình PhoBERT sẽ cho ra véc-tơ sentence embedding mà ta sẽ dùng
-để khai thác ngữ nghĩa của văn bản. Véc-tơ sentence embedding này nằm ở lớp ẩn
-(hidden layer) thứ 13, có chiều là $N \times 768$ với N là chiều dài tối đa của
-câu đầu vào (256 từ). Để tính véc-tơ sentence embedding của văn bản, ta tìm véc
-tơ trung bình cộng của $N$ véc-tơ đầu ra.
+Bài viết sử dụng mô hình PhoBERT đã được huấn luyện sẵn, từ đó chỉ cần đưa dữ liệu đầu vào, mô hình PhoBERT sẽ cho ra véc-tơ sentence embedding mà ta sẽ dùng để khai thác ngữ nghĩa của văn bản. Véc-tơ sentence embedding này nằm ở lớp ẩn (hidden layer) thứ 13, có chiều là $N \times 768$ với N là chiều dài tối đa của câu đầu vào (256 từ). Để tính véc-tơ sentence embedding của văn bản, ta tìm véc tơ trung bình cộng của $N$ véc-tơ đầu ra.
 
 \subsection{Khối Autoencoder}
-Sau khi có véc-tơ xác suất chủ đề của LDA và véc-tơ sentence embedding của
-PhoBERT, ta nối hai véc-tơ này lại với nhau đối với từng văn bản. Véc-tơ mới sẽ
-có chiều $k + 768$. Khối Autoencoder được sử dụng để giảm chiều cho véc-tơ này
-(hình~\ref{fig:autoencoder}).
+Sau khi có véc-tơ xác suất chủ đề của LDA và véc-tơ sentence embedding của PhoBERT, ta nối hai véc-tơ này lại với nhau đối với từng văn bản. Véc-tơ mới sẽ có chiều $k + 768$. Khối Autoencoder được sử dụng để giảm chiều cho véc-tơ này (hình~\ref{fig:autoencoder}).
 
-Mục tiêu của Autoencoder là sao chép dữ liệu đầu vào và cố gắng tái hiện lại dữ
-liệu đó ở đầu ra. Quá trình được thực hiện bằng cách nén đầu vào thành một
-không gian tiềm ẩn (latent space representation). Mục tiêu của khối Autoencoder
-là loại bỏ các đặc trưng thừa và nhiễu, chỉ giữ lại những đặc trưng quan trọng,
-đồng thời làm giảm thời gian tính toán khi làm đầu vào cho các mô hình sau.
+Mục tiêu của Autoencoder là sao chép dữ liệu đầu vào và cố gắng tái hiện lại dữ liệu đó ở đầu ra. Quá trình được thực hiện bằng cách nén đầu vào thành một không gian tiềm ẩn (latent space representation). Mục tiêu của khối Autoencoder là loại bỏ các đặc trưng thừa và nhiễu, chỉ giữ lại những đặc trưng quan trọng, đồng thời làm giảm thời gian tính toán khi làm đầu vào cho các mô hình sau.
 
-\image[0.8]{img/autoencoder/architect.png}{Minh hoạ kiến trúc Autoencoder. Ảnh:
-compthree blog.}{fig:autoencoder}
+\image[0.8]{img/autoencoder/architect.png}{Minh hoạ kiến trúc Autoencoder. Ảnh: compthree blog.}{fig:autoencoder}
 
-Sau khi véc-tơ kết hợp được đi qua khối Autoencoder để huấn luyện với lớp giữa
-64 nơ-ron và lớp cuối 32 nơ-ron, ta lấy véc-tơ kết quả của lớp cuối (encoded
-data) để sử dụng cho việc phân cụm.
+Sau khi véc-tơ kết hợp được đi qua khối Autoencoder để huấn luyện với lớp giữa 64 nơ-ron và lớp cuối 32 nơ-ron, ta lấy véc-tơ kết quả của lớp cuối (encoded data) để sử dụng cho việc phân cụm.
 
 \subsection{Khối gom cụm k-means++}
-Mô hình sử dụng thuật toán k-means++ để gom cụm các véc-tơ 32 chiều của khối
-Autoencoder. Gom cụm là phương pháp học không giám sát, có nhiệm vụ phân chia
-tập dữ liệu thành một số cụm nhất định sao cho các phần tử trong cụm sẽ có các
-đặc điểm tương tự nhau.
+Mô hình sử dụng thuật toán k-means++ để gom cụm các véc-tơ 32 chiều của khối Autoencoder. Gom cụm là phương pháp học không giám sát, có nhiệm vụ phân chia tập dữ liệu thành một số cụm nhất định sao cho các phần tử trong cụm sẽ có các đặc điểm tương tự nhau.
 
-k-means phân tách các điểm trong dữ liệu sao cho tổng khoảng cách bình phương
-giữa các điểm trong cụm và trọng tâm của nó là nhỏ nhất. Tuy nhiên k-means có
-nhược điểm là thuật toán có thể bị mắc kẹt trong các cụm cục bộ mà không thể
-hình thành cụm toàn cục. k-means++ giải quyết vấn đề này bằng cách chọn các
-trọng tâm cụm một cách thông minh hơn để các cụm có thể hội tụ ở mức cục bộ.
+k-means phân tách các điểm trong dữ liệu sao cho tổng khoảng cách bình phương giữa các điểm trong cụm và trọng tâm của nó là nhỏ nhất. Tuy nhiên k-means có nhược điểm là thuật toán có thể bị mắc kẹt trong các cụm cục bộ mà không thể hình thành cụm toàn cục. k-means++ giải quyết vấn đề này bằng cách chọn các trọng tâm cụm một cách thông minh hơn để các cụm có thể hội tụ ở mức cục bộ.
 
-Sau khi gom cụm k-means++ với $k$ cụm (giá trị $k$ cụm này phải bằng với giá
-trị $k$ chủ đề ở mô hình LDA), các véc-tơ (đại diện cho các văn bản) trong cùng
-một cụm sẽ được cho là cùng chủ đề.
-
+Sau khi gom cụm k-means++ với $k$ cụm (giá trị $k$ cụm này phải bằng với giá trị $k$ chủ đề ở mô hình LDA), các véc-tơ (đại diện cho các văn bản) trong cùng một cụm sẽ được cho là cùng chủ đề.
 
 \section{Công cụ thu thập dữ liệu, xử lý dữ liệu}
 
-Nguồn dữ liệu chính là các bài báo Tuổi Trẻ (tuoitre.vn) ở danh mục \textit{Sức
-khoẻ}. Báo cáo sử dụng chương trình Python để thu thập các bài báo. Các dữ liệu
-thu thập được từ một bài báo bao gồm đoạn trích tóm tắt, nội dung bài viết,
-ngày đăng, các bình luận, số lượng thích (like) bài báo nhận được và các từ
-khoá (keyword) của bài báo do người viết đặt. Tuy nhiên, chỉ duy nhất nội dung
-bài báo được lấy làm dữ liệu trực tiếp cho mô hình. Tổng số bài báo thu thập
-được là 12732 bài, trải dài từ ngày tháng 9 năm 2019 đến tháng 11 năm 2021.
+Nguồn dữ liệu chính là các bài báo Tuổi Trẻ (tuoitre.vn) ở danh mục \textit{Sức khoẻ}. Báo cáo sử dụng chương trình Python để thu thập các bài báo. Các dữ liệu thu thập được từ một bài báo bao gồm đoạn trích tóm tắt, nội dung bài viết, ngày đăng, các bình luận, số lượng thích (like) bài báo nhận được và các từ khoá (keyword) của bài báo do người viết đặt. Tuy nhiên, chỉ duy nhất nội dung bài báo được lấy làm dữ liệu trực tiếp cho mô hình. Tổng số bài báo thu thập được là 12732 bài, trải dài từ ngày tháng 9 năm 2019 đến tháng 11 năm 2021.
 
-Trước khi đưa vào mô hình, dữ liệu cần được làm sạch và chuẩn hoá
-(normalization) để tránh lỗi trong quá trình huấn luyện:
+Trước khi đưa vào mô hình, dữ liệu cần được làm sạch và chuẩn hoá (normalization) để tránh lỗi trong quá trình huấn luyện:
 \begin{enumerate}
-    \item Loại bỏ các bài báo không có nội dung (có chứa cột mang giá trị
-        \textit{NULL}).
-    \item Chuẩn hoá (normalize) các ký tự unicode. Chữ cái tiếng Việt có dấu
-        tuy luôn luôn hiển thị giống nhau nhưng sẽ được viết bằng nhiều cách
-        khác nhau. Ví dụ, chữ ``Â'' sẽ có hai cách viết: (1) là một ký tự
-        unicode duy nhất ``Â'' - U+00C2, hoặc (2) được kết hợp bởi một ký tự
-        ``A'' và một ký tự ``\^{}''. Chính vì vậy, ta phải chuẩn hoá chúng về
-        một dạng để tránh lặp từ trong quá trình huấn luyện.
-    \item Loại bỏ các ký tự đặc biệt và các stop-word (là các từ phổ biến và ít
-        mang một ý nghĩa đặc trưng, ví dụ như ``là'', ``và'', v.v.).
+    \item Loại bỏ các bài báo không có nội dung (có chứa cột mang giá trị \textit{NULL}).
+    \item Chuẩn hoá (normalize) các ký tự unicode. Chữ cái tiếng Việt có dấu tuy luôn luôn hiển thị giống nhau nhưng sẽ được viết bằng nhiều cách khác nhau. Ví dụ, chữ ``Â'' sẽ có hai cách viết: (1) là một ký tự unicode duy nhất ``Â'' - U+00C2, hoặc (2) được kết hợp bởi một ký tự ``A'' và một ký tự ``\^{}''. Chính vì vậy, ta phải chuẩn hoá chúng về một dạng để tránh lặp từ trong quá trình huấn luyện.
+    \item Loại bỏ các ký tự đặc biệt và các stop-word (là các từ phổ biến và ít mang một ý nghĩa đặc trưng, ví dụ như ``là'', ``và'', v.v.).
 \end{enumerate}
 
-Sau khi được làm sạch, tập dữ liệu còn lại 12595 bài báo. Tiếp theo, ta cần đưa
-nội dung các bài viết qua VnCoreNLP để phân đoạn từ. Sau khi được phân đoạn, dữ
-liệu về cơ bản đã có thể được sử dụng làm đầu vào cho mô hình.
+Sau khi được làm sạch, tập dữ liệu còn lại 12595 bài báo. Tiếp theo, ta cần đưa nội dung các bài viết qua VnCoreNLP để phân đoạn từ. Sau khi được phân đoạn, dữ liệu về cơ bản đã có thể được sử dụng làm đầu vào cho mô hình.
 
 \section{Hiện thực mô hình}
-Mô hình được hiện thực trên ngôn ngữ Python, sử dụng trình thông dịch Jupyter
-Notebook trên hạ tầng Google Colab. Các mô hình con bao gồm:
+Mô hình được hiện thực trên ngôn ngữ Python, sử dụng trình thông dịch Jupyter Notebook trên hạ tầng Google Colab. Các mô hình con bao gồm:
 
 \begin{itemize}
-    \item Mô hình LDA sử dụng thư viện
-        \textit{gensim}~\cite{GensimTopicModelling2021}.
-    \item Mô hình PhoBERT sử dụng thư viện \textit{Transformers} của Hugging
-        Face~\cite{wolfTransformersStateoftheArtNatural2020}. Mô hình huấn
-        luyện sẵn PhoBERT\textsubscript{BASE} với chiều dài token tối đa là
-        256.
+    \item Mô hình LDA sử dụng thư viện \textit{gensim}~\cite{GensimTopicModelling2021}.
+    \item Mô hình PhoBERT sử dụng thư viện \textit{Transformers} của Hugging Face~\cite{wolfTransformersStateoftheArtNatural2020}. Mô hình huấn luyện sẵn PhoBERT\textsubscript{BASE} với chiều dài token tối đa là 256.
     %TODO cite
     \item Autoencoder được hiện thực dựa trên mô hình mẫu của \textit{keras}.
     %TODO cite
     \item Bộ gom cụm k-means++ sử dụng thư viện \textit{sklearn}.
 \end{itemize}
 
-Sau khi gom cụm, tập dữ liệu được chia thành \textit{k} chủ đề với mỗi bài báo
-chỉ thuộc một chủ đề. Lâm \cite{lamGomCumVan2021} thực hiện biểu diễn
-(visualize) các chủ đề đó bằng word cloud, bằng cách lấy các từ có tần suất
-xuất hiện cao nhất trong một chủ đề để làm các từ khoá thể hiện cho chủ đề đó.
-Tuy nhiên, tại vì tập dữ liệu của Lâm \cite{lamGomCumVan2021} thuộc về 10 danh
-mục khác nhau, nên cách biểu diễn đó có thể đã đủ để giúp người xem phân biệt
-được các chủ đề. Tập dữ liệu của báo cáo chỉ thuộc về một danh mục duy nhất
-(Sức khoẻ), nên thực nghiệm cho cho thấy cách biểu diễn đó khó có thể phân biệt
-được các chủ đề với nhau. Lý do cơ bản là vì từ phổ biến nhất trong tập văn bản
-không có nghĩa là nó có ảnh hưởng quan trọng nhất đối với chủ đề. Vì vậy, báo
-cáo sử dụng TF-IDF để tính điểm (score) cho toàn bộ các từ trong một tập văn
-bản thuộc cùng chủ đề đã được phân cụm. Sau đó, với mỗi văn bản, chỉ lấy $n$ từ
-có điểm số cao nhất để biểu diễn thành word cloud cho chủ đề đó.
+Sau khi gom cụm, tập dữ liệu được chia thành \textit{k} chủ đề với mỗi bài báo chỉ thuộc một chủ đề. Lâm \cite{lamGomCumVan2021} thực hiện biểu diễn (visualize) các chủ đề đó bằng word cloud, bằng cách lấy các từ có tần suất xuất hiện cao nhất trong một chủ đề để làm các từ khoá thể hiện cho chủ đề đó.  Tuy nhiên, tại vì tập dữ liệu của Lâm \cite{lamGomCumVan2021} thuộc về 10 danh mục khác nhau, nên cách biểu diễn đó có thể đã đủ để giúp người xem phân biệt được các chủ đề. Tập dữ liệu của báo cáo chỉ thuộc về một danh mục duy nhất (Sức khoẻ), nên thực nghiệm cho cho thấy cách biểu diễn đó khó có thể phân biệt được các chủ đề với nhau. Lý do cơ bản là vì từ phổ biến nhất trong tập văn bản không có nghĩa là nó có ảnh hưởng quan trọng nhất đối với chủ đề. Vì vậy, báo cáo sử dụng TF-IDF để tính điểm (score) cho toàn bộ các từ trong một tập văn bản thuộc cùng chủ đề đã được phân cụm. Sau đó, với mỗi văn bản, chỉ lấy $n$ từ có điểm số cao nhất để biểu diễn thành word cloud cho chủ đề đó.
 
 \section{Kết quả}
-Báo cáo sử dụng thang đo Coherence để xác định tính mạch lạc trong chủ đề,
-Coherence có giá trị từ 0 đến 1, giá trị càng về 0 thì chủ đề càng mất đi tính
-mạch lạc; Và thang đo Silhouette để đánh giá kết quả của bộ phân cụm,
-Silhouette có giá trị từ -1 đến 1, càng về 0 thì các cụm có ít sự phân biệt,
-càng về 1 thì các cụm càng có sự phân biệt rõ ràng và ngược lại.
-Bảng~\ref{table:result} biểu diễn kết quả của mô hình trên các giá trị gom cụm
-\textit{k} khác nhau.
+Báo cáo sử dụng thang đo Coherence để xác định tính mạch lạc trong chủ đề, Coherence có giá trị từ 0 đến 1, giá trị càng về 0 thì chủ đề càng mất đi tính mạch lạc; Và thang đo Silhouette để đánh giá kết quả của bộ phân cụm, Silhouette có giá trị từ -1 đến 1, càng về 0 thì các cụm có ít sự phân biệt, càng về 1 thì các cụm càng có sự phân biệt rõ ràng và ngược lại.  Bảng~\ref{table:result} biểu diễn kết quả của mô hình trên các giá trị gom cụm \textit{k} khác nhau.
 
 \begin{table}[ht!]
     \centering
@@ -190,23 +111,14 @@ Bảng~\ref{table:result} biểu diễn kết quả của mô hình trên các g
     \label{table:result}
 \end{table}
 
-Theo dữ liệu ta có thể thấy, \textit{k} càng lớn thì điểm Coherence thường càng
-cao, tuy nhiên \text{k} lớn sẽ giảm hiệu suất gom cụm đi đáng kể. Điều này có
-thể ám chỉ tập dữ liệu có thể chia ra được thành nhiều chủ đề hơn, tuy nhiên,
-vì cách kết hợp véc-tơ LDA và PhoBERT chưa hợp lý nên điểm số gom cụm giảm
-xuống đáng kể khi $k$ càng lớn.
+Theo dữ liệu ta có thể thấy, \textit{k} càng lớn thì điểm Coherence thường càng cao, tuy nhiên \text{k} lớn sẽ giảm hiệu suất gom cụm đi đáng kể. Điều này có thể ám chỉ tập dữ liệu có thể chia ra được thành nhiều chủ đề hơn, tuy nhiên, vì cách kết hợp véc-tơ LDA và PhoBERT chưa hợp lý nên điểm số gom cụm giảm xuống đáng kể khi $k$ càng lớn.
 
-Hình~\ref{fig:clusters} minh hoạ kết quả gom cụm với $k=5$. Hình
-\ref{fig:topic1}, \ref{fig:topic2}, \ref{fig:topic3}, \ref{fig:topic4},
-\ref{fig:topic5} thể hiện 5 word cloud được lọc bởi TF-IDF cho 5 chủ đề khác
-nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
+Hình~\ref{fig:clusters} minh hoạ kết quả gom cụm với $k=5$. Hình \ref{fig:topic1}, \ref{fig:topic2}, \ref{fig:topic3}, \ref{fig:topic4}, \ref{fig:topic5} thể hiện 5 word cloud được lọc bởi TF-IDF cho 5 chủ đề khác nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
 \begin{enumerate}
     \image[0.6]{img/experiments/clusters.png}{Minh hoạ kết quả gom cụm với
     $k=5$.}{fig:clusters}
 
-    \item Chủ đề 1 tập trung chủ yếu về ``vắc-xin'', ``dịch'' [COVID-19], ``thuốc''
-        và ``thử nghiệm'' [vắc-xin COVID-19]. Một số tựa đề bài báo được lấy ngẫu
-        nhiên trong tập các bài viết cùng chủ đề:
+    \item Chủ đề 1 tập trung chủ yếu về ``vắc-xin'', ``dịch'' [COVID-19], ``thuốc'' và ``thử nghiệm'' [vắc-xin COVID-19]. Một số tựa đề bài báo được lấy ngẫu nhiên trong tập các bài viết cùng chủ đề:
         \begin{itemize}
             \item AstraZeneca và J\&J nối lại các thử nghiệm vắc xin COVID-19 tại Mỹ
             \item Vắc xin COVID-19 của Việt Nam được thử nghiệm trên người ra sao?
@@ -217,11 +129,9 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             \item Sở Y tế TP.HCM xem xét cho bệnh nhân COVID-19 khỏi bệnh tình nguyện chống dịch
         \end{itemize}
 
-    \image[0.6]{img/experiments/topic0.png}{Word cloud cho chủ đề thứ 1,
-    $k=5$.}{fig:topic1}
+    \image[0.6]{img/experiments/topic0.png}{Word cloud cho chủ đề thứ 1, $k=5$.}{fig:topic1}
 
-    \item Chủ đề 2 có các từ ``bệnh nhân'', ``cách ly'' hay ``ca'', chúng đều thể
-        hiện cho các bài viết thông tin về số ca nhiễm [COVID-19] trong ngày.
+    \item Chủ đề 2 có các từ ``bệnh nhân'', ``cách ly'' hay ``ca'', chúng đều thể hiện cho các bài viết thông tin về số ca nhiễm [COVID-19] trong ngày.
         \begin{itemize}
             \item Bắc Giang xuất hiện ổ dịch mới với 12 ca mắc ở Công ty Hosiden, sẽ lấy mẫu xuyên đêm
             \item Bệnh viện quận Tân Phú tạm ngưng nhận bệnh vì 3 ca nghi nhiễm COVID-19
@@ -233,11 +143,9 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             TP.HCM: F0 khỏi bệnh nếu chưa được xác nhận, phải tiêm vắc xin mới có thẻ xanh COVID
         \end{itemize}
 
-    \image[0.6]{img/experiments/topic1.png}{Word cloud cho chủ đề thứ 2,
-    $k=5$.}{fig:topic2}
+    \image[0.6]{img/experiments/topic1.png}{Word cloud cho chủ đề thứ 2, $k=5$.}{fig:topic2}
 
-    \item Chủ đề 3 nói về các vấn đề chung về y tế như ``bác sĩ'', ``bệnh nhân''
-        hay ``điều trị''.
+    \item Chủ đề 3 nói về các vấn đề chung về y tế như ``bác sĩ'', ``bệnh nhân'' hay ``điều trị''.
         \begin{itemize}
             \item Ngày đêm túc trực cứu phi công người Anh
             \item Cứu sống thai nhi bị 6 vòng dây rốn quấn chặt
@@ -249,11 +157,9 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             \item Trái tim anh công nhân cầu đường Vũng Tàu đập trong lồng ngực thanh niên Huế
         \end{itemize}
 
-    \image[0.6]{img/experiments/topic2.png}{Word cloud cho chủ đề thứ 3,
-    $k=5$.}{fig:topic3}
+    \image[0.6]{img/experiments/topic2.png}{Word cloud cho chủ đề thứ 3, $k=5$.}{fig:topic3}
 
-    \item Chủ đề 4 có các từ ``tiêm'', ``vắc-xin'', ``ca'' là phổ biến, thể hiện các
-        bài viết cập nhật về tiến độ tiêm chủng.
+    \item Chủ đề 4 có các từ ``tiêm'', ``vắc-xin'', ``ca'' là phổ biến, thể hiện các bài viết cập nhật về tiến độ tiêm chủng.
         \begin{itemize}
             \item Thủ tướng Ấn Độ ca ngợi yoga trong điều trị COVID-19
             \item Đà Nẵng dự kiến tiêm 20.000 mũi vắc xin COVID-19 một ngày, 100-110 điểm tiêm
@@ -264,14 +170,11 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
             \item Tiêm 'trộn' vắc xin Johnson \& Johnson với Moderna tăng kháng thể gấp 76 lần
         \end{itemize}
 
-    \image[0.6]{img/experiments/topic3.png}{Word cloud cho chủ đề thứ 4,
-    $k=5$.}{fig:topic4}
+    \image[0.6]{img/experiments/topic3.png}{Word cloud cho chủ đề thứ 4, $k=5$.}{fig:topic4}
 
-    \image[0.6]{img/experiments/topic4.png}{Word cloud cho chủ đề thứ 5,
-    $k=5$.}{fig:topic5}
+    \image[0.6]{img/experiments/topic4.png}{Word cloud cho chủ đề thứ 5, $k=5$.}{fig:topic5}
 
-    \item Chủ đề 5 phổ biến với các từ ``bệnh'', ``trẻ'', ``thuốc'' và ``nghiên cứu'',
-        về cơ bản cũng là các vấn đề chung về y tế, nhưng thiên về các mẹo hay phương pháp để cải thiện sức khoẻ.
+    \item Chủ đề 5 phổ biến với các từ ``bệnh'', ``trẻ'', ``thuốc'' và ``nghiên cứu'', về cơ bản cũng là các vấn đề chung về y tế, nhưng thiên về các mẹo hay phương pháp để cải thiện sức khoẻ.
         \begin{itemize}
             \item Người 'chịu khó' súc họng sẽ giúp mình ít nhiễm trùng hô hấp hơn
             \item Trẻ nhiễm COVID-19 mắc hội chứng lạ giống Kawasaki: làm sao phân biệt hai bệnh?
@@ -285,52 +188,31 @@ nhau. Nhìn vào hình, ta có thể đoán được các chủ đề cơ bản:
 
 
 \section{Tổng kết chương~\ref{chap:experiments}}
-Áp dụng mô hình trên để thực hiện gom cụm chủ đề cho tập dữ liệu bài báo cùng
-một danh mục Sức khoẻ, ta thấy sự phân biệt giữa các chủ đề mới chỉ ở ngang mức
-trung bình. Tuy đã được cải thiện bằng TF-IDF, nhưng cách biểu diễn chủ đề sử
-dụng word cloud vẫn còn chưa bộc lộ hết được ý nghĩa của chủ đề. Tốc độ tính
-toán của mô hình đã được tăng lên đáng kể bằng cách sử dụng GPU, tuy nhiên đa
-phần các nhược điểm mà \cite{lamGomCumVan2021} gặp phải vẫn chưa được giải
-quyết trong báo cáo này:
+Áp dụng mô hình trên để thực hiện gom cụm chủ đề cho tập dữ liệu bài báo cùng một danh mục Sức khoẻ, ta thấy sự phân biệt giữa các chủ đề mới chỉ ở ngang mức trung bình. Tuy đã được cải thiện bằng TF-IDF, nhưng cách biểu diễn chủ đề sử dụng word cloud vẫn còn chưa bộc lộ hết được ý nghĩa của chủ đề. Tốc độ tính toán của mô hình đã được tăng lên đáng kể bằng cách sử dụng GPU, tuy nhiên đa phần các nhược điểm mà \cite{lamGomCumVan2021} gặp phải vẫn chưa được giải quyết trong báo cáo này:
 
 \begin{itemize}
-    \item Quá trình xử lý nhiễu vẫn còn đơn giản, lượng dữ liệu ít (12 nghìn
-        bài viết).
-    \item Cách kết hợp véc-tơ LDA và PhoBERT chưa hợp lý, dẫn đến phân cụm chưa
-        tốt.
-    \item Hạn chế của LDA là ta phải định nghĩa trước số chủ đề $k$. Nếu $k$
-        không được lựa chọn hợp lý, mô hình sẽ phân cụm một cách thưa thớt hoặc
-        trùng lặp chủ đề.
+    \item Quá trình xử lý nhiễu vẫn còn đơn giản, lượng dữ liệu ít (12 nghìn bài viết).
+    \item Cách kết hợp véc-tơ LDA và PhoBERT chưa hợp lý, dẫn đến phân cụm chưa tốt.
+    \item Hạn chế của LDA là ta phải định nghĩa trước số chủ đề $k$. Nếu $k$ không được lựa chọn hợp lý, mô hình sẽ phân cụm một cách thưa thớt hoặc trùng lặp chủ đề.
 \end{itemize}
 
 \chapter{Kết luận}
 \section{Kết quả đạt được}
 Báo cáo rút ra được các kết quả sau quá trình nghiên cứu:
 \begin{itemize}
-    \item Nghiên cứu và tìm hiểu được các kỹ thuật phát hiện xu hướng, các mô
-        hình phát hiện chủ đề và phân tích ngữ nghĩa.
-    \item Học được cách thu thập dữ liệu, các kỹ thuật làm sạch và tiền xử lý
-        dữ liệu.
-    \item Thử nghiệm dữ liệu thu thập được với mô hình có sẵn, đánh giá, so
-        sánh được các nhược điểm của các mô hình gom cụm chủ đề đối với tập dữ
-        liệu.
+    \item Nghiên cứu và tìm hiểu được các kỹ thuật phát hiện xu hướng, các mô hình phát hiện chủ đề và phân tích ngữ nghĩa.
+    \item Học được cách thu thập dữ liệu, các kỹ thuật làm sạch và tiền xử lý dữ liệu.
+    \item Thử nghiệm dữ liệu thu thập được với mô hình có sẵn, đánh giá, so sánh được các nhược điểm của các mô hình gom cụm chủ đề đối với tập dữ liệu.
 \end{itemize}
 
 \section{Đề xuất hướng nghiên cứu}
 Dựa trên kinh nghiệm và thực nghiệm đã đạt được, báo cáo đề xuất các thay đổi và cải tiến cho đề tài như sau:
 
 \begin{itemize}
-    \item Sử dụng mô hình Hierachical Dirichlet Process (HDP) để phân tách chủ
-        đề mà không cần định nghĩa trước giá trị $k$.
+    \item Sử dụng mô hình Hierachical Dirichlet Process (HDP) để phân tách chủ đề mà không cần định nghĩa trước giá trị $k$.
     \item Cải tiến cách kết hợp mô hình chủ đề và mô hình ngữ nghĩa để gom cụm.
-    \item Sử dụng các phương pháp khác tốt hơn để biểu diễn trực quan (bằng
-        hình ảnh hoặc câu từ) cho chủ đề mà không cần phải giải thích bằng dữ
-        liệu.
-    \item Kết hợp với mô hình phát hiện xu hướng. Hiện tại mô hình mới chỉ dừng
-        lại ở mức độ phân tích chủ đề. Đề tài này cũng sẽ cố gắng khai thác mô
-        hình xu hướng để phát hiện các chủ đề nổi bật đang được quan tâm trên
-        thời gian thực.
+    \item Sử dụng các phương pháp khác tốt hơn để biểu diễn trực quan (bằng hình ảnh hoặc câu từ) cho chủ đề mà không cần phải giải thích bằng dữ liệu.
+    \item Kết hợp với mô hình phát hiện xu hướng. Hiện tại mô hình mới chỉ dừng lại ở mức độ phân tích chủ đề. Đề tài này cũng sẽ cố gắng khai thác mô hình xu hướng để phát hiện các chủ đề nổi bật đang được quan tâm trên thời gian thực.
 \end{itemize}
 
-Các thay đổi khác sẽ được tìm hiểu và khai thác thêm trong các quá trình nghiên
-cứu tiếp theo.
+Các thay đổi khác sẽ được tìm hiểu và khai thác thêm trong các quá trình nghiên cứu tiếp theo.
