@@ -259,7 +259,7 @@ def analyse_category(
     for topic in analysed_topics:
         score: float = 0
 
-        score += len(topic.articles) * 10
+        score += len(topic.articles) * 5
 
         # Calculate the average time of the articles
         datetimes = [article.original_article.date for article in topic.articles]
@@ -268,10 +268,10 @@ def analyse_category(
         )
 
         relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
-        time_score = math.sinh(1 / relative_hours) * 50
-        time_score = min(time_score, 40)
+        time_score = math.sinh(1 / relative_hours) * 100
+        time_score = min(time_score, 200)
 
-        score += score * time_score
+        score += math.sqrt(len(topic.articles)) * time_score
 
         topic_scores.append((topic, score))
 
