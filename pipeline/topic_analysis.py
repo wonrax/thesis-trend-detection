@@ -229,9 +229,8 @@ def analyse_category(
         total_num_articles += len(topic_articles[topic])
 
     TOPIC_ARTICLES_THRESHOLD = (
-        int(total_num_articles / 100)
+        round(math.log(x=total_num_articles, base=3))
         # the minimum number of articles for a topic to be considered qualified
-        # currently set to 1% of the total number of articles
     )
 
     filtered_topics = {
