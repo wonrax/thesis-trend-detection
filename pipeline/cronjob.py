@@ -1,7 +1,7 @@
 from main import perform_analysis, perform_crawl
 from data.model.category import Category
 from logger import get_common_logger
-from data.preprocess import rdrsegmenter
+from data import preprocess
 
 if __name__ == "__main__":
     logger = get_common_logger()
@@ -23,6 +23,6 @@ if __name__ == "__main__":
         logger.exception("Exception occurred while running cronjob")
         logger.critical("Cronjob stopped with error")
 
-    if rdrsegmenter:
+    if preprocess.rdrsegmenter:
         logger.info(f"Closing VnCoreNLP server...")
-        rdrsegmenter.close()
+        preprocess.rdrsegmenter.close()

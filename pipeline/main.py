@@ -4,7 +4,7 @@ from typing import List
 import argparse
 from logger import get_common_logger
 from typing import List
-from data.preprocess import rdrsegmenter
+from data import preprocess
 
 # Set up logger
 logger = get_common_logger()
@@ -236,6 +236,6 @@ if __name__ == "__main__":
 
         logger.critical(f"Unexpected error: {sys.exc_info()}")
 
-    if rdrsegmenter:
+    if preprocess.rdrsegmenter:
         logger.info(f"Closing VnCoreNLP server...")
-        rdrsegmenter.close()
+        preprocess.rdrsegmenter.close()
