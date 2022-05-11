@@ -237,4 +237,5 @@ if __name__ == "__main__":
         logger.critical(f"Unexpected error: {sys.exc_info()}")
 
     if rdrsegmenter:
+        logger.info(f"Closing VnCoreNLP server...")
         rdrsegmenter.close()

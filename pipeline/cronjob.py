@@ -24,4 +24,5 @@ if __name__ == "__main__":
         logger.critical("Cronjob stopped with error")
 
     if rdrsegmenter:
+        logger.info(f"Closing VnCoreNLP server...")
         rdrsegmenter.close()
