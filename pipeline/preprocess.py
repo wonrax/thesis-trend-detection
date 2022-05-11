@@ -95,16 +95,16 @@ def preprocess_articles(articles: List[Article]):
             do_tokens=True,
             stopword_list=stopword_list_for_excerpt,
         )["tokens"]
-        excerpt_segmented_sentences = Preprocess.segmentize(
-            article.excerpt,
-            do_sentences=True,
-            stopword_list=source_signatures,
-        )["sentences"]
-        # content_segmented = Preprocess.segmentize(
-        #     article.content,
-        #     stopword_list=stopword_list_for_excerpt,
+        # excerpt_segmented_sentences = Preprocess.segmentize(
+        #     article.excerpt,
         #     do_sentences=True,
+        #     stopword_list=source_signatures,
         # )["sentences"]
+        content_segmented = Preprocess.segmentize(
+            article.content,
+            stopword_list=stopword_list_for_excerpt,
+            do_sentences=True,
+        )["sentences"]
         processed_articles.append(
             PreprocessedArticle(
                 id_mongo=article.id,
@@ -112,8 +112,8 @@ def preprocess_articles(articles: List[Article]):
                 source=article.source,
                 title=article.title,
                 excerpt_segmented_tokens=excerpt_segmented_tokens,
-                excerpt_segmented_sentences=excerpt_segmented_sentences,
-                # content_segmented_sentences=content_segmented,
+                # excerpt_segmented_sentences=excerpt_segmented_sentences,
+                content_segmented_sentences=content_segmented,
             )
         )
 
