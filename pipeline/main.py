@@ -77,7 +77,9 @@ def perform_crawl(
     return articles
 
 
-def perform_analysis_on_category(category: Category, days=1.5) -> None:
+def perform_analysis_on_category(
+    category: Category, days=1.5, min_articles=300
+) -> None:
     """Perform analysis on crawled articles of a category and store to the database
 
     Args:
@@ -115,6 +117,10 @@ def perform_analysis_on_category(category: Category, days=1.5) -> None:
         articles += Article.objects.filter(
             category=str(_c.name), date__gte=start_date, date__lte=end_date
         )
+    if len(categories) == 1 and len(articles) < min_articles:
+        articles = Article.objects.filter(category=str(categories[0].name)).order_by(
+            "-date"
+        )[:min_articles]
 
     # Perform preprocessing on articles
     processed_articles = preprocess_articles(articles)
