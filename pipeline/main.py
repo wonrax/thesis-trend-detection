@@ -4,6 +4,7 @@ from typing import List
 import argparse
 from logger import get_common_logger
 from typing import List
+from data.preprocess import rdrsegmenter
 
 # Set up logger
 logger = get_common_logger()
@@ -234,3 +235,6 @@ if __name__ == "__main__":
         import sys
 
         logger.critical(f"Unexpected error: {sys.exc_info()}")
+
+    if rdrsegmenter:
+        rdrsegmenter.close()
