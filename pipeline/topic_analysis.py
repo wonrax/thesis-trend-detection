@@ -223,7 +223,7 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
 def analyse_category(
     category: Category, topic_articles: dict[int, List[PreprocessedArticle]]
 ) -> CategoryAnalysis:
-    
+
     total_num_articles = 0
     for topic in topic_articles:
         total_num_articles += len(topic_articles[topic])
@@ -233,6 +233,7 @@ def analyse_category(
         # the minimum number of articles for a topic to be considered qualified
     )
 
+    logger.info(f"Filtering topics with less than {TOPIC_ARTICLES_THRESHOLD} articles")
     filtered_topics = {
         topic_id: topic_articles[topic_id]
         for topic_id in topic_articles.keys()
