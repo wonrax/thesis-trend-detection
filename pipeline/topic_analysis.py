@@ -120,7 +120,7 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
 
     if article.content_segmented_sentences:
         for n in [2]:
-            kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=2, top=10)
+            kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=2, top=10, dedupLim=0.45)
             _keywords = kw_extractor.extract_keywords(
                 article.content_segmented_sentences
             )
