@@ -223,9 +223,15 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
 def analyse_category(
     category: Category, topic_articles: dict[int, List[PreprocessedArticle]]
 ) -> CategoryAnalysis:
+    
+    total_num_articles = 0
+    for topic in topic_articles:
+        total_num_articles += len(topic_articles[topic])
 
     TOPIC_ARTICLES_THRESHOLD = (
-        5  # the minimum number of articles for a topic to be considered qualified
+        int(total_num_articles / 100)
+        # the minimum number of articles for a topic to be considered qualified
+        # currently set to 1% of the total number of articles
     )
 
     filtered_topics = {
