@@ -1,6 +1,7 @@
 from main import perform_analysis, perform_crawl
 from data.model.category import Category
 from logger import get_common_logger
+from data.preprocess import rdrsegmenter
 
 if __name__ == "__main__":
     logger = get_common_logger()
@@ -21,3 +22,6 @@ if __name__ == "__main__":
     except:
         logger.exception("Exception occurred while running cronjob")
         logger.critical("Cronjob stopped with error")
+
+    if rdrsegmenter:
+        rdrsegmenter.close()

@@ -1,3 +1,7 @@
+# TODO
+# CLOSE THE VNCORENLP SERVER OTHERWISE IT'LL KEEP RUNNING AND YOU'LL HAVE
+# DUPLICATE VNCORENLP PROCESSES
+
 from main import perform_analysis, perform_crawl
 from data.model.category import Category
 import time
