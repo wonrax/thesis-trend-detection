@@ -118,11 +118,11 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
             / total
         )
 
-    if article.excerpt_segmented_sentences:
+    if article.content_segmented_sentences:
         for n in range(1, 4):
             kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=1, top=3)
             _keywords = kw_extractor.extract_keywords(
-                article.excerpt_segmented_sentences
+                article.content_segmented_sentences
             )
             _keywords.sort(key=lambda s: s[1], reverse=False)
             keywords += [k for k, _ in _keywords]
