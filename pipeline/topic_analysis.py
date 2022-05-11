@@ -200,8 +200,8 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         if num_comments:
             score += num_comments * 30
         if date:
-            relative_minutes: float = (now - date).seconds / 60 + 1
-            score += 10000 / relative_minutes
+            relative_hours: float = ((now - date).total_seconds() / 60 + 1) / 60
+            score += min(math.sinh(1 / relative_hours) * 500, 200) * 2
         if article.keywords:
             for keyword in article.keywords:
                 if keyword in relevance_keywords:
