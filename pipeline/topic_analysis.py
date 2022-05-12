@@ -45,7 +45,7 @@ def analyse_comment(comment: Comment) -> CommentAnalysis:
         text=comment.content, do_teen_code=True, do_sentences=True
     )["sentences"]
 
-    sentiment = get_sentiment(comment_content_segmented)
+    sentiment = get_sentiment(sentence=comment_content_segmented, threshold=0.8)
 
     replies = None
     # TODO currently only support one level of replies
@@ -120,7 +120,9 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
 
     if article.content_segmented_sentences:
         for n in [2]:
-            kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=2, top=10, dedupLim=0.45)
+            kw_extractor = KeywordExtractor(
+                lan="vi", n=n, windowsSize=2, top=10, dedupLim=0.45
+            )
             _keywords = kw_extractor.extract_keywords(
                 article.content_segmented_sentences
             )
