@@ -206,6 +206,7 @@ class TopicDetail(Resource):
             averagePositiveRate=topic.average_positive_rate,
             averageNegativeRate=topic.average_negative_rate,
             averageNeutralRate=topic.average_neutral_rate,
+            totalNumberOfArticles=len(topic.articles),
             hasMoreArticles=len(topic.articles) > len(articles),
         )
 
