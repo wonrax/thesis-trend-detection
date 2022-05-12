@@ -129,7 +129,7 @@ class Trending(Resource):
                         title=original_article.title,
                     )
                 )
-                if len(articles) == 5:
+                if len(articles) == 3:
                     break
 
                 keywords = [

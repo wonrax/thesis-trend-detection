@@ -67,7 +67,7 @@ const ArticleCardSpotlight = ({
           className="group-hover:underline"
           color="gray-100"
           fontSize="lg"
-          fontWeight="bold"
+          fontWeight="medium"
           leading="tight"
         >
           {article.title}
@@ -168,17 +168,17 @@ const NewsSourceBar = ({
           />
         )}
         {sourceName && (
-          <Text className="shrink" fontSize="sm" fontWeight="medium" ellipsis>
+          <Text className="shrink" color="gray-40" fontSize="sm" ellipsis>
             {sourceName}
           </Text>
         )}
       </div>
       {publishDate && (
         <>
-          <Text color="gray-40" fontSize="sm" fontWeight="medium">
+          <Text color="gray-40" fontSize="sm">
             ·
           </Text>
-          <Text color="gray-40" fontSize="sm" fontWeight="medium" nowrap>
+          <Text color="gray-40" fontSize="sm" nowrap>
             {`${capitalizeFirstLetter(dayjs(publishDate).fromNow())}`}
           </Text>
         </>
@@ -201,7 +201,11 @@ const SentimentChip = ({
       }`}
     >
       {negative ? <ThumbsDown /> : <ThumbsUp />}
-      <Text fontSize="sm" color={negative ? "red" : "green"}>
+      <Text
+        fontSize="sm"
+        fontWeight="medium"
+        color={negative ? "red" : "green"}
+      >
         {`${formatSentimentRate(rate)}%`}
       </Text>
     </div>

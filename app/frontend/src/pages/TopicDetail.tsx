@@ -31,7 +31,7 @@ export const TopicDetail = () => {
     return (
       <>
         <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
-          <Text fontSize="xxl" fontWeight="bold" className="animate-pulse">
+          <Text fontSize="xxl" fontWeight="medium" className="animate-pulse">
             Xu hướng
           </Text>
         </div>
@@ -45,7 +45,7 @@ export const TopicDetail = () => {
         <div className="p-8 flex flex-col justify-center items-center">
           <Text
             fontSize="xxl"
-            fontWeight="bold"
+            fontWeight="medium"
             className="hover:underline cursor-pointer"
             onClick={() => navigate("/")}
           >
@@ -60,7 +60,7 @@ export const TopicDetail = () => {
             className="ml-2"
             renderAs="span"
             fontSize="lg"
-            fontWeight="bold"
+            fontWeight="medium"
             leading="tight"
           >{`${topic?.keywords?.at(0)}, ${topic?.keywords?.at(1)}`}</Text>
         </div>
