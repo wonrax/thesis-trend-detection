@@ -205,7 +205,7 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         if article.keywords:
             for keyword in article.keywords:
                 if keyword in relevance_keywords:
-                    score += 1000
+                    score += 500
         article_scores.append((article, score))
 
     # sort by score
