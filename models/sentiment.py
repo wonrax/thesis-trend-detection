@@ -1,6 +1,7 @@
 import torch
 from transformers import RobertaForSequenceClassification, AutoTokenizer
 from enum import Enum
+import torch
 
 
 class Sentiment(Enum):
@@ -20,7 +21,7 @@ ID2SENTIMENT = {
 }
 
 
-def get_sentiment(sentence: str) -> Sentiment:
+def get_sentiment(sentence: str, threshold = 0.9) -> Sentiment:
     global model
     global tokenizer
 
@@ -36,13 +37,17 @@ def get_sentiment(sentence: str) -> Sentiment:
             cache_dir="models/phobert-base-vietnamese-sentiment",
         )
 
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    model.to(device)
+
     input_ids = torch.tensor([tokenizer.encode(sentence, max_length=256)])
+    input_ids = input_ids.to(device)
 
     with torch.no_grad():
         out = model(input_ids)
         probabilities = out.logits.softmax(dim=-1)
         max_index = torch.argmax(probabilities, dim=-1)[0]
-        if probabilities[0][max_index] > 0.9:
+        if probabilities[0][max_index] > threshold:
             return ID2SENTIMENT[int(max_index)]
         else:
             return Sentiment.UNSURE

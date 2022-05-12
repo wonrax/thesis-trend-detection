@@ -6,6 +6,7 @@ export type Topic = {
   averagePositiveRate?: number;
   averageNegativeRate?: number;
   averageNeutralRate?: number;
+  totalNumberOfArticles?: number;
   hasMoreArticles?: boolean;
 };
 

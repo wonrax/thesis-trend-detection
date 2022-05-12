@@ -45,7 +45,7 @@ def analyse_comment(comment: Comment) -> CommentAnalysis:
         text=comment.content, do_teen_code=True, do_sentences=True
     )["sentences"]
 
-    sentiment = get_sentiment(comment_content_segmented)
+    sentiment = get_sentiment(sentence=comment_content_segmented, threshold=0.8)
 
     replies = None
     # TODO currently only support one level of replies
@@ -118,11 +118,13 @@ def analyse_article(article: PreprocessedArticle) -> ArticleAnalysis:
             / total
         )
 
-    if article.excerpt_segmented_sentences:
-        for n in range(1, 4):
-            kw_extractor = KeywordExtractor(lan="vi", n=n, windowsSize=1, top=3)
+    if article.content_segmented_sentences:
+        for n in [2]:
+            kw_extractor = KeywordExtractor(
+                lan="vi", n=n, windowsSize=2, top=10, dedupLim=0.45
+            )
             _keywords = kw_extractor.extract_keywords(
-                article.excerpt_segmented_sentences
+                article.content_segmented_sentences
             )
             _keywords.sort(key=lambda s: s[1], reverse=False)
             keywords += [k for k, _ in _keywords]
@@ -177,8 +179,8 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
             sorted_keywords[0][0]
         )  # Get the most popular keyword for each n_gram
 
-        if len(sorted_keywords) >= 3:
-            relevance_keywords += [k for k, _ in sorted_keywords[:3]]
+        if len(sorted_keywords) >= 10:
+            relevance_keywords += [k for k, _ in sorted_keywords[:10]]
         else:
             relevance_keywords += [k for k, _ in sorted_keywords]
 
@@ -200,12 +202,12 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         if num_comments:
             score += num_comments * 30
         if date:
-            relative_minutes: float = (now - date).seconds / 60 + 1
-            score += 10000 / relative_minutes
+            relative_hours: float = ((now - date).total_seconds() / 60 + 1) / 60
+            score += min(math.sinh(1 / relative_hours) * 500, 200) * 2
         if article.keywords:
             for keyword in article.keywords:
                 if keyword in relevance_keywords:
-                    score += 1000
+                    score += 500
         article_scores.append((article, score))
 
     # sort by score
@@ -224,10 +226,16 @@ def analyse_category(
     category: Category, topic_articles: dict[int, List[PreprocessedArticle]]
 ) -> CategoryAnalysis:
 
+    total_num_articles = 0
+    for topic in topic_articles:
+        total_num_articles += len(topic_articles[topic])
+
     TOPIC_ARTICLES_THRESHOLD = (
-        5  # the minimum number of articles for a topic to be considered qualified
+        round(math.log(total_num_articles, 3))
+        # the minimum number of articles for a topic to be considered qualified
     )
 
+    logger.info(f"Filtering topics with less than {TOPIC_ARTICLES_THRESHOLD} articles")
     filtered_topics = {
         topic_id: topic_articles[topic_id]
         for topic_id in topic_articles.keys()
@@ -259,7 +267,7 @@ def analyse_category(
     for topic in analysed_topics:
         score: float = 0
 
-        score += len(topic.articles) * 10
+        score += len(topic.articles) * 5
 
         # Calculate the average time of the articles
         datetimes = [article.original_article.date for article in topic.articles]
@@ -268,10 +276,10 @@ def analyse_category(
         )
 
         relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
-        time_score = math.sinh(1 / relative_hours) * 200
-        time_score = min(time_score, 60)
+        time_score = math.sinh(1 / relative_hours) * 500
+        time_score = min(time_score, 200)
 
-        score += score * time_score
+        score += math.sqrt(len(topic.articles)) * time_score
 
         topic_scores.append((topic, score))
 

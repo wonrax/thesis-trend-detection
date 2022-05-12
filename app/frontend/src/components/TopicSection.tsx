@@ -2,12 +2,14 @@ import ArticleCard from "./ArticleCard";
 import Article from "../models/Article";
 import Text from "./Text";
 import Divider from "./Divider";
+import { ReactComponent as ArrowRight } from "./icons/ArrowRight.svg";
 
 export const TopicSection = ({
   spotlightArticle,
   articles,
   showThumbnail = false,
   keywords,
+  totalNumberOfArticles,
   rank,
   hasMore,
   navigateToTopic,
@@ -16,6 +18,7 @@ export const TopicSection = ({
   articles?: Array<Article>;
   showThumbnail?: boolean;
   keywords?: Array<string>;
+  totalNumberOfArticles?: number;
   rank?: number;
   hasMore?: boolean;
   navigateToTopic?: () => void;
@@ -69,13 +72,18 @@ export const TopicSection = ({
             if (navigateToTopic) navigateToTopic();
           }}
         >
-          <Text
-            className="px-3 py-1 m-auto rounded-md bg-gray-0 w-fit group-hover:underline"
-            fontWeight="medium"
-            textAlign="center"
-          >
-            Xem thêm tin về chủ đề này
-          </Text>
+          <div className="flex flex-row items-center gap-1 px-3 py-1 m-auto rounded-md bg-gray-0 w-fit">
+            <Text
+              className="group-hover:underline"
+              fontWeight="medium"
+              textAlign="center"
+            >
+              {totalNumberOfArticles
+                ? `Xem tất cả ${totalNumberOfArticles} tin`
+                : "Xem thêm tin về chủ đề này"}
+            </Text>
+            <ArrowRight />
+          </div>
         </div>
       )}
     </div>

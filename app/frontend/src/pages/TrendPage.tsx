@@ -140,6 +140,7 @@ export const TrendPage = ({
               spotlightArticle={topic.articles[0]}
               articles={topic.articles.slice(1)}
               keywords={topic.keywords}
+              totalNumberOfArticles={topic.totalNumberOfArticles}
               hasMore={topic.hasMoreArticles}
               rank={index + 1}
               navigateToTopic={() => {

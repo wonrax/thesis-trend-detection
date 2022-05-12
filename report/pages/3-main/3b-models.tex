@@ -1,276 +1,121 @@
 \chapter{Các mô hình}
 \label{chap:models}
 
-Ta thường có hai cách để phát hiện các sự kiện hay chủ đề nổi bật: \textbf{(1)}
-hồi tưởng (retrospect), sử dụng toàn bộ dữ liệu để làm đầu vào cho mô hình,
-hoặc, \textbf{(2)} online, phát hiện trên thời gian thực bằng cách đưa vào
-(feed) mô hình mỗi khi ta thu thập được dữ liệu
-mới~\cite{lauOnlineTrendAnalysis2012}. Với cách \textbf{(1)}, ta có thể phân
-tích được các chủ đề hay sự kiện trong lịch sử, và thường được hiện thực bằng
-các phương thức như gọm cụm (clustering) hay phát hiện bất thường (anomaly
-detection). Tuy nhiên, nếu ta muốn phát hiện các sự kiện đang xảy ra trong thời
-gian thực, chẳng hạn như phát hiện động đất, thì ta cần dùng đến kỹ thuật thứ
-\textbf{(2)}.
+Ta thường có hai cách để phát hiện các sự kiện hay chủ đề nổi bật: \textbf{(1)} hồi tưởng (retrospect), sử dụng toàn bộ dữ liệu để làm đầu vào cho mô hình, hoặc, \textbf{(2)} online, phát hiện trên thời gian thực bằng cách đưa vào (feed) mô hình mỗi khi ta thu thập được dữ liệu mới~\cite{lauOnlineTrendAnalysis2012}. Với cách \textbf{(1)}, ta có thể phân tích được các chủ đề hay sự kiện trong lịch sử, và thường được hiện thực bằng các phương thức như gọm cụm (clustering) hay phát hiện bất thường (anomaly detection). Tuy nhiên, nếu ta muốn phát hiện các sự kiện đang xảy ra trong thời gian thực, chẳng hạn như phát hiện động đất, thì ta cần dùng đến kỹ thuật thứ \textbf{(2)}.
 
-Ba mô hình chính được báo cáo này nhắc tới bao gồm mô hình phát hiện xu hướng
-(được xếp vào kỹ thuật thứ \textbf{2}), mô hình phát hiện chủ đề và mô hình
-phát hiện chủ đề dựa trên ngữ nghĩa (được xếp vào kỹ thuật thứ \textbf{1}).  Mô
-hình phát hiện xu hướng được nghiên cứu là mô hình được phát triển bởi
-Twitter~\cite{hendricksonTrendDetectionSocial2015}, bao gồm mô hình xác suất và
-mô hình hướng dữ liệu (data-driven). Mô hình phát hiện chủ đề là mô hình khai
-thác sự xuất hiện của các từ khoá trong các tập văn bản để tìm ra sự tương quan
-giữa các từ khoá và sự ảnh hưởng của từ khoá đối với chủ đề của văn bản. Mô
-hình phát hiện chủ đề mà báo cáo này sẽ tập trung nghiên cứu là mô hình Latent
-Dirichlet Allication (LDA). Mô hình phát hiện chủ đề dựa trên ngữ nghĩa là một
-mô hình phát hiện chủ đề nhưng được dựa trên ngữ nghĩa của văn bản, hay ngữ
-cảnh mà văn bản đó biểu hiện để thực hiện gom cụm chủ đề. Mô hình ngữ nghĩa
-BERT và PhoBERT là đối tượng nghiên cứu và là cơ sở cho thực nghiệm, được kết
-hợp với LDA và phương pháp gom cụm để có thể sinh ra kết quả tốt
-hơn~\cite{lamGomCumVan2021}.
+Ba mô hình chính được báo cáo này nhắc tới bao gồm mô hình phát hiện xu hướng (được xếp vào kỹ thuật thứ \textbf{2}), mô hình phát hiện chủ đề và mô hình phát hiện chủ đề dựa trên ngữ nghĩa (được xếp vào kỹ thuật thứ \textbf{1}).  Mô hình phát hiện xu hướng được nghiên cứu là mô hình được phát triển bởi Twitter~\cite{hendricksonTrendDetectionSocial2015}, bao gồm mô hình xác suất và mô hình hướng dữ liệu (data-driven). Mô hình phát hiện chủ đề là mô hình khai thác sự xuất hiện của các từ khoá trong các tập văn bản để tìm ra sự tương quan giữa các từ khoá và sự ảnh hưởng của từ khoá đối với chủ đề của văn bản. Mô hình phát hiện chủ đề mà báo cáo này sẽ tập trung nghiên cứu là mô hình \acrfull{lda} Mô hình phát hiện chủ đề dựa trên ngữ nghĩa là một mô hình phát hiện chủ đề nhưng được dựa trên ngữ nghĩa của văn bản, hay ngữ cảnh mà văn bản đó biểu hiện để thực hiện gom cụm chủ đề. Mô hình ngữ nghĩa BERT và PhoBERT là đối tượng nghiên cứu và là cơ sở cho thực nghiệm, được kết hợp với LDA và phương pháp gom cụm để có thể sinh ra kết quả tốt hơn~\cite{lamGomCumVan2021}.
 
 
 
 \section{Mô hình phát hiện xu hướng}
-Tương tác của người dùng trên mạng xã hội luôn có sự liên quan nhất định nào đó
-đến các sự kiện ở ngoài thế giới
-thực~\cite{hendricksonTrendDetectionSocial2015}. Để phát hiện xu hướng, ta cần
-phải trả lời các câu hỏi như: sự kiện đó bắt đầu từ khi nào? Mức độ thay đổi
-phạm vi của sự kiện này là lớn hay nhỏ? Và chúng thay đổi như thế nào đối với
-các sự kiện bình thường (typical) khác? Việc này không chỉ giúp phân biệt giữa
-các sự kiện bình thường và các sự kiện bất thường (atypical) mà còn giúp so
-sánh các sự kiện bất thường với
-nhau~\cite{hendricksonTrendDetectionSocial2015}.
+Tương tác của người dùng trên mạng xã hội luôn có sự liên quan nhất định nào đó đến các sự kiện ở ngoài thế giới thực~\cite{hendricksonTrendDetectionSocial2015}. Để phát hiện xu hướng, ta cần phải trả lời các câu hỏi như: sự kiện đó bắt đầu từ khi nào? Mức độ thay đổi phạm vi của sự kiện này là lớn hay nhỏ? Và chúng thay đổi như thế nào đối với các sự kiện bình thường (typical) khác? Việc này không chỉ giúp phân biệt giữa các sự kiện bình thường và các sự kiện bất thường (atypical) mà còn giúp so sánh các sự kiện bất thường với nhau~\cite{hendricksonTrendDetectionSocial2015}.
 
-Twitter là mạng xã hội cho phép người dùng đăng các bài đăng, hay còn được gọi
-là Tweet. Trong một Tweet, người dùng có thể thêm văn bản (giới hạn 280 ký tự)
-hoặc hình ảnh. Mô hình của Twitter định lượng các hành vi người dùng bằng cách
-đếm hashtag, mention hoặc liên kết (link) trong một khoảng thời gian cố định
-(bucketed count). Khi một định lượng được thể hiện bằng một từ hoặc cụm từ, ta
-có thể gọi từ hoặc cụm từ đó là \textit{chủ
-đề}~\cite{hendricksonTrendDetectionSocial2015}.
+Twitter là mạng xã hội cho phép người dùng đăng các bài đăng, hay còn được gọi là Tweet. Trong một Tweet, người dùng có thể thêm văn bản (giới hạn 280 ký tự) hoặc hình ảnh. Mô hình của Twitter định lượng các hành vi người dùng bằng cách đếm hashtag, mention hoặc liên kết (link) trong một khoảng thời gian cố định (bucketed count). Khi một định lượng được thể hiện bằng một từ hoặc cụm từ, ta có thể gọi từ hoặc cụm từ đó là \textit{chủ đề}~\cite{hendricksonTrendDetectionSocial2015}.
 
-Tuy nhiên, ta không thể biết trước được mức độ của sự thay đổi, hay thời gian
-mà sự thay đổi đó sẽ xảy ra. Có sự kiện chỉ diễn ra trong một vài giây, có sự
-kiện có thể diễn ra trong hàng năm. Hơn nữa, định lượng cho các sự kiện đó có
-thể thay đổi từ một vài Tweet cho đến hàng triệu Tweet. Để phát triển một giải
-thuật có thể đáp ứng được các kích thước dữ liệu trên phạm vi rộng lớn là việc
-không hề đơn giản~\cite{hendricksonTrendDetectionSocial2015}.
+Tuy nhiên, ta không thể biết trước được mức độ của sự thay đổi, hay thời gian mà sự thay đổi đó sẽ xảy ra. Có sự kiện chỉ diễn ra trong một vài giây, có sự kiện có thể diễn ra trong hàng năm. Hơn nữa, định lượng cho các sự kiện đó có thể thay đổi từ một vài Tweet cho đến hàng triệu Tweet. Để phát triển một giải thuật có thể đáp ứng được các kích thước dữ liệu trên phạm vi rộng lớn là việc không hề đơn giản~\cite{hendricksonTrendDetectionSocial2015}.
 
-Nhiều kỹ thuật dùng để phát hiện xu hướng đều định nghĩa một mô hình cơ sở
-(background model), là mô hình có thể đại diện cho giả thuyết không (null
-hypothesis), về cơ bản có nghĩa là \textit{không trend} (không là xu hướng).
-Những thay đổi của các định lượng so với mô hình cơ sở (deviation) được tính
-toán thành một hệ số (figure-of-merit) $\eta$. Giá trị $\eta$ càng lớn thì sự
-thay đổi của định lượng so với mô hình cơ sở càng nhiều. Và một giá trị $\eta$
-được định nghĩa trước có thể được sử dụng để chấp nhận hoặc từ chối giả thuyết
-không~\cite{hendricksonTrendDetectionSocial2015}.
+Nhiều kỹ thuật dùng để phát hiện xu hướng đều định nghĩa một mô hình cơ sở (background model), là mô hình có thể đại diện cho giả thuyết không (null hypothesis), về cơ bản có nghĩa là \textit{không trend} (không là xu hướng).  Những thay đổi của các định lượng so với mô hình cơ sở (deviation) được tính toán thành một hệ số (figure-of-merit) $\eta$. Giá trị $\eta$ càng lớn thì sự thay đổi của định lượng so với mô hình cơ sở càng nhiều. Và một giá trị $\eta$ được định nghĩa trước có thể được sử dụng để chấp nhận hoặc từ chối giả thuyết không~\cite{hendricksonTrendDetectionSocial2015}.
 
-Một kỹ thuật khác có thể bao gồm thành phần cơ sở (non-trend, hay \textit{không
-trend}) và thành phần giống trend (trend-like, hay \textit{đang là xu hướng}).
-Khi đó, giá trị $\eta$ sẽ thể hiện cho việc dữ liệu sẽ giống \textit{trend} hơn
-hay dữ liệu sẽ giống \textit{không trend}
-hơn~\cite{hendricksonTrendDetectionSocial2015}.
+Một kỹ thuật khác có thể bao gồm thành phần cơ sở (non-trend, hay \textit{không trend}) và thành phần giống trend (trend-like, hay \textit{đang là xu hướng}).  Khi đó, giá trị $\eta$ sẽ thể hiện cho việc dữ liệu sẽ giống \textit{trend} hơn hay dữ liệu sẽ giống \textit{không trend} hơn~\cite{hendricksonTrendDetectionSocial2015}.
 
 \subsection{Mô hình xác xuất Poisson}
 
-Phân phối Poisson là phân phối xác suất rời rạc, dùng để thể hiện xác suất số
-lần một sự kiện nào đó xảy ra trong một khoảng thời gian nhất
-định~\cite{haightHandbookPoissonDistribution1967}. Vì vậy, phân phối Poisson có
-khả năng áp dụng cho việc định lượng dữ liệu trên mạng xã hội, hay nói cách
-khác, ta có thể mặc định dữ liệu đó tuân theo phân phối
-Poisson~\cite{hendricksonTrendDetectionSocial2015}.
+Phân phối Poisson là phân phối xác suất rời rạc, dùng để thể hiện xác suất số lần một sự kiện nào đó xảy ra trong một khoảng thời gian nhất định~\cite{haightHandbookPoissonDistribution1967}. Vì vậy, phân phối Poisson có khả năng áp dụng cho việc định lượng dữ liệu trên mạng xã hội, hay nói cách khác, ta có thể mặc định dữ liệu đó tuân theo phân phối Poisson~\cite{hendricksonTrendDetectionSocial2015}.
 
-Ví dụ, ta xét số lượng Tweet có chứa hashtag ``\#covid19'' trong một khoảng thời
-gian nhất định. Tần suất đăng bài của người dùng có thể thay đổi theo thời
-gian. Nhưng nếu ta bỏ qua sự thay đổi đó, ta có thể nói, số lượng Tweet có chứa
-hashtag ``\#covid19'' tuân theo phân phối Poisson:
+Ví dụ, ta xét số lượng Tweet có chứa hashtag ``\#covid19'' trong một khoảng thời gian nhất định. Tần suất đăng bài của người dùng có thể thay đổi theo thời gian. Nhưng nếu ta bỏ qua sự thay đổi đó, ta có thể nói, số lượng Tweet có chứa hashtag ``\#covid19'' tuân theo phân phối Poisson:
 \[ P\left(c_{i} ; \nu\right)=\nu^{c_{i}} \cdot e^{-\nu} / c_{i} ! \]
 
 với:
 \begin{itemize}
-	\item $c_{i}$ là số lượng Tweet có chứa hashtag ``\#covid19'' trong một
-		khoảng thời gian nhất định.
-	\item $P$ là xác suất xuất hiện các Tweet có chứa hashtag ``\#covid19'' với
-		số lượng $c_{i}$.
+	\item $c_{i}$ là số lượng Tweet có chứa hashtag ``\#covid19'' trong một khoảng thời gian nhất định.
+	\item $P$ là xác suất xuất hiện các Tweet có chứa hashtag ``\#covid19'' với số lượng $c_{i}$.
 	\item $\nu$ là số lượng kỳ vọng các Tweet có chứa hashtag ``\#covid19''.
 \end{itemize}
 
-Vì ta không thể biết chính xác giá trị $\nu$, nên ta có thể lấy số lượng Tweet ở
-khoảng thời gian trước đó (đã biết) là $c_{i - 1}$ để biểu diễn cho $\nu$. Ta có
-hệ số $\eta$ tại một thời điểm nào đó là:
+Vì ta không thể biết chính xác giá trị $\nu$, nên ta có thể lấy số lượng Tweet ở khoảng thời gian trước đó (đã biết) là $c_{i - 1}$ để biểu diễn cho $\nu$. Ta có hệ số $\eta$ tại một thời điểm nào đó là:
 \[ c_{i}=\eta \cdot \mathrm{CI}(\alpha, \nu)+\nu \]
 
 với:
 \begin{itemize}
 	\item $\nu=c_{i-1}$.
-	\item $CI(\alpha, \nu)$ là khoảng tin cậy (confidence interval) cho phân
-	phối Poisson với mean $\nu$ và độ tin cậy $\alpha$.
+	\item $CI(\alpha, \nu)$ là khoảng tin cậy (confidence interval) cho phân phối Poisson với mean $\nu$ và độ tin cậy $\alpha$.
 \end{itemize}
 
-Khi đó, một số lượng Tweet $c_{i}$ được định nghĩa để có thể từ chối giả thuyết
-khi:
+Khi đó, một số lượng Tweet $c_{i}$ được định nghĩa để có thể từ chối giả thuyết khi:
 \[
 	c_{i}>=\eta_{c} \cdot \operatorname{CI}\left(\alpha, c_{i-1}\right)+c_{i-1}
 \]
 
-với $\eta_{c}$ và $\alpha$ là các tham số để điều chỉnh hiệu suất của thuật
-toán~\cite{hendricksonTrendDetectionSocial2015}.
+với $\eta_{c}$ và $\alpha$ là các tham số để điều chỉnh hiệu suất của thuật toán~\cite{hendricksonTrendDetectionSocial2015}.
 
-Trên thực tế, dữ liệu thường không tuân theo phân phối Poisson với mean chỉ đơn
-giản là một điểm dữ liệu. Để giải quyết vấn đề này, ta có thể tính mean bằng
-giá trị trung bình của nhiều điểm dữ liệu trong lịch sử trong cùng một sliding
-window. Tuy nhiên, ta không thể bỏ qua tần suất hoạt động của người dùng trong
-ngày, trong tháng hoặc trong năm. Chẳng hạn như, người dùng có xu hướng đăng
-Tweet nhiều nhất trong ngày vào lúc 17h-20h. Cho nên, khi ta bắt gặp sự thay
-đổi đáng kể trong khoảng thời gian đó, ta không thể đơn giản kết luận đó là xu
-hướng.
+Trên thực tế, dữ liệu thường không tuân theo phân phối Poisson với mean chỉ đơn giản là một điểm dữ liệu. Để giải quyết vấn đề này, ta có thể tính mean bằng giá trị trung bình của nhiều điểm dữ liệu trong lịch sử trong cùng một sliding window. Tuy nhiên, ta không thể bỏ qua tần suất hoạt động của người dùng trong ngày, trong tháng hoặc trong năm. Chẳng hạn như, người dùng có xu hướng đăng Tweet nhiều nhất trong ngày vào lúc 17h-20h. Cho nên, khi ta bắt gặp sự thay đổi đáng kể trong khoảng thời gian đó, ta không thể đơn giản kết luận đó là xu hướng.
 
-Mô hình trên khá đơn giản và chỉ yêu cầu một điểm hoặc vài điểm dữ liệu cho mô
-hình cơ sở. Tuy nhiên với lượng dữ liệu thay đổi liên tục và thay đổi trong
-phạm vi rộng, ta không thể tìm được một cặp tham số $\eta$ và $\alpha$ tối ưu
-cho mọi loại dữ liệu.
+Mô hình trên khá đơn giản và chỉ yêu cầu một điểm hoặc vài điểm dữ liệu cho mô hình cơ sở. Tuy nhiên với lượng dữ liệu thay đổi liên tục và thay đổi trong phạm vi rộng, ta không thể tìm được một cặp tham số $\eta$ và $\alpha$ tối ưu cho mọi loại dữ liệu.
 
 \subsection{Mô hình hướng dữ liệu (data-driven)}
-Để giải quyết các vấn đề của mô hình Poisson,
-\cite{hendricksonTrendDetectionSocial2015}~đề xuất phương pháp đơn giản hơn đó
-là so sánh dữ liệu cần phân tích với các dữ liệu đã được gán nhãn. Trước tiên,
-ta phải phân loại dữ liệu có sẵn thành \textit{đang trend} hoặc \textit{không
-trend}. Sau đó, ta định nghĩa một hàm tính khoảng cách từ dữ liệu đã gán nhãn
-và dữ liệu ta cần phân tích:
+Để giải quyết các vấn đề của mô hình Poisson, \cite{hendricksonTrendDetectionSocial2015}~đề xuất phương pháp đơn giản hơn đó là so sánh dữ liệu cần phân tích với các dữ liệu đã được gán nhãn. Trước tiên, ta phải phân loại dữ liệu có sẵn thành \textit{đang trend} hoặc \textit{không trend}. Sau đó, ta định nghĩa một hàm tính khoảng cách từ dữ liệu đã gán nhãn và dữ liệu ta cần phân tích:
 \[ d(r, s)=\sum_{i}^{N}\left(r_{i}-s_{i}\right)^{2} \]
 
 với:
 \begin{itemize}
 	\item $r$ là dữ liệu dạng time series đã được gán nhãn.
 	\item $s$ là dữ liệu dạng time series đang được phân tích.
-	\item $r_{i}$ và $s_{i}$ là các giá trị của dữ liệu tại thời điểm $i$ trong
-	tập dữ liệu $r$ và $s$ có độ dài $N$.
+	\item $r_{i}$ và $s_{i}$ là các giá trị của dữ liệu tại thời điểm $i$ trong tập dữ liệu $r$ và $s$ có độ dài $N$.
 \end{itemize}
 
-Nếu $r$ có độ dài lớn hơn $s$, ta lấy giá trị nhỏ nhất trong các khoảng cách
-$d(r_s, s)$, với $r_s$ là tập con (sub-series) của $r$. Với hàm khoảng cách ở
-trên, ta có thể tính trọng lượng (weight) bằng cách:
-\[ W(r,s)=e^{-\lambda \cdot d(r,s)} \]
+Nếu $r$ có độ dài lớn hơn $s$, ta lấy giá trị nhỏ nhất trong các khoảng cách $d(r_s, s)$, với $r_s$ là tập con (sub-series) của $r$. Với hàm khoảng cách ở trên, ta có thể tính trọng lượng (weight) bằng cách: \[ W(r,s)=e^{-\lambda \cdot d(r,s)} \]
 
-Tham số $\lambda$ là một hệ số để điều chỉnh mức độ quan trọng giữa các time
-series khác nhau hoặc giống nhau. Ví dụ, giá trị $\lambda$ lớn cho ra $W$ rất
-nhỏ kể cả khi khoảng cách $r$ và $s$ là rất lớn. Khi đó, $\eta$ sẽ được tính
-bằng tỉ lệ:
+Tham số $\lambda$ là một hệ số để điều chỉnh mức độ quan trọng giữa các time series khác nhau hoặc giống nhau. Ví dụ, giá trị $\lambda$ lớn cho ra $W$ rất nhỏ kể cả khi khoảng cách $r$ và $s$ là rất lớn. Khi đó, $\eta$ sẽ được tính bằng tỉ lệ:
 \[
 \eta(s)=\frac{\sum_{r \in R+} W(r, s)}{\sum_{r \in R-} W(r, s)}
 \]
 
-với $R+$ là tập dữ liệu gồm nhiều time series được gán nhãn \textit{trend} và
-$R-$ là dữ liệu được gán nhãn \textit{không trend}. Giá trị $\eta$ càng cao thì
-time series $s$ càng \textit{giống trend} và ngược lại.
+với $R+$ là tập dữ liệu gồm nhiều time series được gán nhãn \textit{trend} và $R-$ là dữ liệu được gán nhãn \textit{không trend}. Giá trị $\eta$ càng cao thì time series $s$ càng \textit{giống trend} và ngược lại.
 
-Khó khăn chính khi hiện thực mô hình này là việc gán nhãn cho các dữ liệu
-\textit{đang trend} và \textit{không trend}. Bên cạnh đó, để mô hình hoạt động
-trên mọi kích thước dữ liệu, việc thực hiện biến đổi (transformation) trên các
-tập dữ liệu là cần thiết. Các biến đổi có thể là~\cite{nikolovTrendNoTrend2012}:
+Khó khăn chính khi hiện thực mô hình này là việc gán nhãn cho các dữ liệu \textit{đang trend} và \textit{không trend}. Bên cạnh đó, để mô hình hoạt động trên mọi kích thước dữ liệu, việc thực hiện biến đổi (transformation) trên các tập dữ liệu là cần thiết. Các biến đổi có thể là~\cite{nikolovTrendNoTrend2012}:
 
 \begin{itemize}
-	\item \textbf{Chuẩn hoá đường cơ sở (Baseline Normalization)}: Quan sát cho
-		thấy khá nhiều chủ đề \textit{không trend} có tần suất Tweet rất cao,
-		bên cạnh đó cũng có rất nhiều chủ đề \textit{đang trend} lại có tần
-		suất Tweet rất thấp. Ví dụ, chủ đề ``city'' có tần suất cơ sở (baseline
-		rate) rất cao vì nó là một âm tiết phổ biến trong tiếng Anh. Vì vậy nên
-		ta có thể sử dụng Baseline Normalization để nhấn mạnh (emphasize) các
-		điểm dữ liệu cao hơn đường cơ sở và giảm độ quan trọng của các điểm dữ
-		liệu thấp hơn đường cơ sở.
+	\item \textbf{Chuẩn hoá đường cơ sở (Baseline Normalization)}: Quan sát cho thấy khá nhiều chủ đề \textit{không trend} có tần suất Tweet rất cao, bên cạnh đó cũng có rất nhiều chủ đề \textit{đang trend} lại có tần suất Tweet rất thấp. Ví dụ, chủ đề ``city'' có tần suất cơ sở (baseline rate) rất cao vì nó là một âm tiết phổ biến trong tiếng Anh. Vì vậy nên ta có thể sử dụng Baseline Normalization để nhấn mạnh (emphasize) các điểm dữ liệu cao hơn đường cơ sở và giảm độ quan trọng của các điểm dữ liệu thấp hơn đường cơ sở.
 	
-	\item \textbf{Chuẩn hoá spike (Spike Normalization)}: Các chủ đề
-		\textit{đang trend} và các chủ đề \textit{không trend} còn khác nhau ở
-		độ lớn và tần suất của các điểm spike (điểm có giá trị lớn đột ngột).
-		Vì vậy, Spike Normalization giúp nhấn mạnh các điểm spike và ngược lại.
+	\item \textbf{Chuẩn hoá spike (Spike Normalization)}: Các chủ đề \textit{đang trend} và các chủ đề \textit{không trend} còn khác nhau ở độ lớn và tần suất của các điểm spike (điểm có giá trị lớn đột ngột).  Vì vậy, Spike Normalization giúp nhấn mạnh các điểm spike và ngược lại.
 	
-	\item \textbf{Thang đo logarit (Logarithmic Scale)}: Ta thường không thể
-		biết được cách thức mà một chủ đề được lan toả ra khắp cộng đồng, nhưng
-		ta biết được đa số các quá trình phân nhánh (branching process) đều
-		phát sinh theo cấp số mũ. Vì vậy, ta có thể sử dụng thang đo logarit để
-		định lượng, qua đó có thể khai thác các đặc điểm này.
+	\item \textbf{Thang đo logarit (Logarithmic Scale)}: Ta thường không thể biết được cách thức mà một chủ đề được lan toả ra khắp cộng đồng, nhưng ta biết được đa số các quá trình phân nhánh (branching process) đều phát sinh theo cấp số mũ. Vì vậy, ta có thể sử dụng thang đo logarit để định lượng, qua đó có thể khai thác các đặc điểm này.
 
 \end{itemize}
 
-Mặc dù dữ liệu được dán nhãn sẽ quyết định kết quả của một time series, nhưng
-ta vấn có thể điều chỉnh mô hình bằng cách thay đổi các tham số như $\lambda$,
-độ dài time series $s$ và $r$, chọn các phương thức biến đổi để đạt được kết
-quả tốt nhất, vì nhiều trong số chúng có ảnh hưởng trực tiếp tới các chỉ số như
-true-positive và false-positive~\cite{hendricksonTrendDetectionSocial2015}.
+Mặc dù dữ liệu được dán nhãn sẽ quyết định kết quả của một time series, nhưng ta vấn có thể điều chỉnh mô hình bằng cách thay đổi các tham số như $\lambda$, độ dài time series $s$ và $r$, chọn các phương thức biến đổi để đạt được kết quả tốt nhất, vì nhiều trong số chúng có ảnh hưởng trực tiếp tới các chỉ số như true-positive và false-positive~\cite{hendricksonTrendDetectionSocial2015}.
 
 \section{Mô hình phát hiện chủ đề}
-Chủ đề là vấn đề cơ bản, là nội dung trọng tâm mà người nói hoặc người viết
-muốn đề cập. Một văn bản (bài báo, Tweet, bài văn, v.v.) có thể chứa nhiều chủ
-đề, nhưng chỉ có một hoặc một vài chủ đề có thể làm chủ đề chính để đại diện
-cho văn bản đó.
+Chủ đề là vấn đề cơ bản, là nội dung trọng tâm mà người nói hoặc người viết muốn đề cập. Một văn bản (bài báo, Tweet, bài văn, v.v.) có thể chứa nhiều chủ đề, nhưng chỉ có một hoặc một vài chủ đề có thể làm chủ đề chính để đại diện cho văn bản đó.
 
-Để tìm ra chủ đề, ta không thể đơn giản chỉ tìm từ phổ biến nhất trong văn bản.
-Mỗi từ tuỳ theo ngữ cảnh có thể thuộc về nhiều chủ đề khác nhau. Ví dụ như âm
-tiết ``đường'' có thể vừa thuộc chủ đề ``gia vị'' và vừa có thể thuộc chủ đề
-``công trình''. Mô hình phát hiện chủ đề là mô hình túi từ (bag-of-words model)
-dùng để khai thác mối tương quan giữa các từ và các chủ đề ngữ nghĩa tiềm ẩn
-(latent sematic theme) giữa các văn
-bản~\cite{madaniRealtimeTrendingTopics2015}.
+Để tìm ra chủ đề, ta không thể đơn giản chỉ tìm từ phổ biến nhất trong văn bản.  Mỗi từ tuỳ theo ngữ cảnh có thể thuộc về nhiều chủ đề khác nhau. Ví dụ như âm tiết ``đường'' có thể vừa thuộc chủ đề ``gia vị'' và vừa có thể thuộc chủ đề ``công trình''. Mô hình phát hiện chủ đề là mô hình túi từ (bag-of-words model) dùng để khai thác mối tương quan giữa các từ và các chủ đề ngữ nghĩa tiềm ẩn (latent sematic theme) giữa các văn bản~\cite{madaniRealtimeTrendingTopics2015}.
 
-Về cơ bản, mô hình chủ đề thực hiện ba công
-việc~\cite{kapadiaTopicModelingPython2020}:
+Về cơ bản, mô hình chủ đề thực hiện ba công việc~\cite{kapadiaTopicModelingPython2020}:
 
 \begin{itemize}
-	\item \textbf{Giảm chiều (Dimensionality Reduction)}: thay vì biểu diễn từ
-		T ở không gian đặc trưng (feature space) \{Word\_i: count(Word\_i, T)
-		for Word\_i in Vocabulary\}, ta có thể biểu diễn nó thành \{Topic\_i:
-		Weight(Topic\_i, T) for Topic\_i in Topics\}.
+	\item \textbf{Giảm chiều (Dimensionality Reduction)}: thay vì biểu diễn từ T ở không gian đặc trưng (feature space) \{Word\_i: count(Word\_i, T) for Word\_i in Vocabulary\}, ta có thể biểu diễn nó thành \{Topic\_i: Weight(Topic\_i, T) for Topic\_i in Topics\}.
 	
-	\item \textbf{Học không giám sát (Unsupervised Learning)}: có thể so sánh
-		với gom cụm, khi số lượng cụm hay số lượng chủ đề là tham số cho đầu ra
-		của mô hình. Khi ta thực hiện mô hình chủ đề, ta gọm cụm các từ thay vì
-		gom cụm các văn bản.
+	\item \textbf{Học không giám sát (Unsupervised Learning)}: có thể so sánh với gom cụm, khi số lượng cụm hay số lượng chủ đề là tham số cho đầu ra của mô hình. Khi ta thực hiện mô hình chủ đề, ta gọm cụm các từ thay vì gom cụm các văn bản.
 	
-	\item \textbf{Gán nhãn (Tagging)}: tìm cách biểu diễn các chủ đề mà các văn
-		bản trong một tập văn bản thể hiện.
+	\item \textbf{Gán nhãn (Tagging)}: tìm cách biểu diễn các chủ đề mà các văn bản trong một tập văn bản thể hiện.
 \end{itemize}
 
 \subsection{Mô hình Latent Dirichlet Allocation (LDA)}
 \label{sec:lda}
 
-Mô hình LDA là mô hình tạo sinh xác suất (generative probabilistic model) cho
-các dữ liệu rời rạc như các kho văn bản (text corpora). LDA là mô hình Bayes ba
-lớp, với mỗi văn bản trong một tập văn bản được biểu diễn thông qua một tập các
-chủ đề. Và mỗi chủ đề được biểu diễn bằng một tập các xác suất chủ
-đề~\cite{bleiLatentDirichletAllocation2003}. Nói cách khác, một văn bản có thể
-biểu diễn bằng nhiều chủ đề, và một chủ đề có thể được biểu diễn bằng nhiều từ
-khác nhau.
+Mô hình LDA là mô hình tạo sinh xác suất (generative probabilistic model) cho các dữ liệu rời rạc như các kho văn bản (text corpora). LDA là mô hình Bayes ba lớp, với mỗi văn bản trong một tập văn bản được biểu diễn thông qua một tập các chủ đề. Và mỗi chủ đề được biểu diễn bằng một tập các xác suất chủ đề~\cite{bleiLatentDirichletAllocation2003}. Nói cách khác, một văn bản có thể biểu diễn bằng nhiều chủ đề, và một chủ đề có thể được biểu diễn bằng nhiều từ khác nhau.
 
-Giả sử ta có 1000 văn bản, và mỗi văn bản có trung bình 300 từ. Để biết được thể
-loại của mỗi văn bản, ta có thể nối mỗi văn bản với các từ xuất hiện trong văn
-bản đó (Hình \ref{fig:simple_word_doc_model}). Khi đó, một tập các văn bản kết
-nối cùng với một tập các từ thì chúng được gọi là cùng chủ
-đề~\cite{ganegedaraIntuitiveGuideLatent2021}. Tuy nhiên, số kết nối ta phải tính
-toán là quá lớn: $1000 \cdot 300 = 300000$.
+Giả sử ta có 1000 văn bản, và mỗi văn bản có trung bình 300 từ. Để biết được thể loại của mỗi văn bản, ta có thể nối mỗi văn bản với các từ xuất hiện trong văn bản đó (Hình \ref{fig:simple_word_doc_model}). Khi đó, một tập các văn bản kết nối cùng với một tập các từ thì chúng được gọi là cùng chủ đề~\cite{ganegedaraIntuitiveGuideLatent2021}. Tuy nhiên, số kết nối ta phải tính toán là quá lớn: $1000 \cdot 300 = 300000$.
 
-\image[0.7]{img/lda/simple_word_doc_model.jpeg}{Mô hình kết nối văn bản - từ đơn
-giản. Ảnh:
-Medium~\cite{ganegedaraIntuitiveGuideLatent2021}}{fig:simple_word_doc_model}
+\image[0.7]{img/lda/simple_word_doc_model.jpeg}{Mô hình kết nối văn bản - từ đơn giản. Ảnh: Medium~\cite{ganegedaraIntuitiveGuideLatent2021}}{fig:simple_word_doc_model}
 
-Để giảm số kết nối, LDA thêm một lớp tiềm ẩn (latent), tức là các chủ đề ẩn chứa
-trong các văn bản đều bị ẩn đi (unknown)(Hình \ref{fig:latent_word_doc_model}).
-Tuy nhiên chúng vẫn được thể hiện bằng cách tạo sinh văn bản dựa trên các chủ đề
-đó~\cite{tomarTopicModelingUsing2019}.
+Để giảm số kết nối, LDA thêm một lớp tiềm ẩn (latent), tức là các chủ đề ẩn chứa trong các văn bản đều bị ẩn đi (unknown)(Hình \ref{fig:latent_word_doc_model}).  Tuy nhiên chúng vẫn được thể hiện bằng cách tạo sinh văn bản dựa trên các chủ đề đó~\cite{tomarTopicModelingUsing2019}.
 
-\image[0.7]{img/lda/latent_word_doc_model.jpeg}{Mô hình có lớp tiềm ẩn giúp giảm
-số lượng kết nối (thread). Ảnh:
-Medium~\cite{ganegedaraIntuitiveGuideLatent2021}}{fig:latent_word_doc_model}
+\image[0.7]{img/lda/latent_word_doc_model.jpeg}{Mô hình có lớp tiềm ẩn giúp giảm số lượng kết nối (thread). Ảnh: Medium~\cite{ganegedaraIntuitiveGuideLatent2021}}{fig:latent_word_doc_model}
 
-\image[0.7]{img/lda/architecture.png}{Minh hoạ mô hình LDA. Các node thể hiện
-cho các biến ngẫu nhiên, các cạnh thể hiện sự phụ thuộc giữa các biến ngẫu
-nhiên. Node màu xám là biến ngẫu nhiên có thể quan sát được; node màu trắng là
-các biến ngẫu nhiên ẩn (hidden). Các hình chữ nhật là ký hiệu tấm (plate
-notation), thể hiện sự lặp lại của các biến ngẫu nhiên
-~\cite{bleiTopicModels2009}.}{fig:lda_architecture}
+\image[0.7]{img/lda/architecture.png}{Minh hoạ mô hình LDA. Các node thể hiện cho các biến ngẫu nhiên, các cạnh thể hiện sự phụ thuộc giữa các biến ngẫu nhiên. Node màu xám là biến ngẫu nhiên có thể quan sát được; node màu trắng là các biến ngẫu nhiên ẩn (hidden). Các hình chữ nhật là ký hiệu tấm (plate notation), thể hiện sự lặp lại của các biến ngẫu nhiên ~\cite{bleiTopicModels2009}.}{fig:lda_architecture}
 
-Hình \ref{fig:lda_architecture} minh hoạ mô hình LDA. Quá trình tạo sinh từng
-văn bản $w$ trong kho văn bản $D$ được thực hiện như
-sau~\cite{bleiLatentDirichletAllocation2003}:
+Hình \ref{fig:lda_architecture} minh hoạ mô hình LDA. Quá trình tạo sinh từng văn bản $w$ trong kho văn bản $D$ được thực hiện như sau~\cite{bleiLatentDirichletAllocation2003}:
 
 \begin{enumerate}
 	\item Chọn $N \sim Poisson(\xi)$.
@@ -278,246 +123,103 @@ sau~\cite{bleiLatentDirichletAllocation2003}:
 	\item Với mỗi từ $w_n$ trong N từ:
 	\begin{enumerate}
 		\item Chọn $z_n \sim Multinomial(\theta)$.
-		\item Chọn một chủ đề $z_n$ từ $p(w_n|z_n,\beta)$, là một xác suất đa
-		thức có điều kiện phụ thuộc vào chủ đề $z_n$.
+		\item Chọn một chủ đề $z_n$ từ $p(w_n|z_n,\beta)$, là một xác suất đa thức có điều kiện phụ thuộc vào chủ đề $z_n$.
 	\end{enumerate}
 \end{enumerate}
 
-LDA là mô hình học không giám sát (unsupervised) nên dữ liệu có thể không cần
-được gán nhãn mà vẫn đưa được vào mô hình. Về cơ bản, LDA sẽ cố gắng sinh ra
-các văn bản giống các văn bản đầu vào nhất có thể, từ đó mô hình học được các
-tham số $\alpha$ và $\beta$.
+LDA là mô hình học không giám sát (unsupervised) nên dữ liệu có thể không cần được gán nhãn mà vẫn đưa được vào mô hình. Về cơ bản, LDA sẽ cố gắng sinh ra các văn bản giống các văn bản đầu vào nhất có thể, từ đó mô hình học được các tham số $\alpha$ và $\beta$.
 
 \subsection{Mô hình Correlated Topic Model (CTM)}
-Vì Dirichlet sinh ra các xác suất chủ đề độc lập nên một nhược điểm của LDA là
-không thể mô hình được sự tương quan giữa các chủ đề. Ví dụ như, chủ đề về
-\textit{y tế} thường sẽ có sự liên quan với chủ đề \textit{thực phẩm} nhiều hơn
-so với \textit{thể thao}. Mô hình CTM~\cite{laffertyCorrelatedTopicModels2006}
-ra đời để giải quyết vấn đề này.
+Vì Dirichlet sinh ra các xác suất chủ đề độc lập nên một nhược điểm của LDA là không thể mô hình được sự tương quan giữa các chủ đề. Ví dụ như, chủ đề về \textit{y tế} thường sẽ có sự liên quan với chủ đề \textit{thực phẩm} nhiều hơn so với \textit{thể thao}. Mô hình CTM~\cite{laffertyCorrelatedTopicModels2006} ra đời để giải quyết vấn đề này.
 
-\image[0.6]{img/ctm/architect.png}{Minh hoạ mô hình CTM.
-Hình:~\cite{laffertyCorrelatedTopicModels2006}}{fig:ctm_architecture}
+\image[0.6]{img/ctm/architect.png}{Minh hoạ mô hình CTM.  Hình:~\cite{laffertyCorrelatedTopicModels2006}}{fig:ctm_architecture}
 
-Thay vì sử dụng phân phối Dirichlet, CTM sử dụng phân phối chuẩn logistic
-(logistic normal distribution). Lúc đó, bước thứ 2 ở mục~\ref{sec:lda} sẽ trở
-thành $\theta \sim f(N(\eta, \sum))$ với $f(x)$ là biến đổi logistic và $N$ là
-phân phối chuẩn đa chiều.
+Thay vì sử dụng phân phối Dirichlet, CTM sử dụng phân phối chuẩn logistic (logistic normal distribution). Lúc đó, bước thứ 2 ở mục~\ref{sec:lda} sẽ trở thành $\theta \sim f(N(\eta, \sum))$ với $f(x)$ là biến đổi logistic và $N$ là phân phối chuẩn đa chiều.
 
 \[
 \theta_{j}=\frac{\exp \left(\eta_{j}\right)}{\sum_{p=0}^{k} \exp
 \left(\eta_{p}\right)}
 \]
 
-CTM không những giúp phân tách chủ đề tốt hơn mà còn giúp thể hiện các sự tương
-quan giữa các chủ đề. Tuy nhiên, vì sự thay đổi trên, CTM mất nhiều thời gian
-hơn để tính toán và ước lượng các tham số trong quá trình huấn luyện.
+CTM không những giúp phân tách chủ đề tốt hơn mà còn giúp thể hiện các sự tương quan giữa các chủ đề. Tuy nhiên, vì sự thay đổi trên, CTM mất nhiều thời gian hơn để tính toán và ước lượng các tham số trong quá trình huấn luyện.
 
 \section{Phương pháp khai thác ngữ nghĩa}
 \subsection{Word embedding, sentence embedding}
-Véc-tơ ngữ nghĩa (vectors semantics) là phương pháp cơ bản để biểu diễn nghĩa
-của các từ trong xử lý ngôn ngữ tự nhiên. Ý tưởng của véc-tơ ngữ nghĩa là
-chuyển một từ thành một điểm trong không gian ngữ nghĩa (semantic space). Điểm
-mà một từ thể hiện sẽ được rút ra từ sự phân bổ các điểm (từ) xung quanh nó
-(neighbor). Véc-tơ dùng để biểu diễn một từ gọi là word
-embedding~\cite{jurafskySpeechLanguageProcessing}.
+Véc-tơ ngữ nghĩa (vectors semantics) là phương pháp cơ bản để biểu diễn nghĩa của các từ trong xử lý ngôn ngữ tự nhiên. Ý tưởng của véc-tơ ngữ nghĩa là chuyển một từ thành một điểm trong không gian ngữ nghĩa (semantic space). Điểm mà một từ thể hiện sẽ được rút ra từ sự phân bổ các điểm (từ) xung quanh nó (neighbor). Véc-tơ dùng để biểu diễn một từ gọi là word embedding~\cite{jurafskySpeechLanguageProcessing}.
 
-\image[0.7]{img/bert/word-embedding.png}{Minh hoạ các véc-tơ ngữ nghĩa của từ,
-các từ gần nhau thường sẽ mang ý nghĩa/ý nghĩa sử dụng gần nhau. Ảnh:
-Medium~\cite{bujokasCreatingWordEmbeddings2020}.}{fig:word_embedding}
+\image[0.7]{img/bert/word-embedding.png}{Minh hoạ các véc-tơ ngữ nghĩa của từ, các từ gần nhau thường sẽ mang ý nghĩa/ý nghĩa sử dụng gần nhau. Ảnh: Medium~\cite{bujokasCreatingWordEmbeddings2020}.}{fig:word_embedding}
 
-Sentence embedding cũng giống như word embedding, nhưng nó dùng để biểu diễn sự
-tương quan ngữ nghĩa giữa các câu. Một cách đơn giản để tạo sentence embedding
-là lấy trung bình tất cả các word embedding của các từ trong câu
-đó~\cite{lamGomCumVan2021}. Sentence embedding giúp ta khai thác được ngữ cảnh
-rộng hơn, trải dài qua nhiều câu mà các word embedding không thể làm được.
+Sentence embedding cũng giống như word embedding, nhưng nó dùng để biểu diễn sự tương quan ngữ nghĩa giữa các câu. Một cách đơn giản để tạo sentence embedding là lấy trung bình tất cả các word embedding của các từ trong câu đó~\cite{lamGomCumVan2021}. Sentence embedding giúp ta khai thác được ngữ cảnh rộng hơn, trải dài qua nhiều câu mà các word embedding không thể làm được.
 
-Sentence embedding có thể sử dụng để phân loại (ví dụ, câu đang xét là mang ý
-nghĩa tích cực hay tiêu cực), phân tích ngữ nghĩa (ví dụ, phân tích sự liên
-quan giữa hai câu bất kỳ) hoặc dùng trong các tác vụ ngôn ngữ (linguistic task,
-ví dụ, xác định động từ là thì hiện tại hay thì quá khứ trong tiếng
-Anh)~\cite{heidenreichPaperSummaryEvaluation2018}.
+Sentence embedding có thể sử dụng để phân loại (ví dụ, câu đang xét là mang ý nghĩa tích cực hay tiêu cực), phân tích ngữ nghĩa (ví dụ, phân tích sự liên quan giữa hai câu bất kỳ) hoặc dùng trong các tác vụ ngôn ngữ (linguistic task, ví dụ, xác định động từ là thì hiện tại hay thì quá khứ trong tiếng Anh)~\cite{heidenreichPaperSummaryEvaluation2018}.
 
 \subsection{Mô hình BERT}
-BERT~\cite{devlinBERTPretrainingDeep2019} (Bidirectional Encoder
-Representations from Transformers) là mô hình ngôn ngữ dựa trên kiến trúc
-Transformer~\cite{vaswaniAttentionAllYou2017}. BERT được các kỹ sư ở Google
-phát triển và công bố vào năm 2018, đánh dấu bước đột phá trong các tác vụ xử
-lý ngôn ngữ tự nhiên và các benchmark như GLUE (đánh giá mức độ hiểu ngôn ngữ),
-SQuAD, v.v.
+BERT~\cite{devlinBERTPretrainingDeep2019} (Bidirectional Encoder Representations from Transformers) là mô hình ngôn ngữ dựa trên kiến trúc Transformer~\cite{vaswaniAttentionAllYou2017}. BERT được các kỹ sư ở Google phát triển và công bố vào năm 2018, đánh dấu bước đột phá trong các tác vụ xử lý ngôn ngữ tự nhiên và các benchmark như GLUE (đánh giá mức độ hiểu ngôn ngữ), SQuAD, v.v.
 
-BERT là mô hình học sẵn (pre-trained model) được huấn luyện sẵn cho mục đích
-chung (general purpose). BERT được thiết kế để huấn luyện trước (pre-train) các
-word embedding. Đầu ra của BERT sẽ được tinh chỉnh (fine-tune) với các lớp huấn
-luyện bổ sung để phù hợp với các yêu cầu cụ thể của các tác vụ khác nhau.
+BERT là mô hình học sẵn (pre-trained model) được huấn luyện sẵn cho mục đích chung (general purpose). BERT được thiết kế để huấn luyện trước (pre-train) các word embedding. Đầu ra của BERT sẽ được tinh chỉnh (fine-tune) với các lớp huấn luyện bổ sung để phù hợp với các yêu cầu cụ thể của các tác vụ khác nhau.
 
-BERT là mô hình ngôn ngữ hai chiều (bidirectional), tức là một từ trong câu sẽ
-được biểu diễn bởi các từ xung quanh nó. Khác với các mô hình một chiều
-(unidirectional), một từ trong câu chỉ xét các từ ở phía trước nó. Ví dụ cho mô
-hình một chiều là ELMo~\cite{petersDeepContextualizedWord2018}; ``Mặc dù ELMo có
-kiến trúc dựa trên một mạng BiLSTM xem xét bối cảnh theo hai chiều từ trái sang
-phải và từ phải sang trái nhưng những chiều này là độc lập nhau nên ta coi như
-đó là biểu diễn một chiều.''~\cite{khanhBERTModel2020}.
+BERT là mô hình ngôn ngữ hai chiều (bidirectional), tức là một từ trong câu sẽ được biểu diễn bởi các từ xung quanh nó. Khác với các mô hình một chiều (unidirectional), một từ trong câu chỉ xét các từ ở phía trước nó. Ví dụ cho mô hình một chiều là ELMo~\cite{petersDeepContextualizedWord2018}; ``Mặc dù ELMo có kiến trúc dựa trên một mạng BiLSTM xem xét bối cảnh theo hai chiều từ trái sang phải và từ phải sang trái nhưng những chiều này là độc lập nhau nên ta coi như đó là biểu diễn một chiều.''~\cite{khanhBERTModel2020}.
 
-BERT chỉ sử dụng phần encoder của kiến trúc Transformer (sẽ được trình bày ở
-phần kế tiếp). Khác với Recurrent Neural Network (RNN), cơ chế attention của
-Transformer truyền tất cả các từ trong câu vào mô hình và thực hiện đánh giá
-(evaluate) chúng cùng một lúc, do đó Transformer có thể coi là huấn luyện hai
-chiều~\cite{khanhBERTModel2020}.
+BERT chỉ sử dụng phần encoder của kiến trúc Transformer (sẽ được trình bày ở phần kế tiếp). Khác với Recurrent Neural Network (RNN), cơ chế attention của Transformer truyền tất cả các từ trong câu vào mô hình và thực hiện đánh giá (evaluate) chúng cùng một lúc, do đó Transformer có thể coi là huấn luyện hai chiều~\cite{khanhBERTModel2020}.
 
-Đầu vào của BERT là một tập các từ được encode thành các véc-tơ embedding.
-Trước tiên, đầu vào sẽ được WordPiece phân tách thành các token. BERT sẽ dựa
-trên các token để tạo ra ba véc-tơ embedding:
+Đầu vào của BERT là một tập các từ được encode thành các véc-tơ embedding.  Trước tiên, đầu vào sẽ được WordPiece phân tách thành các token. BERT sẽ dựa trên các token để tạo ra ba véc-tơ embedding:
 \begin{itemize}
-	\item Các token sẽ được chuyển thành các véc-tơ 768 chiều, trở thành Token
-		Embedding.
-	\item Segment Embedding là các véc-tơ để phân biệt các câu. Giữa các câu
-		này sẽ được phân chia bởi một token [SEP]. Ví dụ, véc-tơ Segment
-		Embedding của câu thứ nhất sẽ mang giá trị 0 ở tất cả các chiều, và
-		véc-tơ Segment Embedding của câu thứ hai sẽ mang giá trị 1 ở tất cả các
-		chiều.
-	\item Positional Embedding sẽ cho biết token đang nằm ở vị trí nào trong
-		câu và được tính bằng các hàm $sin$ và $cos$ ở các tần suất khác
-		nhau~\cite{vaswaniAttentionAllYou2017}.
+	\item Các token sẽ được chuyển thành các véc-tơ 768 chiều, trở thành Token Embedding.
+	\item Segment Embedding là các véc-tơ để phân biệt các câu. Giữa các câu này sẽ được phân chia bởi một token [SEP]. Ví dụ, véc-tơ Segment Embedding của câu thứ nhất sẽ mang giá trị 0 ở tất cả các chiều, và véc-tơ Segment Embedding của câu thứ hai sẽ mang giá trị 1 ở tất cả các chiều.
+	\item Positional Embedding sẽ cho biết token đang nằm ở vị trí nào trong câu và được tính bằng các hàm $sin$ và $cos$ ở các tần suất khác nhau~\cite{vaswaniAttentionAllYou2017}.
 \end{itemize}
 
 \image[1]{img/bert/input.png}{Minh hoạ đầu vào của
 BERT~\cite{devlinBERTPretrainingDeep2019}}{fig:bert_input}
 
-Đầu vào cho các lớp tiếp theo của BERT sẽ là tổng của ba véc-tơ embedding trên.
-Chiều dài tối đa của đầu vào cho mô hình là 512 token, token đầu tiên luôn là
-token [CLS] (token classification). Và giữa các câu được phân chia bởi token
-[SEP]. BERT được huấn luyện trên tập dữ liệu
-BooksCorpus~\cite{zhuAligningBooksMovies2015} (800 triệu từ) và Wikipedia tiếng
-Anh (2500 triệu từ).
+Đầu vào cho các lớp tiếp theo của BERT sẽ là tổng của ba véc-tơ embedding trên.  Chiều dài tối đa của đầu vào cho mô hình là 512 token, token đầu tiên luôn là token [CLS] (token classification). Và giữa các câu được phân chia bởi token [SEP]. BERT được huấn luyện trên tập dữ liệu BooksCorpus~\cite{zhuAligningBooksMovies2015} (800 triệu từ) và Wikipedia tiếng Anh (2500 triệu từ).
 
 BERT sử dụng hai tác vụ để huấn luyện:
 
 \begin{enumerate}
-	\item \textbf{Masked ML (MLM)}:
-		Vì mô hình BERT là mô hình hai chiều nên một từ trong câu có thể ``thấy
-		được chính nó'', qua đó mô hình có thể gian lận để dự đoán từ một cách
-		dễ dàng~\cite{devlinBERTPretrainingDeep2019}. Chính vì vậy, ta cần phải
-		che dấu (mask) một số từ để huấn luyện BERT dự đoán các từ bị che đó.
-		Qua nhiều lần thử nghiệm, \cite{devlinBERTPretrainingDeep2019} chọn che
-		dấu 15\% số từ trong câu và chúng được chọn một cách ngẫu nhiên. Tuy
-		nhiên, vì quá trình fine-tune không sử dụng Masked ML để huấn luyện,
-		BERT chỉ thay thế 80\% trong số 15\% đó bằng token [MASK]. Trong 20\%
-		còn lại, một nửa sẽ được thay thế bởi các token ngẫu nhiên và nửa còn
-		lại sẽ được giữ nguyên token ban đầu.
-	\item \textbf{Next Sentence Prediction (NSP)}: Đầu vào của BERT sẽ là hai
-		câu bất kỳ trong tập dữ liệu được phân cách bởi token [SEP]. BERT chọn
-		câu thứ hai là câu tiếp theo (trên tập dữ liệu) của câu thứ nhất với cơ
-		hội 50\%, và 50\% còn lại câu thứ hai được lấy ngẫu nhiên từ tập dữ
-		liệu. BERT sẽ được huấn luyện để dự đoán xem câu thứ hai có phải là câu
-		tiếp theo của câu thứ nhất hay không, qua đó huấn luyện BERT hiểu được
-		mối quan hệ giữa các câu với nhau.
+	\item \textbf{Masked ML (MLM)}: Vì mô hình BERT là mô hình hai chiều nên một từ trong câu có thể ``thấy được chính nó'', qua đó mô hình có thể gian lận để dự đoán từ một cách dễ dàng~\cite{devlinBERTPretrainingDeep2019}. Chính vì vậy, ta cần phải che dấu (mask) một số từ để huấn luyện BERT dự đoán các từ bị che đó.  Qua nhiều lần thử nghiệm, \cite{devlinBERTPretrainingDeep2019} chọn che dấu 15\% số từ trong câu và chúng được chọn một cách ngẫu nhiên. Tuy nhiên, vì quá trình fine-tune không sử dụng Masked ML để huấn luyện, BERT chỉ thay thế 80\% trong số 15\% đó bằng token [MASK]. Trong 20\% còn lại, một nửa sẽ được thay thế bởi các token ngẫu nhiên và nửa còn lại sẽ được giữ nguyên token ban đầu.
+	\item \textbf{Next Sentence Prediction (NSP)}: Đầu vào của BERT sẽ là hai câu bất kỳ trong tập dữ liệu được phân cách bởi token [SEP]. BERT chọn câu thứ hai là câu tiếp theo (trên tập dữ liệu) của câu thứ nhất với cơ hội 50\%, và 50\% còn lại câu thứ hai được lấy ngẫu nhiên từ tập dữ liệu. BERT sẽ được huấn luyện để dự đoán xem câu thứ hai có phải là câu tiếp theo của câu thứ nhất hay không, qua đó huấn luyện BERT hiểu được mối quan hệ giữa các câu với nhau.
 \end{enumerate}
 
-Quá trình tinh chỉnh (fine-tune) cho các tác vụ khác được dựa trên mô hình BERT
-đã được huấn luyện sẵn (pre-trained model). Ta có thể thêm một hoặc các lớp
-(layer) bổ sung mà không cần can thiệp hay chỉnh sửa mô hình BERT ban đầu.
+Quá trình tinh chỉnh (fine-tune) cho các tác vụ khác được dựa trên mô hình BERT đã được huấn luyện sẵn (pre-trained model). Ta có thể thêm một hoặc các lớp (layer) bổ sung mà không cần can thiệp hay chỉnh sửa mô hình BERT ban đầu.
 
 \subsection{Encoder của kiến trúc transformer} Kiến trúc
-Transformer~\cite{vaswaniAttentionAllYou2017} bao gồm encoder và decoder
-(hình \ref{fig:transformer}). Về cơ bản, encoder được sử dụng để chuyển đầu vào
-thành các đặc trưng đơn giản (feature learning). Decoder sử dụng kết quả của
-encoder để dự đoán nhãn của đầu ra. Mô hình BERT chỉ sử dụng phần encoder của
-kiến trúc Transformer.
+Transformer~\cite{vaswaniAttentionAllYou2017} bao gồm encoder và decoder (hình \ref{fig:transformer}). Về cơ bản, encoder được sử dụng để chuyển đầu vào thành các đặc trưng đơn giản (feature learning). Decoder sử dụng kết quả của encoder để dự đoán nhãn của đầu ra. Mô hình BERT chỉ sử dụng phần encoder của kiến trúc Transformer.
 
-\image[0.6]{img/bert/transformer.png}{Kiến trúc Transformer với phần bên trái
-là encoder, bên phải là
-decoder~\cite{vaswaniAttentionAllYou2017}.}{fig:transformer}
+\image[0.6]{img/bert/transformer.png}{Kiến trúc Transformer với phần bên trái là encoder, bên phải là decoder~\cite{vaswaniAttentionAllYou2017}.}{fig:transformer}
 
-Encoder gồm hai thành phần chính là Multi-Head Attention và mạng nơ-ron truyền
-thẳng (Feed-Forward Neural Network, hay FNN). Mỗi thành phần được bao quanh bởi
-một residual connection~\cite{heDeepResidualLearning2016} và layer
-normalization~\cite{baLayerNormalization2016}: $LayerNorm(x + Sublayer(x))$ với
-$Sublayer$ là Multi-Head Attention hoặc FFN.
+Encoder gồm hai thành phần chính là Multi-Head Attention và mạng nơ-ron truyền thẳng (Feed-Forward Neural Network, hay FNN). Mỗi thành phần được bao quanh bởi một residual connection~\cite{heDeepResidualLearning2016} và layer normalization~\cite{baLayerNormalization2016}: $LayerNorm(x + Sublayer(x))$ với $Sublayer$ là Multi-Head Attention hoặc FFN.
 
-Cơ chế self-attention là cơ chế giúp các từ điều chỉnh trọng số của các từ sao
-cho sự ảnh hưởng của các từ xung quanh đối với bản thân nó là hợp lý nhất. Ví
-dụ câu ``Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay'', thì từ
-\textit{Dũng} sẽ nên có ảnh hưởng nhiều đến từ \textit{anh ấy} hơn các từ còn
-lại. Self-attention được tính bằng query, key và value: $Q = W_q \cdot x$, $K =
-W_k \cdot x$, $V = W_v \cdot x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ
-học trong quá trình huấn luyện, và $x$ là véc-tơ embedding cho đầu vào. $Q, K,
-V$ sau đó sẽ được cho qua lớp Scaled Dot-Product Attention để tính giá trị
-attention (hình~\ref{fig:multi_attention}):
+Cơ chế self-attention là cơ chế giúp các từ điều chỉnh trọng số của các từ sao cho sự ảnh hưởng của các từ xung quanh đối với bản thân nó là hợp lý nhất. Ví dụ câu ``Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay'', thì từ \textit{Dũng} sẽ nên có ảnh hưởng nhiều đến từ \textit{anh ấy} hơn các từ còn lại. Self-attention được tính bằng query, key và value: $Q = W_q \cdot x$, $K = W_k \cdot x$, $V = W_v \cdot x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ học trong quá trình huấn luyện, và $x$ là véc-tơ embedding cho đầu vào. $Q, K, V$ sau đó sẽ được cho qua lớp Scaled Dot-Product Attention để tính giá trị attention (hình~\ref{fig:multi_attention}):
 \[ \operatorname{Attention}(Q, K, V)=\operatorname{softmax}\left(\frac{Q
 K^{T}}{\sqrt{d_{k}}}\right) V \]
 
-với $d_k$ là chiều của query và key. Multi-Head Attention bao gồm nhiều lớp
-self-attention, và được sinh ra bằng cách nối (concatenate) các lớp
-self-attention đó lại với nhau (hình~\ref{fig:multi_attention}):
+với $d_k$ là chiều của query và key. Multi-Head Attention bao gồm nhiều lớp self-attention, và được sinh ra bằng cách nối (concatenate) các lớp self-attention đó lại với nhau (hình~\ref{fig:multi_attention}):
 \[ MultiHead(Q,K,V) = Concat(head_1,...,head_h)W^O \]
 \[ \text{với } head_i = Attention(QW_i^Q, KW_i^K, VW_i^V). \]
 
-Với $W_O$, $W_i^Q$, $W_i^K$ và $W_i^V$ là các linear projection, cũng là các ma
-trận tham số (parameter matrix) được học trong quá trình huấn luyện.
+Với $W_O$, $W_i^Q$, $W_i^K$ và $W_i^V$ là các linear projection, cũng là các ma trận tham số (parameter matrix) được học trong quá trình huấn luyện.
 
-\image[1]{img/bert/multi-attention.png}{Minh hoạ Scaled Dot-Product Attention
-và Multi-Head
-Attention~\cite{vaswaniAttentionAllYou2017}.}{fig:multi_attention}
+\image[1]{img/bert/multi-attention.png}{Minh hoạ Scaled Dot-Product Attention và Multi-Head Attention~\cite{vaswaniAttentionAllYou2017}.}{fig:multi_attention}
 
-FFN là mạng nơ-ron bao gồm hai biến đổi tuyến tính sử dụng hàm kích hoạt ReLU
-(ReLU activation function):
+FFN là mạng nơ-ron bao gồm hai biến đổi tuyến tính sử dụng hàm kích hoạt ReLU (ReLU activation function):
 \[ FFN(x) = max(0,xW_1 + b_1)W_2 + b_2 \]
 
-Kiến trúc của BERT bao gồm nhiều khối encoder chồng lên nhau. Nếu $L$ là số
-khối encoder, $H$ là kích thước của véc-tơ embedding, $A$ là số self-attention
-head trong lớp Multi-Head Attention, BERT đề nghị hai kích thước mô hình
+Kiến trúc của BERT bao gồm nhiều khối encoder chồng lên nhau. Nếu $L$ là số khối encoder, $H$ là kích thước của véc-tơ embedding, $A$ là số self-attention head trong lớp Multi-Head Attention, BERT đề nghị hai kích thước mô hình
 chính~\cite{devlinBERTPretrainingDeep2019}:
 \begin{itemize}
-	\item \textbf{BERT\textsubscript{BASE}} (L=12, H=768, A=12, 110 triệu tham
-		số).
-	\item \textbf{BERT\textsubscript{LARGE}} (L=24, H=1024, A=16, 340 triệu
-		tham số).
+	\item \textbf{BERT\textsubscript{BASE}} (L=12, H=768, A=12, 110 triệu tham số).
+	\item \textbf{BERT\textsubscript{LARGE}} (L=24, H=1024, A=16, 340 triệu tham số).
 \end{itemize}
 
-Ngoài ra còn các mô hình pre-train mở rộng của BERT như \textbf{BERT
-Multilingual} (hỗ trợ đa ngôn ngữ) hay
-\textbf{DistilBERT}~\cite{sanhDistilBERTDistilledVersion2020} (mô hình nhẹ và
-nhanh hơn BERT) và RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019} (mô hình khai
-thác tối ưu phương thức huấn luyện của BERT), v.v.
+Ngoài ra còn các mô hình pre-train mở rộng của BERT như \textbf{BERT Multilingual} (hỗ trợ đa ngôn ngữ) hay \textbf{DistilBERT}~\cite{sanhDistilBERTDistilledVersion2020} (mô hình nhẹ và nhanh hơn BERT) và RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019} (mô hình khai thác tối ưu phương thức huấn luyện của BERT), v.v.
 
 \subsection{Mô hình BERT cho tiếng Việt: PhoBERT}
-PhoBERT~\cite{nguyenPhoBERTPretrainedLanguage2020} (hay Phở BERT) được cho là
-đạt hiệu quả cao hơn so với mô hình BERT Mutilingual trong các tác vụ xử lý
-ngôn ngữ tiếng Việt. PhoBERT được thiết kế dựa trên
-RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019}. RoBERTa là nghiên cứu mô phỏng
-(replication study) của mô hình BERT, các tham số của RoBERTa và các kích thước
-tập huấn luyện được đánh giá (evaluate) một cách kỹ lưỡng hơn. Các nhà nghiên
-cứu phía sau RoBERTa cảm thấy BERT chưa được huấn luyện để sử dụng hết khả năng
-của nó (undertrained)~\cite{liuRoBERTaRobustlyOptimized2019}, và đã đề nghị một
-công thức mới để huấn luyện BERT. Các thay đổi bao
-gồm~\cite{liuRoBERTaRobustlyOptimized2019}: \textbf{(1)} huấn luyện mô hình lâu
-hơn, với kích thước batch lớn hơn và dữ liệu nhiều hơn; \textbf{(2)} không sử
-dụng Next Sentence Prediction để huấn luyện; \textbf{(3)} huấn luyện trên các
-câu dài hơn; và \textbf{(4)} liên tục thay đổi cơ chế ẩn dấu (mask) token trong
-quá trình huấn luyện.
+PhoBERT~\cite{nguyenPhoBERTPretrainedLanguage2020} (hay Phở BERT) được cho là đạt hiệu quả cao hơn so với mô hình BERT Mutilingual trong các tác vụ xử lý ngôn ngữ tiếng Việt. PhoBERT được thiết kế dựa trên RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019}. RoBERTa là nghiên cứu mô phỏng (replication study) của mô hình BERT, các tham số của RoBERTa và các kích thước tập huấn luyện được đánh giá (evaluate) một cách kỹ lưỡng hơn. Các nhà nghiên cứu phía sau RoBERTa cảm thấy BERT chưa được huấn luyện để sử dụng hết khả năng của nó (undertrained)~\cite{liuRoBERTaRobustlyOptimized2019}, và đã đề nghị một công thức mới để huấn luyện BERT. Các thay đổi bao gồm~\cite{liuRoBERTaRobustlyOptimized2019}: \textbf{(1)} huấn luyện mô hình lâu hơn, với kích thước batch lớn hơn và dữ liệu nhiều hơn; \textbf{(2)} không sử dụng Next Sentence Prediction để huấn luyện; \textbf{(3)} huấn luyện trên các câu dài hơn; và \textbf{(4)} liên tục thay đổi cơ chế ẩn dấu (mask) token trong quá trình huấn luyện.
 
-Đầu vào của PhoBERT cần qua bước xử lý bởi
-VnCoreNLP~\cite{vuVnCoreNLPVietnameseNatural2018}. VnCoreNLP là bộ công cụ xử
-lý ngôn ngữ tự nhiên, hỗ trợ các tác vụ như phân đoạn từ (word segmentation),
-gán nhãn từ loại (part-of-speech tagging, hay POS), nhận dạng thực thể có tên
-(named entity recognition, hay NER) và phân tích quan hệ phụ thuộc (dependency
-parsing). PhoBERT chỉ yêu cầu sử dụng tác vụ phân đoạn từ từ VnCoreNLP. Phân
-đoạn từ là tác vụ quan trọng tại vì tiếng Việt là ngôn ngữ đơn âm, mà các từ có
-thể vừa là từ đơn vừa có thể là từ ghép. Cho nên các thành phần của từ ghép nếu
-đứng riêng sẽ không có nghĩa hoặc có nghĩa khác so với từ ghép bao gồm nó.
+Đầu vào của PhoBERT cần qua bước xử lý bởi VnCoreNLP~\cite{vuVnCoreNLPVietnameseNatural2018}. VnCoreNLP là bộ công cụ xử lý ngôn ngữ tự nhiên, hỗ trợ các tác vụ như phân đoạn từ (word segmentation), gán nhãn từ loại (part-of-speech tagging, hay POS), nhận dạng thực thể có tên (named entity recognition, hay NER) và phân tích quan hệ phụ thuộc (dependency parsing). PhoBERT chỉ yêu cầu sử dụng tác vụ phân đoạn từ từ VnCoreNLP. Phân đoạn từ là tác vụ quan trọng tại vì tiếng Việt là ngôn ngữ đơn âm, mà các từ có thể vừa là từ đơn vừa có thể là từ ghép. Cho nên các thành phần của từ ghép nếu đứng riêng sẽ không có nghĩa hoặc có nghĩa khác so với từ ghép bao gồm nó.
 
 \section{Tổng kết chương~\ref{chap:models}}
-Chương~\ref{chap:models} đã trình bày các mô hình chính thuộc ba loại mô hình
-phát hiện chủ đề, phát hiện xu hướng và phân tích ngữ nghĩa. Về cơ bản, mỗi mô
-hình đều có ưu điểm và nhược điểm riêng. Các mô hình phát hiện xu hướng là mô
-hình xác suất đơn giản và tốc độ, thích hợp cho phát hiện xu hướng trong thời
-gian thực. Tuy nhiên các mô hình này chỉ xét đến tần suất xuất hiện của từ mà
-bỏ qua toàn bộ sự liên quan về các từ cũng như cách chúng hình thành chủ đề.
-Các mô hình chủ đề khắc phục được vấn đề đó, nhưng tại vì là mô hình túi từ nên
-các đặc trưng về cú pháp hay ngữ nghĩa vẫn chưa được khai thác. Các mô hình ngữ
-nghĩa, tuy có khả năng gom cụm chủ đề thấp, nhưng có thể phân tích ngữ cảnh và
-đánh giá sự ảnh hưởng của các từ trong câu với nhau.
+Chương~\ref{chap:models} đã trình bày các mô hình chính thuộc ba loại mô hình phát hiện chủ đề, phát hiện xu hướng và phân tích ngữ nghĩa. Về cơ bản, mỗi mô hình đều có ưu điểm và nhược điểm riêng. Các mô hình phát hiện xu hướng là mô hình xác suất đơn giản và tốc độ, thích hợp cho phát hiện xu hướng trong thời gian thực. Tuy nhiên các mô hình này chỉ xét đến tần suất xuất hiện của từ mà bỏ qua toàn bộ sự liên quan về các từ cũng như cách chúng hình thành chủ đề.  Các mô hình chủ đề khắc phục được vấn đề đó, nhưng tại vì là mô hình túi từ nên các đặc trưng về cú pháp hay ngữ nghĩa vẫn chưa được khai thác. Các mô hình ngữ nghĩa, tuy có khả năng gom cụm chủ đề thấp, nhưng có thể phân tích ngữ cảnh và đánh giá sự ảnh hưởng của các từ trong câu với nhau.
 
-Để phát hiện xu hướng sử dụng mô hình phát hiện chủ đề hoặc mô hình ngữ nghĩa,
-ta cần nghiên cứu thêm để bổ sung, cải tiến mô hình và tìm cách biểu diễn các
-xu hướng đó một cách trực quan cho người xem.
+Để phát hiện xu hướng sử dụng mô hình phát hiện chủ đề hoặc mô hình ngữ nghĩa, ta cần nghiên cứu thêm để bổ sung, cải tiến mô hình và tìm cách biểu diễn các xu hướng đó một cách trực quan cho người xem.
