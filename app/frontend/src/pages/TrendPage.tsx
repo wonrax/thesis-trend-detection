@@ -62,7 +62,7 @@ export const TrendPage = ({
     return (
       <>
         <div className="w-screen h-screen flex flex-col gap-2 items-center justify-center bg-gray-0">
-          <Text fontSize="xxl" fontWeight="bold" className="animate-pulse">
+          <Text fontSize="xxl" fontWeight="medium" className="animate-pulse">
             Xu hướng
           </Text>
           {error && <Text color="red">{error}</Text>}
@@ -77,7 +77,7 @@ export const TrendPage = ({
         <div className="p-8 flex flex-col justify-center items-center">
           <Text
             fontSize="xxl"
-            fontWeight="bold"
+            fontWeight="medium"
             className="hover:underline cursor-pointer"
             onClick={() => navigate("/")}
           >
