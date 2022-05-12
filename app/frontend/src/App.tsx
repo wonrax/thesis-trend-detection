@@ -18,7 +18,7 @@ dayjs.extend(timezone);
 dayjs.extend(utc);
 
 function RedirectToHomepage() {
-  location.href = "/moi-nhat";
+  window.location.replace("/moi-nhat");
   return null;
 }
 
