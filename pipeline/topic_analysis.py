@@ -183,6 +183,8 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
             relevance_keywords += [k for k, _ in sorted_keywords[:10]]
         else:
             relevance_keywords += [k for k, _ in sorted_keywords]
+    
+    relevance_keywords = [k.lower() for k in relevance_keywords]
 
     # TODO compute average sentiment rate for this topic
     average_negative_rate = None
@@ -194,20 +196,18 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     for article in analysed_articles:
         score: float = 0
         articleObject: Article = article.original_article
-        likes = articleObject.likes
-        date = articleObject.date
+        likes = articleObject.likes if articleObject.likes else 0
         num_comments = len(articleObject.comments) if articleObject.comments else 0
-        if likes:
-            score += likes
-        if num_comments:
-            score += num_comments * 2
-        if date:
-            relative_hours: float = ((now - date).total_seconds() / 60 + 1) / 60
-            score += 2 / math.log(0.01 * relative_hours + 1.05) # base e by default
+        date = articleObject.date
         if article.keywords:
             for keyword in article.keywords:
-                if keyword in relevance_keywords:
+                if keyword.lower() in relevance_keywords:
                     score += 10
+        if likes:
+            score *= math.sqrt(likes + num_comments * 2)
+        if date:
+            relative_hours: float = ((now - date).total_seconds() / 60 + 1) / 60
+            score *= 2 / math.log(0.01 * relative_hours + 1.05) # base e by default
         article_scores.append((article, score))
 
     # sort by score
