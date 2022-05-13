@@ -198,16 +198,16 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         date = articleObject.date
         num_comments = len(articleObject.comments) if articleObject.comments else 0
         if likes:
-            score += likes * 20
+            score += likes
         if num_comments:
-            score += num_comments * 30
+            score += num_comments * 2
         if date:
             relative_hours: float = ((now - date).total_seconds() / 60 + 1) / 60
-            score += min(math.sinh(1 / relative_hours) * 500, 200) * 2
+            score += 2 / math.log(0.01 * relative_hours + 1.05) # base e by default
         if article.keywords:
             for keyword in article.keywords:
                 if keyword in relevance_keywords:
-                    score += 500
+                    score += 10
         article_scores.append((article, score))
 
     # sort by score
@@ -267,7 +267,7 @@ def analyse_category(
     for topic in analysed_topics:
         score: float = 0
 
-        score += len(topic.articles) * 5
+        score += math.sqrt(len(topic.articles))
 
         # Calculate the average time of the articles
         datetimes = [article.original_article.date for article in topic.articles]
@@ -276,7 +276,7 @@ def analyse_category(
         )
 
         relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
-        time_score = 1 / math.log(0.01 * relative_hours + 1.05) # base e by default
+        time_score = 2 / math.log(0.01 * relative_hours + 1.05) # base e by default
 
         score += math.sqrt(len(topic.articles)) * time_score
 
