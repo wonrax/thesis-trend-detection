@@ -37,7 +37,7 @@ def topic_cluster(
     logger.info(f"Coherence score (c_v): {coherence_score}")
 
     # CLUSTERING
-    num_topics = min(len(vecs[0]), len(corpus) - 1)
+    num_topics = min(hdpmodel.model.live_k, len(corpus) - 1)
     logger.info(f"Clustering {num_topics} clusters...")
     cluster_model = KMeans(n_clusters=num_topics)
     cluster_model.fit(vecs)
