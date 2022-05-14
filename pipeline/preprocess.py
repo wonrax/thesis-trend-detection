@@ -107,7 +107,7 @@ def preprocess_articles(articles: List[Article]):
             stopword_list=stopword_list_for_excerpt,
             do_sentences=True,
             do_tokens=True
-        )["sentences"]
+        )
         processed_articles.append(
             PreprocessedArticle(
                 id_mongo=article.id,
