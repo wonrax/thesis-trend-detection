@@ -92,21 +92,15 @@ def preprocess_articles(articles: List[Article]):
 
     logger.info(f"Segmentizing...")
     for article in articles:
-        # excerpt_segmented_tokens = Preprocess.segmentize(
-        #     article.excerpt,
-        #     do_tokens=True,
-        #     stopword_list=stopword_list_for_excerpt,
-        # )["tokens"]
-        # excerpt_segmented_sentences = Preprocess.segmentize(
-        #     article.excerpt,
-        #     do_sentences=True,
-        #     stopword_list=source_signatures,
-        # )["sentences"]
+        excerpt_segmented = Preprocess.segmentize(
+            article.excerpt,
+            do_tokens=True,
+            stopword_list=stopword_list_for_excerpt,
+        )
         content_segmented = Preprocess.segmentize(
             article.content,
             stopword_list=stopword_list_for_excerpt,
             do_sentences=True,
-            do_tokens=True
         )
         processed_articles.append(
             PreprocessedArticle(
@@ -114,10 +108,10 @@ def preprocess_articles(articles: List[Article]):
                 id_source=article.id_source,
                 source=article.source,
                 title=article.title,
-                # excerpt_segmented_tokens=excerpt_segmented_tokens,
+                excerpt_segmented_tokens=excerpt_segmented["tokens"],
                 # excerpt_segmented_sentences=excerpt_segmented_sentences,
                 content_segmented_sentences=content_segmented["sentences"],
-                content_segmented_tokens=content_segmented["tokens"],
+                # content_segmented_tokens=content_segmented["tokens"],
             )
         )
 

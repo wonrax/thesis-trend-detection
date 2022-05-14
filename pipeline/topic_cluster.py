@@ -23,14 +23,14 @@ def topic_cluster(
     """
 
     # FILTERING
-    articles = list(filter(lambda x: x.content_segmented_tokens, articles))
-    corpus = [article.content_segmented_tokens for article in articles]
+    articles = list(filter(lambda x: x.excerpt_segmented_tokens, articles))
+    corpus = [article.excerpt_segmented_tokens for article in articles]
     corpus = [[token.lower() for token in doc] for doc in corpus]
 
     # TRAIN MODEL
     logger.info("Started training topic model...")
     hdpmodel = TopicModel(logger=logger)
-    hdpmodel.train(corpus, initial_k=50, iteration=500)
+    hdpmodel.train(corpus, initial_k=50, iteration=1000)
     coherence_score = hdpmodel.evaluate("c_v")
     logger.info("Vectorizing corpus...")
     vecs = hdpmodel.vectorize(corpus)
