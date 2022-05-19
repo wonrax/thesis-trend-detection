@@ -33,6 +33,7 @@ class PreprocessedArticle:
         title: str,
         excerpt_segmented_tokens: List[str] = None,
         excerpt_segmented_sentences: str = None,
+        content_segmented_tokens: List[str] = None,
         content_segmented_sentences: str = None,
         comments: List[PreprocessedComment] = None,
     ) -> None:
@@ -42,6 +43,7 @@ class PreprocessedArticle:
         self.title = title
         self.excerpt_segmented_tokens = excerpt_segmented_tokens
         self.excerpt_segmented_sentences = excerpt_segmented_sentences
+        self.content_segmented_tokens = content_segmented_tokens
         self.content_segmented_sentences = content_segmented_sentences
 
         if comments is None:
@@ -90,30 +92,26 @@ def preprocess_articles(articles: List[Article]):
 
     logger.info(f"Segmentizing...")
     for article in articles:
-        excerpt_segmented_tokens = Preprocess.segmentize(
+        excerpt_segmented = Preprocess.segmentize(
             article.excerpt,
             do_tokens=True,
             stopword_list=stopword_list_for_excerpt,
-        )["tokens"]
-        # excerpt_segmented_sentences = Preprocess.segmentize(
-        #     article.excerpt,
-        #     do_sentences=True,
-        #     stopword_list=source_signatures,
-        # )["sentences"]
+        )
         content_segmented = Preprocess.segmentize(
             article.content,
             stopword_list=stopword_list_for_excerpt,
             do_sentences=True,
-        )["sentences"]
+        )
         processed_articles.append(
             PreprocessedArticle(
                 id_mongo=article.id,
                 id_source=article.id_source,
                 source=article.source,
                 title=article.title,
-                excerpt_segmented_tokens=excerpt_segmented_tokens,
+                excerpt_segmented_tokens=excerpt_segmented["tokens"],
                 # excerpt_segmented_sentences=excerpt_segmented_sentences,
-                content_segmented_sentences=content_segmented,
+                content_segmented_sentences=content_segmented["sentences"],
+                # content_segmented_tokens=content_segmented["tokens"],
             )
         )
 

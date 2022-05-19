@@ -184,6 +184,8 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         else:
             relevance_keywords += [k for k, _ in sorted_keywords]
 
+    relevance_keywords = [k.lower() for k in relevance_keywords]
+
     # TODO compute average sentiment rate for this topic
     average_negative_rate = None
     average_neutral_rate = None
@@ -194,20 +196,21 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
     for article in analysed_articles:
         score: float = 0
         articleObject: Article = article.original_article
-        likes = articleObject.likes
-        date = articleObject.date
+        likes = articleObject.likes if articleObject.likes else 0
         num_comments = len(articleObject.comments) if articleObject.comments else 0
-        if likes:
-            score += likes * 20
-        if num_comments:
-            score += num_comments * 30
-        if date:
-            relative_hours: float = ((now - date).total_seconds() / 60 + 1) / 60
-            score += min(math.sinh(1 / relative_hours) * 500, 200) * 2
+        date = articleObject.date
+        score += math.sqrt(
+            num_comments
+        )  # prioritize num comments since we also do sentiment analysis
         if article.keywords:
             for keyword in article.keywords:
-                if keyword in relevance_keywords:
-                    score += 500
+                if keyword.lower() in relevance_keywords:
+                    score += 10
+        if likes:
+            score *= math.sqrt(likes + num_comments * 2 + 1)
+        if date:
+            relative_hours: float = ((now - date).total_seconds() / 60 + 1) / 60
+            score += 2 / math.log(0.01 * relative_hours + 1.05)  # base e by default
         article_scores.append((article, score))
 
     # sort by score
@@ -267,7 +270,7 @@ def analyse_category(
     for topic in analysed_topics:
         score: float = 0
 
-        score += len(topic.articles) * 5
+        score += math.sqrt(len(topic.articles))
 
         # Calculate the average time of the articles
         datetimes = [article.original_article.date for article in topic.articles]
@@ -276,8 +279,7 @@ def analyse_category(
         )
 
         relative_hours: float = ((now - avg_time).total_seconds() / 60 + 1) / 60
-        time_score = math.sinh(1 / relative_hours) * 500
-        time_score = min(time_score, 200)
+        time_score = 2 / math.log(0.01 * relative_hours + 1.05)  # base e by default
 
         score += math.sqrt(len(topic.articles)) * time_score
 
