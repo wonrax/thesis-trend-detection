@@ -199,6 +199,9 @@ def analyse_topic(articles: List[PreprocessedArticle]) -> TopicAnalysis:
         likes = articleObject.likes if articleObject.likes else 0
         num_comments = len(articleObject.comments) if articleObject.comments else 0
         date = articleObject.date
+        score += math.sqrt(
+            num_comments
+        )  # prioritize num comments since we also do sentiment analysis
         if article.keywords:
             for keyword in article.keywords:
                 if keyword.lower() in relevance_keywords:

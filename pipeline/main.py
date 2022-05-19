@@ -27,20 +27,22 @@ def perform_crawl(
     from data.crawler.tuoitre import TuoiTreCrawler
     from data.crawler.vnexpress import VnExpressCrawler
     from data.crawler.dantri import DanTriCrawler
-    from data.crawler.vietnamnet import VietnamnetCrawler
     from data.crawler.thanhnien import ThanhNienCrawler
-    from data.crawler.nguoilaodong import NguoiLaoDongCrawler
-    from data.crawler.zingnews import ZingNewsCrawler
+    # from data.crawler.nguoilaodong import NguoiLaoDongCrawler
+    # from data.crawler.zingnews import ZingNewsCrawler
+    # from data.crawler.vietnamnet import VietnamnetCrawler
+    from data.crawler.baomoi import BaoMoiCrawler
     from crawl import crawl
 
     MAP_STRING_TO_SOURCE = {
         "dantri": DanTriCrawler,
         "vnexpress": VnExpressCrawler,
         "tuoitre": TuoiTreCrawler,
-        "vietnamnet": VietnamnetCrawler,
+        # "vietnamnet": VietnamnetCrawler,
         "thanhnien": ThanhNienCrawler,
-        "nguoilaodong": NguoiLaoDongCrawler,
-        "zingnews": ZingNewsCrawler,
+        "baomoi": BaoMoiCrawler
+        # "nguoilaodong": NguoiLaoDongCrawler,
+        # "zingnews": ZingNewsCrawler,
     }
 
     if source == "all":
@@ -48,10 +50,11 @@ def perform_crawl(
             DanTriCrawler,
             ThanhNienCrawler,
             TuoiTreCrawler,
-            VietnamnetCrawler,
             VnExpressCrawler,
-            NguoiLaoDongCrawler,
-            ZingNewsCrawler,
+            BaoMoiCrawler,
+            # VietnamnetCrawler,
+            # NguoiLaoDongCrawler,
+            # ZingNewsCrawler,
         ]
     elif source in MAP_STRING_TO_SOURCE:
         crawler_engines = [MAP_STRING_TO_SOURCE[source]]
