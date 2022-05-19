@@ -60,7 +60,7 @@ class BaoMoiCrawler(Crawler):
         days = (end_date - start_date).days
         request_url = self.build_request_url(days)
         try:
-            response = requests.get(request_url, timeout=self.timeout)
+            response = requests.get(request_url, timeout=120)
             response.raise_for_status()
             data = response.json()
             assert data["err"] == 0

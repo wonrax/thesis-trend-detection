@@ -156,7 +156,7 @@ const NewsSourceBar = ({
           />
         )}
         {sourceName && (
-          <Text className="shrink" color="gray-40" fontSize="sm" ellipsis>
+          <Text className="shrink" color="gray-40" fontSize="sm">
             {sourceName}
           </Text>
         )}

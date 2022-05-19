@@ -51,8 +51,8 @@ class DanTriCrawler(Crawler):
             html = requests.get(url, timeout=self.timeout).text
             soup = BeautifulSoup(html, "html.parser")
 
-            highlight_section = soup.select_one(".article.highlight")
-            news_list_section = soup.select_one(".article.article-three.large")
+            highlight_section = soup.select_one(".article-wrap")
+            news_list_section = soup.select_one(".article.list")
 
             pattern = r"href=\"(\/.*?[0-9]{8,}\.htm)\""
 
