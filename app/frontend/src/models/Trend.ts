@@ -6,6 +6,7 @@ export type Trend = {
   creationDate: Date;
   categoryName: string;
   availableCategories?: { [key: string]: string };
+  hasMoreTopics?: boolean;
 };
 
 export default Trend;
