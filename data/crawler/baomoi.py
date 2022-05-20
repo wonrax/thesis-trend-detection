@@ -85,7 +85,7 @@ class BaoMoiCrawler(Crawler):
                         authors=[publisher],
                         excerpt=article["description"],
                         content=article["description"],  # TODO get real content
-                        url=self.BASE_URL + article["url"],
+                        url=self.BASE_URL + article["redirectUrl"],
                         img_url=article["thumbL"],
                         comments=[],  # TODO
                         tags=None,
