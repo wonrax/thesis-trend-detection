@@ -1,5 +1,5 @@
 import Text from "../components/Text";
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import TopicSection from "../components/TopicSection";
 import axios from "axios";
 import Trend from "../models/Trend";
@@ -35,11 +35,53 @@ export const TrendPage = ({
 }) => {
   const { trendCategory } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Lazy loading
+  const [isLazyLoading, setIsLazyLoading] = useState<boolean>(false);
+  const [lazyLoadingHasMore, setLazyLoadingHasMore] = useState<boolean>(true);
+
   const [error, setError] = useState<string>();
   const [navigating, setNavigating] = useState<boolean>(false);
   const navigate = useNavigate();
   const { passedTrend } = (useLocation().state as { passedTrend?: Trend }) || {
     passedTrend: undefined,
+  };
+
+  useEffect(() => {
+    const listener = () => handleLazyScroll(trend);
+    window.addEventListener("scroll", listener);
+    return () => window.removeEventListener("scroll", listener);
+  }, [trend, lazyLoadingHasMore, isLazyLoading]);
+
+  const handleLazyScroll = (trend?: Trend) => {
+    if (
+      document.documentElement.scrollTop + 4 * window.innerHeight <
+        document.documentElement.offsetHeight ||
+      isLazyLoading ||
+      !lazyLoadingHasMore ||
+      !trend
+    )
+      return;
+    handleLoadMore(trend);
+  };
+
+  const handleLoadMore = (trend: Trend) => {
+    setIsLazyLoading(true);
+    if (trend?.topics) {
+      const page_size = 10;
+      const page = Math.ceil(trend?.topics.length / page_size);
+      axios
+        .get(
+          `${API_URL}/trending/byid?trend_id=${trend?.id}&page=${page}&page_size=${page_size}`
+        )
+        .then((res) => {
+          const data: Trend = res.data;
+          trend.topics = [...trend.topics, ...data.topics];
+          setTrend(trend);
+          setLazyLoadingHasMore(data.hasMoreTopics || false);
+        })
+        .finally(() => setIsLazyLoading(false));
+    }
   };
 
   const memorized =
@@ -64,6 +106,11 @@ export const TrendPage = ({
         });
     } else if (passedTrend) {
       setTrend(passedTrend);
+
+      // reset lazyloading
+      setIsLazyLoading(false);
+      setLazyLoadingHasMore(true);
+
       navigate(location.pathname, { state: {}, replace: true }); // Clear location state
       setNavigating(false);
     }
