@@ -1,5 +1,5 @@
 import Text from "../components/Text";
-import { lazy, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TopicSection from "../components/TopicSection";
 import axios from "axios";
 import Trend from "../models/Trend";
@@ -19,6 +19,7 @@ import { ReactComponent as News } from "../components/icons/categories/News.svg"
 import { ReactComponent as People } from "../components/icons/categories/People.svg";
 import { ReactComponent as Sport } from "../components/icons/categories/Sport.svg";
 import { ReactComponent as Technology } from "../components/icons/categories/Technology.svg";
+import Loading from "../components/Loading";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -196,6 +197,10 @@ export const TrendPage = ({
             />
           ))}
         </Masonry>
+        <div className="py-8">
+          {isLazyLoading && <Loading />}
+          {!lazyLoadingHasMore && <Text>Đến đây là hết.</Text>}
+        </div>
       </div>
       {<Overlay enabled={navigating} />}
     </div>
