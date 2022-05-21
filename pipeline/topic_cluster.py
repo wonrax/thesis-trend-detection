@@ -30,7 +30,7 @@ def topic_cluster(
     # TRAIN MODEL
     logger.info("Started training topic model...")
     hdpmodel = TopicModel(logger=logger)
-    hdpmodel.train(corpus, initial_k=50, iteration=1000)
+    hdpmodel.train(corpus, initial_k=int(len(corpus) / 6), iteration=2000)
     coherence_score = hdpmodel.evaluate("c_v")
     logger.info("Vectorizing corpus...")
     vecs = hdpmodel.vectorize(corpus)
