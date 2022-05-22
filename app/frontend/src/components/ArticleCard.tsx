@@ -9,7 +9,7 @@ import ReactTooltip from "react-tooltip";
 import styles from "./ArticleCard.module.css";
 
 const formatSentimentRate = (rate: number) => {
-  return (rate * 100).toFixed(0);
+  return Math.round(rate * 100);
 };
 
 export const ArticleCard = ({

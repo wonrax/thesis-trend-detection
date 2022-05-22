@@ -135,7 +135,7 @@ class Preprocess:
                             "N",  # Noun
                             "V",  # Verb
                             "Np",  # Proper noun (e.g. "Việt Nam")
-                            "M",  # Numeric (e.g. "34")
+                            # "M",  # Numeric (e.g. "34")
                             "A",  # Adjective
                             "Ny", # Noun Abbreviation (e.g. "WTO")
                             "Nb", # Noun borrowed (e.g. Internet)
