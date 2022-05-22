@@ -262,12 +262,12 @@ const SentimentBar = ({
           {positiveRate != undefined &&
             negativeRate != undefined &&
             neutralRate != undefined && (
-              <Text color="white">{`Không chắc: ${
+              <Text color="white">{`Không chắc: ${formatSentimentRate(
                 100 -
-                formatSentimentRate(positiveRate) -
-                formatSentimentRate(negativeRate) -
-                formatSentimentRate(neutralRate)
-              }%`}</Text>
+                  formatSentimentRate(positiveRate) -
+                  formatSentimentRate(negativeRate) -
+                  formatSentimentRate(neutralRate)
+              )}%`}</Text>
             )}
           {/* {neutralRate}
           {positiveRate &&
