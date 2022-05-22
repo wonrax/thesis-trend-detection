@@ -7,7 +7,7 @@ import { ReactComponent as ThumbsUp } from "./icons/ThumbsUp.svg";
 import { ReactComponent as ThumbsDown } from "./icons/ThumbsDown.svg";
 
 const formatSentimentRate = (rate: number) => {
-  return (rate * 100).toFixed(0);
+  return Math.round(rate * 100);
 };
 
 export const ArticleCard = ({
