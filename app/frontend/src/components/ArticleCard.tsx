@@ -9,7 +9,7 @@ import ReactTooltip from "react-tooltip";
 import styles from "./ArticleCard.module.css";
 
 const formatSentimentRate = (rate: number) => {
-  return Math.round(rate * 100);
+  return Math.round(rate * 100 * 1e2) / 1e2;
 };
 
 export const ArticleCard = ({
@@ -262,9 +262,12 @@ const SentimentBar = ({
           {positiveRate != undefined &&
             negativeRate != undefined &&
             neutralRate != undefined && (
-              <Text color="white">{`Không chắc: ${formatSentimentRate(
-                1 - positiveRate - negativeRate - neutralRate
-              )}%`}</Text>
+              <Text color="white">{`Không chắc: ${
+                1 -
+                formatSentimentRate(positiveRate) -
+                formatSentimentRate(negativeRate) -
+                formatSentimentRate(neutralRate)
+              }%`}</Text>
             )}
           {/* {neutralRate}
           {positiveRate &&
