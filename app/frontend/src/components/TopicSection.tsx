@@ -47,7 +47,7 @@ export const TopicSection = ({
           <Text fontSize="lg" color="gray-40" fontWeight="medium">
             #{rank || ""}
           </Text>
-          <div className="flex flex-row flex-wrap gap-2">
+          <div className="flex flex-row flex-wrap gap-2 min-w-0">
             {_kws.map((keyword, index) => (
               <div
                 key={index}

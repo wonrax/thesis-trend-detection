@@ -49,6 +49,7 @@ module.exports = {
         60: "#605F64",
         40: "#888A8E",
         20: "#BBBEBE",
+        10: "#D8D8D8",
         0: "#F2F3F2",
       },
       red: "#DF4C6F",
