@@ -6,10 +6,13 @@ import Topic from "../models/Topic";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Overlay from "../components/Overlay";
 import { API_URL } from "../constants";
+import Logo from "../components/Logo";
+import LoadingPage from "../components/LoadingPage";
 
 export const TopicDetail = () => {
   const [topic, setTopic] = useState<Topic>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
   const { id, index } = useParams();
   const { passedTopic } = (useLocation().state as { passedTopic?: Topic }) || {
     passedTopic: undefined,
@@ -20,37 +23,28 @@ export const TopicDetail = () => {
     if (passedTopic) {
       setTopic(passedTopic);
     } else {
-      axios.get(`${API_URL}/topic/${id}/${index}`).then((res) => {
-        setTopic(res.data);
-        setLoading(false);
-      });
+      axios
+        .get(`${API_URL}/topic/${id}/${index}`)
+        .then((res) => {
+          setTopic(res.data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setError("Không thể tải dữ liệu. Vui lòng thử tải lại trang.");
+        });
     }
+    navigate(location.pathname, { state: {}, replace: true }); // Clear location state
   }, []);
 
   if (loading && !passedTopic) {
-    return (
-      <>
-        <div className="w-screen h-screen flex items-center justify-center bg-gray-0">
-          <Text fontSize="xxl" fontWeight="medium" className="animate-pulse">
-            Xu hướng
-          </Text>
-        </div>
-      </>
-    );
+    return <LoadingPage error={error} />;
   }
 
   return (
     <div className="w-full bg-gray-0">
       <div className="min-h-screen m-auto py-8 p-2 sm:w-[512px]">
         <div className="p-8 flex flex-col justify-center items-center">
-          <Text
-            fontSize="xxl"
-            fontWeight="medium"
-            className="hover:underline cursor-pointer"
-            onClick={() => navigate("/")}
-          >
-            Xu hướng
-          </Text>
+          <Logo />
         </div>
         <div className="p-4">
           <Text renderAs="span" fontSize="lg">

@@ -21,8 +21,8 @@ export const Text = ({
   ellipsis = false,
   nowrap = false,
   leading = "normal",
+  href,
   children,
-  ...props
 }: {
   className?: string;
   onClick?: () => void;
@@ -45,6 +45,7 @@ export const Text = ({
   ellipsis?: boolean;
   nowrap?: boolean;
   leading?: "normal" | "tight";
+  href?: string;
   children: React.ReactNode;
 }) => {
   const classNames = classnames(
@@ -67,7 +68,7 @@ export const Text = ({
     (MAP_FONT_SIZE_TO_TAG[fontSize] as keyof JSX.IntrinsicElements);
 
   return (
-    <Tag className={classNames} onClick={onClick} {...props}>
+    <Tag className={classNames} onClick={onClick} href={href}>
       {children}
     </Tag>
   );

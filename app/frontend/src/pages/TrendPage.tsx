@@ -20,6 +20,10 @@ import { ReactComponent as People } from "../components/icons/categories/People.
 import { ReactComponent as Sport } from "../components/icons/categories/Sport.svg";
 import { ReactComponent as Technology } from "../components/icons/categories/Technology.svg";
 import Loading from "../components/Loading";
+import Link from "../components/Link";
+import Logo from "../components/Logo";
+import { MainLayout } from "../components/MainLayout";
+import LoadingPage from "../components/LoadingPage";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -118,92 +122,73 @@ export const TrendPage = ({
   }, [trendCategory]);
 
   if (loading && !memorized) {
-    return (
-      <>
-        <div className="w-screen h-screen flex flex-col gap-2 items-center justify-center bg-gray-0">
-          <Text fontSize="xxl" fontWeight="medium" className="animate-pulse">
-            Xu hướng
-          </Text>
-          {error && <Text color="red">{error}</Text>}
-        </div>
-      </>
-    );
+    return <LoadingPage error={error} />;
   }
 
   return (
-    <div className="w-full bg-gray-0">
-      <div className="flex flex-col items-center min-h-screen m-auto py-8 px-2 sm:px-16 md:px-4 xl:px-0 xl:w-[1280px]">
-        <div className="p-8 flex flex-col justify-center items-center">
-          <Text
-            fontSize="xxl"
-            fontWeight="medium"
-            className="hover:underline cursor-pointer"
-            onClick={() => navigate("/")}
-          >
-            Xu hướng
-          </Text>
-        </div>
-        <div className="flex flex-row flex-wrap mb-4 max-w-screen-md px-4 gap-x-2 gap-y-2 justify-center">
-          {trend?.availableCategories &&
-            Object.entries(trend?.availableCategories).map(([key, value]) => (
-              <CategoryNavigationChip
-                key={key}
-                catId={key}
-                category={value}
-                current={trendCategory == key}
-                onClick={() => {
-                  setNavigating(true);
-                  axios
-                    .get(`${API_URL}/trending/category/${key}`)
-                    .then((res) => {
-                      navigate(`/${key}`, {
-                        state: { passedTrend: res.data },
-                      });
-                    });
-                }}
-              />
-            ))}
-        </div>
-        {trend?.topics?.length == 0 && (
-          <Text className="p-4" fontSize="lg" textAlign="center">
-            Hôm nay không có tin gì mới, mời bạn quay lại sau.
-          </Text>
-        )}
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          className={styles["my-masonry-grid"]}
-          columnClassName={styles["my-masonry-grid_column"]}
-        >
-          {/* array of JSX items */}
-          {trend?.topics.map((topic, index) => (
-            <TopicSection
-              key={`${trend.id}-${index}`}
-              spotlightArticle={topic.articles[0]}
-              articles={topic.articles.slice(1)}
-              keywords={topic.keywords}
-              totalNumberOfArticles={topic.totalNumberOfArticles}
-              hasMore={topic.hasMoreArticles}
-              rank={index + 1}
-              navigateToTopic={() => {
+    <MainLayout>
+      <div className="p-8 flex flex-col justify-center items-center">
+        <Logo />
+      </div>
+      <div className="flex flex-row flex-wrap mb-4 max-w-screen-md px-4 gap-x-2 gap-y-2 justify-center">
+        {trend?.availableCategories &&
+          Object.entries(trend?.availableCategories).map(([key, value]) => (
+            <CategoryNavigationChip
+              key={key}
+              catId={key}
+              category={value}
+              current={trendCategory == key}
+              onClick={() => {
+                if (trendCategory == key) return;
                 setNavigating(true);
-                axios
-                  .get(`${API_URL}/topic/${trend.id}/${index}`)
-                  .then((res) => {
-                    navigate(`/topic/${trend.id}/${index}`, {
-                      state: { passedTopic: res.data },
-                    });
+                axios.get(`${API_URL}/trending/category/${key}`).then((res) => {
+                  navigate(`/${key}`, {
+                    state: { passedTrend: res.data },
                   });
+                });
               }}
             />
           ))}
-        </Masonry>
-        <div className="py-8">
-          {isLazyLoading && <Loading />}
-          {!lazyLoadingHasMore && <Text>Đến đây là hết.</Text>}
-        </div>
+      </div>
+      {trend?.topics?.length == 0 && (
+        <Text className="p-4" fontSize="lg" textAlign="center">
+          Hôm nay không có tin gì mới, mời bạn quay lại sau.
+        </Text>
+      )}
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className={styles["my-masonry-grid"]}
+        columnClassName={styles["my-masonry-grid_column"]}
+      >
+        {/* array of JSX items */}
+        {trend?.topics.map((topic, index) => (
+          <TopicSection
+            key={`${trend.id}-${index}`}
+            spotlightArticle={topic.articles[0]}
+            articles={topic.articles.slice(1)}
+            keywords={topic.keywords}
+            totalNumberOfArticles={topic.totalNumberOfArticles}
+            hasMore={topic.hasMoreArticles}
+            rank={index + 1}
+            trendId={trend.id}
+            topicIndex={index}
+            navigateToTopic={() => {
+              setNavigating(true);
+              axios.get(`${API_URL}/topic/${trend.id}/${index}`).then((res) => {
+                navigate(`/topic/${trend.id}/${index}`, {
+                  state: { passedTopic: res.data },
+                });
+              });
+            }}
+          />
+        ))}
+      </Masonry>
+      <div className="py-8">
+        {isLazyLoading && <Loading />}
+        {!lazyLoadingHasMore && <Text>Đến đây là hết.</Text>}
       </div>
       {<Overlay enabled={navigating} />}
-    </div>
+    </MainLayout>
   );
 };
 
@@ -250,9 +235,10 @@ const CategoryNavigationChip = ({
   }
   const stroke = current ? "outline outline-2 outline-gray-40" : "";
   return (
-    <div
-      className={`flex flex-row items-center gap-2 px-3 py-1 bg-white rounded-xl group cursor-pointer ${stroke}`}
+    <Link
+      className={`flex flex-row items-center gap-2 px-3 py-1 bg-white rounded-xl group ${stroke}`}
       onClick={onClick}
+      href={`/${catId}`}
     >
       {CatIcon ? <CatIcon /> : undefined}
       <Text
@@ -262,6 +248,6 @@ const CategoryNavigationChip = ({
       >
         {category}
       </Text>
-    </div>
+    </Link>
   );
 };
