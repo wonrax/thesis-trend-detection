@@ -48,6 +48,7 @@ const ArticleCardSpotlight = ({
     <a
       className="p-4 w-full space-y-4 block group overflow-hidden"
       {...(article.articleUrl && { href: article.articleUrl })}
+      target="_blank"
     >
       {article.thumbnailUrl && showThumbnail && (
         <img
@@ -108,6 +109,7 @@ const ArticleCardDefault = ({
         }
       )}
       {...(article.articleUrl && { href: article.articleUrl })}
+      target="_blank"
     >
       <div className="space-y-4 min-w-0">
         <div className="space-y-2">
@@ -229,6 +231,7 @@ const SentimentBar = ({
         data-tip
         data-for={`sentiment-bar-${randomUuid}`}
         className="flex flex-row gap-2 w-fit"
+        onClick={(e) => e.preventDefault()}
       >
         {positiveRate != undefined ? (
           <SentimentChip rate={positiveRate} />
@@ -243,27 +246,26 @@ const SentimentBar = ({
         place="bottom"
         className={styles.tooltip}
         arrowColor="rgba(0,0,0,0)"
+        type="light"
+        event="mouseenter click"
+        eventOff="mouseleave"
+        clickable={true}
+        isCapture={true}
       >
         <div className="flex flex-col gap-1">
           {positiveRate != undefined ? (
-            <Text color="white">{`Tích cực: ${formatSentimentRate(
-              positiveRate
-            )}%`}</Text>
+            <Text>{`Tích cực: ${formatSentimentRate(positiveRate)}%`}</Text>
           ) : null}
           {negativeRate != undefined ? (
-            <Text color="white">{`Tiêu cực: ${formatSentimentRate(
-              negativeRate
-            )}%`}</Text>
+            <Text>{`Tiêu cực: ${formatSentimentRate(negativeRate)}%`}</Text>
           ) : null}
           {neutralRate != undefined ? (
-            <Text color="white">{`Trung lập: ${formatSentimentRate(
-              neutralRate
-            )}%`}</Text>
+            <Text>{`Trung lập: ${formatSentimentRate(neutralRate)}%`}</Text>
           ) : null}
           {positiveRate != undefined &&
             negativeRate != undefined &&
             neutralRate != undefined && (
-              <Text color="white">{`Không chắc: ${
+              <Text>{`Không chắc: ${
                 formatSentimentRate(
                   100 -
                     formatSentimentRate(positiveRate) -
