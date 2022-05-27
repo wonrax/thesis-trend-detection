@@ -7,9 +7,10 @@ export const Logo = () => {
   return (
     <Link href="/" onClick={() => navigate("/")}>
       <Text
-        fontSize="xxl"
+        fontSize="xl"
         fontWeight="medium"
         className="hover:underline cursor-pointer"
+        nowrap
       >
         Xu hướng
       </Text>

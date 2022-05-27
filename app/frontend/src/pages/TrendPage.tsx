@@ -8,22 +8,10 @@ import Overlay from "../components/Overlay";
 import Masonry from "react-masonry-css";
 import styles from "./TrendPage.module.css";
 import { API_URL } from "../constants";
-import { ReactComponent as BriefcaseMedical } from "../components/icons/categories/BriefcaseMedical.svg";
-import { ReactComponent as DocumentSearch } from "../components/icons/categories/DocumentSearch.svg";
-import { ReactComponent as Earth } from "../components/icons/categories/Earth.svg";
-import { ReactComponent as HatGraduation } from "../components/icons/categories/HatGraduation.svg";
-import { ReactComponent as Money } from "../components/icons/categories/Money.svg";
-import { ReactComponent as Music } from "../components/icons/categories/Music.svg";
-import { ReactComponent as New } from "../components/icons/categories/New.svg";
-import { ReactComponent as News } from "../components/icons/categories/News.svg";
-import { ReactComponent as People } from "../components/icons/categories/People.svg";
-import { ReactComponent as Sport } from "../components/icons/categories/Sport.svg";
-import { ReactComponent as Technology } from "../components/icons/categories/Technology.svg";
 import Loading from "../components/Loading";
-import Link from "../components/Link";
-import Logo from "../components/Logo";
 import { MainLayout } from "../components/MainLayout";
 import LoadingPage from "../components/LoadingPage";
+import NavBar from "../components/NavBar";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -111,6 +99,7 @@ export const TrendPage = ({
         });
     } else if (passedTrend) {
       setTrend(passedTrend);
+      window.scrollTo(0, 0);
 
       // reset lazyloading
       setIsLazyLoading(false);
@@ -126,128 +115,64 @@ export const TrendPage = ({
   }
 
   return (
-    <MainLayout>
-      <div className="p-8 flex flex-col justify-center items-center">
-        <Logo />
-      </div>
-      <div className="flex flex-row flex-wrap mb-4 max-w-screen-md px-4 gap-x-2 gap-y-2 justify-center">
-        {trend?.availableCategories &&
-          Object.entries(trend?.availableCategories).map(([key, value]) => (
-            <CategoryNavigationChip
-              key={key}
-              catId={key}
-              category={value}
-              current={trendCategory == key}
-              onClick={() => {
-                if (trendCategory == key) return;
+    <>
+      <NavBar
+        categories={trend?.availableCategories}
+        currentCategory={trendCategory}
+        onClick={(categoryId) => {
+          if (trendCategory == categoryId) return;
+          setNavigating(true);
+          axios
+            .get(`${API_URL}/trending/category/${categoryId}`)
+            .then((res) => {
+              navigate(`/${categoryId}`, {
+                state: { passedTrend: res.data },
+              });
+            });
+        }}
+      />
+      <MainLayout>
+        {trend?.topics?.length == 0 && (
+          <Text className="p-4" fontSize="lg" textAlign="center">
+            Hôm nay không có tin gì mới, mời bạn quay lại sau.
+          </Text>
+        )}
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className={styles["my-masonry-grid"]}
+          columnClassName={styles["my-masonry-grid_column"]}
+        >
+          {/* array of JSX items */}
+          {trend?.topics.map((topic, index) => (
+            <TopicSection
+              key={`${trend.id}-${index}`}
+              spotlightArticle={topic.articles[0]}
+              articles={topic.articles.slice(1)}
+              keywords={topic.keywords}
+              totalNumberOfArticles={topic.totalNumberOfArticles}
+              hasMore={topic.hasMoreArticles}
+              rank={index + 1}
+              trendId={trend.id}
+              topicIndex={index}
+              navigateToTopic={() => {
                 setNavigating(true);
-                axios.get(`${API_URL}/trending/category/${key}`).then((res) => {
-                  navigate(`/${key}`, {
-                    state: { passedTrend: res.data },
+                axios
+                  .get(`${API_URL}/topic/${trend.id}/${index}`)
+                  .then((res) => {
+                    navigate(`/topic/${trend.id}/${index}`, {
+                      state: { passedTopic: res.data },
+                    });
                   });
-                });
               }}
             />
           ))}
-      </div>
-      {trend?.topics?.length == 0 && (
-        <Text className="p-4" fontSize="lg" textAlign="center">
-          Hôm nay không có tin gì mới, mời bạn quay lại sau.
-        </Text>
-      )}
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className={styles["my-masonry-grid"]}
-        columnClassName={styles["my-masonry-grid_column"]}
-      >
-        {/* array of JSX items */}
-        {trend?.topics.map((topic, index) => (
-          <TopicSection
-            key={`${trend.id}-${index}`}
-            spotlightArticle={topic.articles[0]}
-            articles={topic.articles.slice(1)}
-            keywords={topic.keywords}
-            totalNumberOfArticles={topic.totalNumberOfArticles}
-            hasMore={topic.hasMoreArticles}
-            rank={index + 1}
-            trendId={trend.id}
-            topicIndex={index}
-            navigateToTopic={() => {
-              setNavigating(true);
-              axios.get(`${API_URL}/topic/${trend.id}/${index}`).then((res) => {
-                navigate(`/topic/${trend.id}/${index}`, {
-                  state: { passedTopic: res.data },
-                });
-              });
-            }}
-          />
-        ))}
-      </Masonry>
-      <div className="py-8">
-        {isLazyLoading && <Loading />}
-        {!lazyLoadingHasMore && <Text>Đến đây là hết.</Text>}
-      </div>
-      {<Overlay enabled={navigating} />}
-    </MainLayout>
-  );
-};
-
-const MAP_CATEGORY_TO_ICON: {
-  [key: string]: React.FunctionComponent<
-    React.SVGProps<SVGSVGElement> & {
-      title?: string | undefined;
-    }
-  >;
-} = {
-  "suc-khoe": BriefcaseMedical,
-  "phap-luat": DocumentSearch,
-  "the-gioi": Earth,
-  "giao-duc": HatGraduation,
-  "kinh-doanh": Money,
-  "giai-tri": Music,
-  "moi-nhat": New,
-  "thoi-su": News,
-  "van-hoa": People,
-  "the-thao": Sport,
-  "cong-nghe": Technology,
-};
-
-const CategoryNavigationChip = ({
-  catId,
-  category,
-  current,
-  onClick,
-}: {
-  catId: string;
-  category: string;
-  current: boolean;
-  onClick?: () => void;
-}) => {
-  let CatIcon:
-    | React.FunctionComponent<
-        React.SVGProps<SVGSVGElement> & {
-          title?: string | undefined;
-        }
-      >
-    | undefined = undefined;
-  if (catId in MAP_CATEGORY_TO_ICON) {
-    CatIcon = MAP_CATEGORY_TO_ICON[catId];
-  }
-  const stroke = current ? "outline outline-2 outline-gray-40" : "";
-  return (
-    <Link
-      className={`flex flex-row items-center gap-2 px-3 py-1 bg-white rounded-xl group ${stroke}`}
-      onClick={onClick}
-      href={`/${catId}`}
-    >
-      {CatIcon ? <CatIcon /> : undefined}
-      <Text
-        fontSize="body"
-        fontWeight="medium"
-        className="group-hover:underline"
-      >
-        {category}
-      </Text>
-    </Link>
+        </Masonry>
+        <div className="py-8">
+          {isLazyLoading && <Loading />}
+          {!lazyLoadingHasMore && <Text>Đến đây là hết.</Text>}
+        </div>
+        {<Overlay enabled={navigating} />}
+      </MainLayout>
+    </>
   );
 };
