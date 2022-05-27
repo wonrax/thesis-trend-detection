@@ -66,7 +66,7 @@ export const NavBar = ({
   return (
     <nav
       className={`sticky top-0 bg-gray-0 w-full transition-all duration-300 ${
-        isShrunk ? "py-1 shadow-sm" : "py-8"
+        isShrunk ? "py-2 outline outline-2 outline-gray-100" : "py-8"
       }`}
     >
       <section
@@ -80,9 +80,9 @@ export const NavBar = ({
             className="hamburger space-y-1.5 cursor-pointer"
             onClick={() => setIsNavBarOpen(!isNavBarOpen)}
           >
-            <span className="block h-0.5 w-6 bg-gray-80"></span>
-            <span className="block h-0.5 w-6 bg-gray-80"></span>
-            <span className="block h-0.5 w-6 bg-gray-80"></span>
+            <span className="block h-0.5 w-6 bg-gray-100"></span>
+            <span className="block h-0.5 w-6 bg-gray-100"></span>
+            <span className="block h-0.5 w-6 bg-gray-100"></span>
           </div>
         </div>
         <div
@@ -178,7 +178,7 @@ const CategoryNavigationChip = ({
   if (catId in MAP_CATEGORY_TO_ICON) {
     CatIcon = MAP_CATEGORY_TO_ICON[catId];
   }
-  const stroke = current ? "outline outline-2 outline-gray-40" : "";
+  const stroke = current ? "outline outline-2 outline-gray-100" : "";
   return (
     <Link
       className={`flex flex-row items-center gap-2 px-3 bg-white ${
