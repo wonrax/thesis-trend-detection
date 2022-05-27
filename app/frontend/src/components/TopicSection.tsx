@@ -3,6 +3,7 @@ import Article from "../models/Article";
 import Text from "./Text";
 import Divider from "./Divider";
 import { ReactComponent as ArrowRight } from "./icons/ArrowRight.svg";
+import Link from "./Link";
 
 export const TopicSection = ({
   spotlightArticle,
@@ -11,6 +12,8 @@ export const TopicSection = ({
   keywords,
   totalNumberOfArticles,
   rank,
+  trendId,
+  topicIndex,
   hasMore,
   navigateToTopic,
 }: {
@@ -20,6 +23,8 @@ export const TopicSection = ({
   keywords?: Array<string>;
   totalNumberOfArticles?: number;
   rank?: number;
+  trendId?: string;
+  topicIndex?: number;
   hasMore?: boolean;
   navigateToTopic?: () => void;
 }) => {
@@ -42,7 +47,7 @@ export const TopicSection = ({
           <Text fontSize="lg" color="gray-40" fontWeight="medium">
             #{rank || ""}
           </Text>
-          <div className="flex flex-row flex-wrap gap-2">
+          <div className="flex flex-row flex-wrap gap-2 min-w-0">
             {_kws.map((keyword, index) => (
               <div
                 key={index}
@@ -66,11 +71,12 @@ export const TopicSection = ({
           </div>
         ))}
       {hasMore && (
-        <div
-          className="py-4 group hover:cursor-pointer"
+        <Link
+          className="block py-4 group"
           onClick={() => {
             if (navigateToTopic) navigateToTopic();
           }}
+          href={`/topic/${trendId}/${topicIndex}`}
         >
           <div className="flex flex-row items-center gap-1 px-3 py-1 m-auto rounded-md bg-gray-0 w-fit">
             <Text
@@ -84,7 +90,7 @@ export const TopicSection = ({
             </Text>
             <ArrowRight />
           </div>
-        </div>
+        </Link>
       )}
     </div>
   );

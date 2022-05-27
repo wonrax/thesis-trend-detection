@@ -8,18 +8,10 @@ import Overlay from "../components/Overlay";
 import Masonry from "react-masonry-css";
 import styles from "./TrendPage.module.css";
 import { API_URL } from "../constants";
-import { ReactComponent as BriefcaseMedical } from "../components/icons/categories/BriefcaseMedical.svg";
-import { ReactComponent as DocumentSearch } from "../components/icons/categories/DocumentSearch.svg";
-import { ReactComponent as Earth } from "../components/icons/categories/Earth.svg";
-import { ReactComponent as HatGraduation } from "../components/icons/categories/HatGraduation.svg";
-import { ReactComponent as Money } from "../components/icons/categories/Money.svg";
-import { ReactComponent as Music } from "../components/icons/categories/Music.svg";
-import { ReactComponent as New } from "../components/icons/categories/New.svg";
-import { ReactComponent as News } from "../components/icons/categories/News.svg";
-import { ReactComponent as People } from "../components/icons/categories/People.svg";
-import { ReactComponent as Sport } from "../components/icons/categories/Sport.svg";
-import { ReactComponent as Technology } from "../components/icons/categories/Technology.svg";
 import Loading from "../components/Loading";
+import { MainLayout } from "../components/MainLayout";
+import LoadingPage from "../components/LoadingPage";
+import NavBar from "../components/NavBar";
 
 const breakpointColumnsObj = {
   default: 3,
@@ -107,6 +99,7 @@ export const TrendPage = ({
         });
     } else if (passedTrend) {
       setTrend(passedTrend);
+      window.scrollTo(0, 0);
 
       // reset lazyloading
       setIsLazyLoading(false);
@@ -118,52 +111,27 @@ export const TrendPage = ({
   }, [trendCategory]);
 
   if (loading && !memorized) {
-    return (
-      <>
-        <div className="w-screen h-screen flex flex-col gap-2 items-center justify-center bg-gray-0">
-          <Text fontSize="xxl" fontWeight="medium" className="animate-pulse">
-            Xu hướng
-          </Text>
-          {error && <Text color="red">{error}</Text>}
-        </div>
-      </>
-    );
+    return <LoadingPage error={error} />;
   }
 
   return (
-    <div className="w-full bg-gray-0">
-      <div className="flex flex-col items-center min-h-screen m-auto py-8 px-2 sm:px-16 md:px-4 xl:px-0 xl:w-[1280px]">
-        <div className="p-8 flex flex-col justify-center items-center">
-          <Text
-            fontSize="xxl"
-            fontWeight="medium"
-            className="hover:underline cursor-pointer"
-            onClick={() => navigate("/")}
-          >
-            Xu hướng
-          </Text>
-        </div>
-        <div className="flex flex-row flex-wrap mb-4 max-w-screen-md px-4 gap-x-2 gap-y-2 justify-center">
-          {trend?.availableCategories &&
-            Object.entries(trend?.availableCategories).map(([key, value]) => (
-              <CategoryNavigationChip
-                key={key}
-                catId={key}
-                category={value}
-                current={trendCategory == key}
-                onClick={() => {
-                  setNavigating(true);
-                  axios
-                    .get(`${API_URL}/trending/category/${key}`)
-                    .then((res) => {
-                      navigate(`/${key}`, {
-                        state: { passedTrend: res.data },
-                      });
-                    });
-                }}
-              />
-            ))}
-        </div>
+    <>
+      <NavBar
+        categories={trend?.availableCategories}
+        currentCategory={trendCategory}
+        onClick={(categoryId) => {
+          if (trendCategory == categoryId) return;
+          setNavigating(true);
+          axios
+            .get(`${API_URL}/trending/category/${categoryId}`)
+            .then((res) => {
+              navigate(`/${categoryId}`, {
+                state: { passedTrend: res.data },
+              });
+            });
+        }}
+      />
+      <MainLayout>
         {trend?.topics?.length == 0 && (
           <Text className="p-4" fontSize="lg" textAlign="center">
             Hôm nay không có tin gì mới, mời bạn quay lại sau.
@@ -184,6 +152,8 @@ export const TrendPage = ({
               totalNumberOfArticles={topic.totalNumberOfArticles}
               hasMore={topic.hasMoreArticles}
               rank={index + 1}
+              trendId={trend.id}
+              topicIndex={index}
               navigateToTopic={() => {
                 setNavigating(true);
                 axios
@@ -201,67 +171,8 @@ export const TrendPage = ({
           {isLazyLoading && <Loading />}
           {!lazyLoadingHasMore && <Text>Đến đây là hết.</Text>}
         </div>
-      </div>
-      {<Overlay enabled={navigating} />}
-    </div>
-  );
-};
-
-const MAP_CATEGORY_TO_ICON: {
-  [key: string]: React.FunctionComponent<
-    React.SVGProps<SVGSVGElement> & {
-      title?: string | undefined;
-    }
-  >;
-} = {
-  "suc-khoe": BriefcaseMedical,
-  "phap-luat": DocumentSearch,
-  "the-gioi": Earth,
-  "giao-duc": HatGraduation,
-  "kinh-doanh": Money,
-  "giai-tri": Music,
-  "moi-nhat": New,
-  "thoi-su": News,
-  "van-hoa": People,
-  "the-thao": Sport,
-  "cong-nghe": Technology,
-};
-
-const CategoryNavigationChip = ({
-  catId,
-  category,
-  current,
-  onClick,
-}: {
-  catId: string;
-  category: string;
-  current: boolean;
-  onClick?: () => void;
-}) => {
-  let CatIcon:
-    | React.FunctionComponent<
-        React.SVGProps<SVGSVGElement> & {
-          title?: string | undefined;
-        }
-      >
-    | undefined = undefined;
-  if (catId in MAP_CATEGORY_TO_ICON) {
-    CatIcon = MAP_CATEGORY_TO_ICON[catId];
-  }
-  const stroke = current ? "outline outline-2 outline-gray-40" : "";
-  return (
-    <div
-      className={`flex flex-row items-center gap-2 px-3 py-1 bg-white rounded-xl group cursor-pointer ${stroke}`}
-      onClick={onClick}
-    >
-      {CatIcon ? <CatIcon /> : undefined}
-      <Text
-        fontSize="body"
-        fontWeight="medium"
-        className="group-hover:underline"
-      >
-        {category}
-      </Text>
-    </div>
+        {<Overlay enabled={navigating} />}
+      </MainLayout>
+    </>
   );
 };

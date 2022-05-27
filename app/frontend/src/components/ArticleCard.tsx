@@ -104,6 +104,7 @@ const ArticleCardDefault = ({
         "p-4 w-full flex flex-row justify-between gap-x-4 group",
         {
           "bg-white rounded-lg": mobile,
+          "min-h-[128px]": showThumbnail,
         }
       )}
       {...(article.articleUrl && { href: article.articleUrl })}
@@ -168,7 +169,7 @@ const NewsSourceBar = ({
           />
         )}
         {sourceName && (
-          <Text className="shrink" color="gray-40" fontSize="sm">
+          <Text className="shrink" color="gray-40" fontSize="sm" ellipsis>
             {sourceName}
           </Text>
         )}
