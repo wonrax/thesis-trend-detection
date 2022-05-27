@@ -108,7 +108,7 @@ export const NavBar = ({
         </div>
       </section>
       <section
-        className={`desktop-nav hidden lg:flex flex-row gap-4 items-center px-8`}
+        className={`desktop-nav hidden lg:flex flex-row justify-center gap-4 items-center px-8`}
       >
         <Logo />
         <div
