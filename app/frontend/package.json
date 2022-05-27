@@ -15,6 +15,7 @@
     "classnames": "^2.3.1",
     "dayjs": "^1.11.0",
     "postcss": "^8.4.12",
+    "rc-tooltip": "^5.1.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-masonry-css": "^1.0.16",

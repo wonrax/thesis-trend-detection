@@ -5,9 +5,11 @@ import classNames from "classnames";
 import { capitalizeFirstLetter } from "../utils/string";
 import { ReactComponent as ThumbsUp } from "./icons/ThumbsUp.svg";
 import { ReactComponent as ThumbsDown } from "./icons/ThumbsDown.svg";
+import Tooltip from "rc-tooltip";
+import "rc-tooltip/assets/bootstrap_white.css";
 
 const formatSentimentRate = (rate: number) => {
-  return Math.round(rate * 100);
+  return Math.round(rate * 100 * 1e2) / 1e2;
 };
 
 export const ArticleCard = ({
@@ -76,6 +78,7 @@ const ArticleCardSpotlight = ({
         <SentimentBar
           positiveRate={article.positiveRate}
           negativeRate={article.negativeRate}
+          neutralRate={article.neutralRate}
         />
       </div>
     </a>
@@ -122,6 +125,7 @@ const ArticleCardDefault = ({
         <SentimentBar
           positiveRate={article.positiveRate}
           negativeRate={article.negativeRate}
+          neutralRate={article.neutralRate}
         />
       </div>
       {article.thumbnailUrl && showThumbnail && (
@@ -204,15 +208,47 @@ const SentimentChip = ({
 const SentimentBar = ({
   positiveRate,
   negativeRate,
+  neutralRate,
 }: {
   positiveRate?: number;
   negativeRate?: number;
+  neutralRate?: number;
 }) => {
   return (
-    <div className="flex flex-row gap-2">
-      {positiveRate ? <SentimentChip rate={positiveRate} /> : null}
-      {negativeRate ? <SentimentChip rate={negativeRate} negative /> : null}
-    </div>
+    <Tooltip
+      placement="bottom"
+      trigger={["hover", "click"]}
+      overlay={
+        <span className="flex flex-col gap-1">
+          {positiveRate != undefined ? (
+            <Text>{`Tích cực: ${formatSentimentRate(positiveRate)}%`}</Text>
+          ) : null}
+          {negativeRate != undefined ? (
+            <Text>{`Tiêu cực: ${formatSentimentRate(negativeRate)}%`}</Text>
+          ) : null}
+          {neutralRate != undefined ? (
+            <Text>{`Trung lập: ${formatSentimentRate(neutralRate)}%`}</Text>
+          ) : null}
+          {positiveRate != undefined &&
+            negativeRate != undefined &&
+            neutralRate != undefined && (
+              <Text>{`Không chắc: ${
+                formatSentimentRate(
+                  100 -
+                    formatSentimentRate(positiveRate) -
+                    formatSentimentRate(negativeRate) -
+                    formatSentimentRate(neutralRate)
+                ) / 100
+              }%`}</Text>
+            )}
+        </span>
+      }
+    >
+      <div className="flex flex-row gap-2 w-fit">
+        {positiveRate ? <SentimentChip rate={positiveRate} /> : null}
+        {negativeRate ? <SentimentChip rate={negativeRate} negative /> : null}
+      </div>
+    </Tooltip>
   );
 };
 

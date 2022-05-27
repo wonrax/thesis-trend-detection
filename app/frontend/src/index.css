@@ -25,3 +25,21 @@
     scrollbar-width: none; /* Firefox */
   }
 }
+
+.rc-tooltip-inner {
+  background-color: #fff !important;
+  border-radius: 16px !important;
+  border: none !important;
+  padding: 16px !important;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+}
+
+.rc-tooltip-arrow {
+  border-bottom-color: #fff !important;
+  border-top-color: #fff !important;
+}
+
+.rc-tooltip {
+  background-color: unset !important;
+  opacity: 100 !important;
+}
