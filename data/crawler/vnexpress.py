@@ -166,7 +166,7 @@ class VnExpressCrawler(Crawler):
         )
 
         try:
-            response = requests.get(comments_endpoint, timeout=self.timeout)
+            response = requests.get(comments_endpoint, timeout=20)
             data = json.loads(response.text)
             assert data["error"] != "0"
 
