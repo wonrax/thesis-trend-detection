@@ -55,10 +55,12 @@ export const TrendPage = ({
       !trend
     )
       return;
+    setIsLazyLoading(true);
     handleLoadMore(trend);
   };
 
   const handleLoadMore = (trend: Trend) => {
+    if (isLazyLoading) return;
     setIsLazyLoading(true);
     if (trend?.topics) {
       const page_size = 10;
