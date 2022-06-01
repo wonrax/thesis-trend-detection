@@ -145,17 +145,17 @@ def main():
     assert DATABASE_URL
     connect(host=DATABASE_URL)
 
-    end_date = datetime.datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
+    end_date = datetime.datetime.utcnow()
     start_date = end_date - datetime.timedelta(days=1.5)
 
-    categories = [Category.SUC_KHOE]
-    categories = [c for c in Category]
-    categories.remove(Category.MOI_NHAT)
+    categories = [Category.THOI_SU]
+    # categories = [c for c in Category]
+    # categories.remove(Category.MOI_NHAT)
 
     articles = []
     for category in categories:
         articles += Article.objects.filter(
-            category=str(category), date__gte=start_date, date__lte=end_date
+            category=category.name, date__gte=start_date, date__lte=end_date
         )
 
     processed_articles = preprocess_articles(articles)
