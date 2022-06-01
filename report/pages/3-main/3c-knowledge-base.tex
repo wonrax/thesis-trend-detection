@@ -1,0 +1,225 @@
+\chapter{Kiến thức nền tảng}
+\label{chap:knowledgebase}
+
+\section{Các nghiên cứu liên quan}
+\label{chap:relatedworks}
+
+Việc nghiên cứu và phân tích xu hướng không còn là mới mẻ kể từ khi kỷ nguyên của mạng xã hội lên ngôi. Mạng xã hội Twitter~\footnote{\url{https://twitter.com}} dành riêng một mục để hiển thị các hashtag và chủ đề nổi trội do người dùng đăng tải ở trên nền tảng này (hình~\ref{fig:twitter_trending}). Google với Google Trends~\footnote{\url{https://trends.google.com}} là một sản phẩm nghiên cứu xu hướng dựa trên các tìm kiếm và truy xuất của người dùng (hình~\ref{fig:google_trends}). Google còn sở hữu Google News~\footnote{\url{https://news.google.com}} là trang tổng hợp các tin tức nổi bật quanh thế giới (hình~\ref{fig:google_news}). Theo ước tính, người dùng Twitter đăng 500 triệu tweet mỗi ngày~\footnote{\url{https://www.omnicoreagency.com/twitter-statistics}}, Google tiếp nhận 63.000 yêu cầu tìm kiếm mỗi giây~\footnote{\url{https://blog.hubspot.com/marketing/google-search-statistics}}, Google News tổng hợp tin tức từ hàng nghìn tờ báo khắp thế giới. Các số liệu trên cho thấy việc tìm kiếm và phân tích các chủ đề nổi bật bằng sức người là hoàn toàn không khả thi.
+
+\image[0.5]{img/twitter-trending.png}{Danh mục Xu hướng của Twitter chứa các từ khóa và hashtag đang được người dùng sử dụng nhiều ở trên nền tảng này.}{fig:twitter_trending}
+
+\image[1]{img/google-trends.png}{Stories và Insights trên Google Trends phân tích xu hướng tìm kiếm của người dùng.}{fig:google_trends}
+
+\image[1]{img/google-news.png}{Google News với tin tức tiếng Việt. Các bài báo đề cập tới cùng một sự kiện được gom lại thành một chủ đề.}{fig:google_news}
+
+Vì vậy, đã có nhiều nghiên cứu được thực hiện để giải quyết vấn đề này. Các kỹ sư tại Twitter~\cite{hendricksonTrendDetectionSocial2015} vào năm 2015 đã đề xuất hai mô hình: (1) Mô hình xác suất, sử dụng phân phối Poisson để mô hình số lượng hashtag (từ khóa), qua đó phát hiện bất thường ở tần suất sử dụng từ khóa; (2) Mô hình hướng dữ liệu, so sánh sự tương đồng giữa dữ liệu cần phân tích với dữ liệu đã được gán nhãn trong lịch sử. Hai mô hình được sử dụng để đưa ra quyết định từ khóa đang được phân tích là \textit{trending} (đang nổi bật, đang là xu hướng) hay \textit{không trending} (bình thường, không là xu hướng). Twitter cho phép người dùng sử dụng hashtag để thêm từ khóa cho bài viết của họ, nên việc trích xuất từ khóa từ dữ liệu Twitter là không khó. Tuy nhiên với các \acrfull{document} hay tập dữ liệu không có từ khóa do người dùng định nghĩa, ta phải dùng các phương pháp trích xuất từ khóa đại diện cho \acrshort{document}, vốn là một tác vụ khó trong xử lý ngôn ngữ tự nhiên.
+
+Do đó, người ta thường sử dụng các phương pháp phát hiện chủ đề (topic detection) để phân tích xu hướng. Hai cách phổ biến để phát hiện chủ đề là \textit{document-pivot} và \textit{feature-pivot}. Với phương pháp \textit{document-pivot}, ta gọm cụm trực tiếp các \acrshort{document}. Còn với \textit{feature-pivot}, ta trích xuất đặc trưng (feature) từ \acrshort{document} rồi mới tiến hành gom cụm trên các đặc trưng đó. Cả hai phương pháp đều có ưu và nhược điểm, \textit{document-pivot} rất nhạy cảm với nhiễu (noise sensitive), còn \textit{feature-pivot}, thường là dựa trên sự phân tích sự đồng nghĩa giữa các từ, nên thường có khả năng gán sai các từ đồng nghĩa, qua đó làm giảm độ chính xác đi đáng kể~\cite{aielloSensingTrendingTopics2013}.
+
+\subsection{Phương pháp document-pivot}
+\label{chap:document-pivot}
+Phuvipadawat và Murata~\cite{phuvipadawatBreakingNewsDetection2010} sử dụng boosted \acrfull{tf-idf} để đo lường sự tương đồng (similarity score) giữa hai \acrshort{document}. Các \acrshort{document} mới (incoming document) sẽ được gán vào các cụm có sẵn dựa trên giá trị tương đồng này (i.e. similarity score lớn hơn một ngưỡng threshold xác định thì sẽ được gán vào cụm). Gọi là boosted \acrshort{tf-idf} là bởi vì similarity score có khả năng thiên vị các đặc trưng đặc biệt như tên riêng, các sự kiện, các vị trí địa lý v.v. dựa trên giả thiết các đặc trưng đó có đóng góp quan trọng đối với chủ đề của một \acrshort{document}.
+
+TwitterStand~\cite{sankaranarayananTwitterStandNewsTweets2009} cũng sử dụng \acrshort{tf-idf} nhưng kết hợp với vector thời gian (thời điểm đăng bài) để gán các \acrshort{document} mới vào cụm.
+
+\subsection{Phương pháp feature-pivot}
+Phương pháp \textit{feature-pivot} thường gắn liền với các mô hình chủ đề (topic model) mà nổi bật là \acrfull{LDA}~\cite{bleiLatentDirichletAllocation2003}. Với \acrshort{LDA}, mỗi \acrshort{document} có một phân phối chủ đề (topic distribution) riêng. Phân phối chủ đề này là \textit{feature} trong \textit{feature-pivot} và ta có thể gom cụm các \acrshort{document} thông qua các phân phối chủ đề.
+
+Madani et al.~\cite{madaniRealtimeTrendingTopics2015} sử dụng \acrfull{HDP}~\cite{tehHierarchicalDirichletProcesses2012} là mô hình chủ đề mở rộng dựa trên \acrshort{LDA} để gom cụm các \acrshort{document} tương tự nhau, các cụm có số lượng \acrshort{document} lớn được cho là đang trending. Sau đó tìm ra các \acrshort{document} đại diện cho cụm để hiển thị trực quan, diễn giải chủ đề cho người dùng.
+
+Với dữ liệu tiếng Việt, Dinh et al.~\cite{dinhImprovingSocialTrend2021} biểu diễn các tài liệu (document, ở đây là các bài đăng trên Facebook và Twitter) dưới dạng đồ thị (graph), sau đó tiến hành gom cụm bằng RankClus~\cite{sunRankClusIntegratingClustering2009} trên đồ thị và trích xuất từ khóa (keyword) để biểu diễn cho chủ đề. Ngoài ra, các tương tác của người dùng như Like (thích) và Bình luận trên một bài đăng cũng là trọng số đóng góp vào sự quyết định mức độ phổ biến của một chủ đề.
+
+\section{Mô hình chủ đề (topic model)}
+Để phát hiện xu hướng, các phương pháp mô hình số lượng từ khóa và phát hiện bất thường (e.g. phân phối Poisson) thường đơn giản và có tốc độ nhanh, thích hợp cho phát hiện xu hướng trong thời gian thực. Tuy nhiên các mô hình này chỉ xét đến tần suất xuất hiện của từ mà bỏ qua toàn bộ sự liên quan về các từ cũng như cách chúng hình thành chủ đề.
+
+Chủ đề là vấn đề cơ bản, là nội dung trọng tâm mà người nói hoặc người viết muốn đề cập. Một văn bản (bài báo, Tweet, bài văn, v.v.) có thể chứa nhiều chủ đề, nhưng chỉ có một hoặc một vài chủ đề có thể làm chủ đề chính để đại diện cho văn bản đó.
+
+Để tìm ra chủ đề, ta không thể đơn giản chỉ tìm từ phổ biến nhất trong văn bản.  Mỗi từ tuỳ theo ngữ cảnh có thể thuộc về nhiều chủ đề khác nhau. Ví dụ như từ ``đường'' có thể vừa thuộc chủ đề ``\textit{gia vị}'' và vừa có thể thuộc chủ đề ``\textit{công trình}''. Mô hình phát hiện chủ đề là mô hình túi từ (bag-of-words model) dùng để khai thác mối tương quan giữa các từ và các chủ đề ngữ nghĩa tiềm ẩn (latent sematic theme) giữa các văn bản~\cite{madaniRealtimeTrendingTopics2015}.
+
+\subsection{Mô hình Latent Dirichlet Allocation (LDA)}
+\label{sec:lda}
+
+Mô hình LDA là mô hình tạo sinh xác suất (generative probabilistic model) cho các dữ liệu rời rạc như các kho văn bản (text corpora). LDA là mô hình Bayes ba lớp, với mỗi văn bản trong một tập văn bản được biểu diễn thông qua một tập các chủ đề. Và mỗi chủ đề được biểu diễn bằng một tập các xác suất chủ đề~\cite{bleiLatentDirichletAllocation2003}. Nói cách khác, một văn bản có thể biểu diễn bằng nhiều chủ đề, và một chủ đề có thể được biểu diễn bằng nhiều từ khác nhau.
+
+\image[0.7]{img/lda/architecture.png}{Minh hoạ mô hình LDA. Các node thể hiện cho các biến ngẫu nhiên, các cạnh thể hiện sự phụ thuộc giữa các biến ngẫu nhiên. Node màu xám là biến ngẫu nhiên có thể quan sát được; node màu trắng là các biến ngẫu nhiên ẩn (hidden). Các hình chữ nhật là ký hiệu tấm (plate notation), thể hiện sự lặp lại của các biến ngẫu nhiên ~\cite{bleiTopicModels2009}.}{fig:lda_architecture}
+
+Hình \ref{fig:lda_architecture} minh hoạ mô hình LDA. Quá trình tạo sinh từng văn bản $w$ trong kho văn bản $D$ được thực hiện như sau~\cite{bleiLatentDirichletAllocation2003}:
+
+\begin{enumerate}
+	\item Chọn $N \sim Poisson(\xi)$.
+	\item Chọn $\theta \sim Dir(\alpha)$ với $Dir$ là phân phối Dirichlet.
+	\item Với mỗi từ $w_n$ trong N từ:
+	\begin{enumerate}
+		\item Chọn $z_n \sim Multinomial(\theta)$.
+		\item Chọn một chủ đề $z_n$ từ $p(w_n|z_n,\beta)$, là một xác suất đa thức có điều kiện phụ thuộc vào chủ đề $z_n$.
+	\end{enumerate}
+\end{enumerate}
+
+LDA là mô hình học không giám sát (unsupervised) nên dữ liệu có thể không cần được gán nhãn mà vẫn đưa được vào mô hình. Về cơ bản, LDA sẽ cố gắng sinh ra các văn bản giống các văn bản đầu vào nhất có thể, từ đó mô hình học được các tham số $\alpha$ và $\beta$. Tuy nhiên, ta phải xác định trước một tham số là $k$ chủ đề và điều chỉnh $k$ sao cho mô hình cho ra kết quả tốt nhất. Đây là trở ngại lớn nhất cho việc áp dụng mô hình vào dữ liệu thời gian thực.
+
+% \subsection{Mô hình Correlated Topic Model (CTM)}
+% Vì Dirichlet sinh ra các xác suất chủ đề độc lập nên một nhược điểm của LDA là không thể mô hình được sự tương quan giữa các chủ đề. Ví dụ như, chủ đề về \textit{y tế} thường sẽ có sự liên quan với chủ đề \textit{thực phẩm} nhiều hơn so với \textit{thể thao}. Mô hình CTM~\cite{laffertyCorrelatedTopicModels2006} ra đời để giải quyết vấn đề này.
+
+% \image[0.6]{img/ctm/architect.png}{Minh hoạ mô hình CTM.  Hình:~\cite{laffertyCorrelatedTopicModels2006}}{fig:ctm_architecture}
+
+% Thay vì sử dụng phân phối Dirichlet, CTM sử dụng phân phối chuẩn logistic (logistic normal distribution). Lúc đó, bước thứ 2 ở mục~\ref{sec:lda} sẽ trở thành $\theta \sim f(N(\eta, \sum))$ với $f(x)$ là biến đổi logistic và $N$ là phân phối chuẩn đa chiều.
+
+% \[
+% \theta_{j}=\frac{\exp \left(\eta_{j}\right)}{\sum_{p=0}^{k} \exp
+% \left(\eta_{p}\right)}
+% \]
+
+% CTM không những giúp phân tách chủ đề tốt hơn mà còn giúp thể hiện các sự tương quan giữa các chủ đề. Tuy nhiên, vì sự thay đổi trên, CTM mất nhiều thời gian hơn để tính toán và ước lượng các tham số trong quá trình huấn luyện.
+
+\subsection{Mô hình Hierachical Dirichlet Process (HDP)}
+\acrshort{HDP} là mô hình mở rộng trên mô hình \acrshort{LDA} để khắc phục giới hạn của \acrshort{LDA}. Ý tưởng của \acrshort{HDP} là thay thế phân phối Dirichlet cho chủ đề bằng Dirichlet process. Từ đó, thay vì lần nào cũng phải phải định nghĩa một tham số $k$, \acrshort{HDP} sử dụng vô hạn chủ đề để gán chủ đề cho các văn bản (hình~\ref{fig:hdp}~\footnote{\url{https://www.cs.cmu.edu/~epxing/Class/10708-14/scribe_notes/scribe_note_lecture20.pdf}}).
+\image[0.7]{img/lda/hdp.png}{Mô hình vô hạn chủ đề.}{fig:hdp}
+
+\acrshort{HDP} là mô hình Bayes phi tham số~\footnote{\url{https://www.youtube.com/watch?v=RSVnohWP6mY}} (Bayesian nonparametric model) với khả năng mô hình các tập dữ liệu có kích thước khác nhau. Khi sử dụng \acrshort{HDP}, ta không cần phải chọn một tham số $k$ như \acrshort{LDA} mà mô hình sẽ tự điều chỉnh tham số cho phù hợp với dữ liệu.
+
+\section{Phương pháp khai thác ngữ nghĩa}
+\subsection{Word embedding, sentence embedding}
+Word embedding là phương pháp chuyển đổi từ dạng văn bản sang dạng số học để làm đầu vào cho các mô hình. Ý tưởng của các phương pháp word embedding là chuyển các từ thành các điểm trong không gian ngữ nghĩa (semantic space), các từ càng gần nghĩa thì véc-tơ của chúng sẽ càng gần nhau.
+
+\image[0.7]{img/bert/word-embedding.png}{Minh hoạ các véc-tơ ngữ nghĩa của từ, các từ gần nhau thường sẽ mang ý nghĩa/ý nghĩa sử dụng gần nhau. Ảnh: Medium~\cite{bujokasCreatingWordEmbeddings2020}.}{fig:word_embedding}
+
+Sentence embedding cũng tương tự như word embedding, nhưng nó dùng để biểu diễn sự tương quan ngữ nghĩa giữa các câu. Một cách đơn giản để tạo sentence embedding là lấy trung bình tất cả các word embedding của các từ trong câu đó~\cite{lamGomCumVan2021}. Sentence embedding có thể sử dụng để phân loại (ví dụ, câu đang xét là mang ý nghĩa tích cực hay tiêu cực), phân tích ngữ nghĩa (ví dụ, phân tích sự liên quan giữa hai câu bất kỳ) hoặc dùng trong các tác vụ ngôn ngữ (linguistic task, ví dụ, xác định động từ là thì hiện tại hay thì quá khứ trong tiếng Anh)~\cite{heidenreichPaperSummaryEvaluation2018}.
+
+\subsection{Mô hình BERT}
+BERT~\cite{devlinBERTPretrainingDeep2019} (Bidirectional Encoder Representations from Transformers) là mô hình ngôn ngữ dựa trên kiến trúc Transformer~\cite{vaswaniAttentionAllYou2017}. BERT được các kỹ sư ở Google phát triển và công bố vào năm 2018, đánh dấu bước đột phá trong các tác vụ xử lý ngôn ngữ tự nhiên và các benchmark như GLUE (đánh giá mức độ hiểu ngôn ngữ), SQuAD, v.v.
+
+BERT là mô hình học sẵn (pre-trained model) được huấn luyện sẵn cho mục đích chung (general purpose). BERT được thiết kế để huấn luyện trước (pre-train) các word embedding. Đầu ra của BERT sẽ được tinh chỉnh (fine-tune) với các lớp huấn luyện bổ sung để phù hợp với các yêu cầu cụ thể của các tác vụ khác nhau.
+
+BERT là mô hình ngôn ngữ hai chiều (bidirectional), tức là một từ trong câu sẽ được biểu diễn bởi các từ xung quanh nó. Khác với các mô hình một chiều (unidirectional), một từ trong câu chỉ xét các từ ở phía trước nó. Ví dụ cho mô hình một chiều là ELMo~\cite{petersDeepContextualizedWord2018}; ``Mặc dù ELMo có kiến trúc dựa trên một mạng BiLSTM xem xét bối cảnh theo hai chiều từ trái sang phải và từ phải sang trái nhưng những chiều này là độc lập nhau nên ta coi như đó là biểu diễn một chiều.''~\cite{khanhBERTModel2020}.
+
+BERT chỉ sử dụng phần encoder của kiến trúc Transformer (sẽ được trình bày ở phần kế tiếp). Khác với Recurrent Neural Network (RNN), cơ chế attention của Transformer truyền tất cả các từ trong câu vào mô hình và thực hiện đánh giá (evaluate) chúng cùng một lúc, do đó Transformer có thể coi là huấn luyện hai chiều~\cite{khanhBERTModel2020}.
+
+Đầu vào của BERT là một tập các từ được encode thành các véc-tơ embedding.  Trước tiên, đầu vào sẽ được WordPiece phân tách thành các token. BERT sẽ dựa trên các token để tạo ra ba véc-tơ embedding:
+\begin{itemize}
+	\item Các token sẽ được chuyển thành các véc-tơ 768 chiều, trở thành Token Embedding.
+	\item Segment Embedding là các véc-tơ để phân biệt các câu. Giữa các câu này sẽ được phân chia bởi một token [SEP]. Ví dụ, véc-tơ Segment Embedding của câu thứ nhất sẽ mang giá trị 0 ở tất cả các chiều, và véc-tơ Segment Embedding của câu thứ hai sẽ mang giá trị 1 ở tất cả các chiều.
+	\item Positional Embedding sẽ cho biết token đang nằm ở vị trí nào trong câu và được tính bằng các hàm $sin$ và $cos$ ở các tần suất khác nhau~\cite{vaswaniAttentionAllYou2017}.
+\end{itemize}
+
+\image[1]{img/bert/input.png}{Minh hoạ đầu vào của
+BERT~\cite{devlinBERTPretrainingDeep2019}}{fig:bert_input}
+
+Đầu vào cho các lớp tiếp theo của BERT sẽ là tổng của ba véc-tơ embedding trên.  Chiều dài tối đa của đầu vào cho mô hình là 512 token, token đầu tiên luôn là token [CLS] (token classification). Và giữa các câu được phân chia bởi token [SEP]. BERT được huấn luyện trên tập dữ liệu BooksCorpus~\cite{zhuAligningBooksMovies2015} (800 triệu từ) và Wikipedia tiếng Anh (2500 triệu từ).
+
+BERT sử dụng hai tác vụ để huấn luyện:
+
+\begin{enumerate}
+	\item \textbf{Masked ML (MLM)}: Vì mô hình BERT là mô hình hai chiều nên một từ trong câu có thể ``thấy được chính nó'', qua đó mô hình có thể gian lận để dự đoán từ một cách dễ dàng~\cite{devlinBERTPretrainingDeep2019}. Chính vì vậy, ta cần phải che dấu (mask) một số từ để huấn luyện BERT dự đoán các từ bị che đó.  Qua nhiều lần thử nghiệm, \cite{devlinBERTPretrainingDeep2019} chọn che dấu 15\% số từ trong câu và chúng được chọn một cách ngẫu nhiên. Tuy nhiên, vì quá trình fine-tune không sử dụng Masked ML để huấn luyện, BERT chỉ thay thế 80\% trong số 15\% đó bằng token [MASK]. Trong 20\% còn lại, một nửa sẽ được thay thế bởi các token ngẫu nhiên và nửa còn lại sẽ được giữ nguyên token ban đầu.
+	\item \textbf{Next Sentence Prediction (NSP)}: Đầu vào của BERT sẽ là hai câu bất kỳ trong tập dữ liệu được phân cách bởi token [SEP]. BERT chọn câu thứ hai là câu tiếp theo (trên tập dữ liệu) của câu thứ nhất với cơ hội 50\%, và 50\% còn lại câu thứ hai được lấy ngẫu nhiên từ tập dữ liệu. BERT sẽ được huấn luyện để dự đoán xem câu thứ hai có phải là câu tiếp theo của câu thứ nhất hay không, qua đó huấn luyện BERT hiểu được mối quan hệ giữa các câu với nhau.
+\end{enumerate}
+
+Quá trình tinh chỉnh (fine-tune) cho các tác vụ khác được dựa trên mô hình BERT đã được huấn luyện sẵn (pre-trained model). Ta có thể thêm một hoặc các lớp (layer) bổ sung mà không cần can thiệp hay chỉnh sửa mô hình BERT ban đầu.
+
+\subsection{Encoder của kiến trúc transformer} Kiến trúc
+Transformer~\cite{vaswaniAttentionAllYou2017} bao gồm encoder và decoder (hình \ref{fig:transformer}). Về cơ bản, encoder được sử dụng để chuyển đầu vào thành các đặc trưng đơn giản (feature learning). Decoder sử dụng kết quả của encoder để dự đoán nhãn của đầu ra. Mô hình BERT chỉ sử dụng phần encoder của kiến trúc Transformer.
+
+\image[0.6]{img/bert/transformer.png}{Kiến trúc Transformer với phần bên trái là encoder, bên phải là decoder~\cite{vaswaniAttentionAllYou2017}.}{fig:transformer}
+
+Encoder gồm hai thành phần chính là Multi-Head Attention và mạng nơ-ron truyền thẳng (Feed-Forward Neural Network, hay FNN). Mỗi thành phần được bao quanh bởi một residual connection~\cite{heDeepResidualLearning2016} và layer normalization~\cite{baLayerNormalization2016}: $LayerNorm(x + Sublayer(x))$ với $Sublayer$ là Multi-Head Attention hoặc FFN.
+
+Cơ chế self-attention là cơ chế giúp các từ điều chỉnh trọng số của các từ sao cho sự ảnh hưởng của các từ xung quanh đối với bản thân nó là hợp lý nhất. Ví dụ câu ``Dũng là một vận động viên nên anh ấy chơi bóng rổ rất hay'', thì từ \textit{Dũng} sẽ nên có ảnh hưởng nhiều đến từ \textit{anh ấy} hơn các từ còn lại. Self-attention được tính bằng query, key và value: $Q = W_q \cdot x$, $K = W_k \cdot x$, $V = W_v \cdot x$ với $W_q, W_k, W_v$ là các ma trận mà BERT sẽ học trong quá trình huấn luyện, và $x$ là véc-tơ embedding cho đầu vào. $Q, K, V$ sau đó sẽ được cho qua lớp Scaled Dot-Product Attention để tính giá trị attention (hình~\ref{fig:multi_attention}):
+\[ \operatorname{Attention}(Q, K, V)=\operatorname{softmax}\left(\frac{Q
+K^{T}}{\sqrt{d_{k}}}\right) V \]
+
+với $d_k$ là chiều của query và key. Multi-Head Attention bao gồm nhiều lớp self-attention, và được sinh ra bằng cách nối (concatenate) các lớp self-attention đó lại với nhau (hình~\ref{fig:multi_attention}):
+\[ MultiHead(Q,K,V) = Concat(head_1,...,head_h)W^O \]
+\[ \text{với } head_i = Attention(QW_i^Q, KW_i^K, VW_i^V). \]
+
+Với $W_O$, $W_i^Q$, $W_i^K$ và $W_i^V$ là các linear projection, cũng là các ma trận tham số (parameter matrix) được học trong quá trình huấn luyện.
+
+\image[1]{img/bert/multi-attention.png}{Minh hoạ Scaled Dot-Product Attention và Multi-Head Attention~\cite{vaswaniAttentionAllYou2017}.}{fig:multi_attention}
+
+FFN là mạng nơ-ron bao gồm hai biến đổi tuyến tính sử dụng hàm kích hoạt ReLU (ReLU activation function):
+\[ FFN(x) = max(0,xW_1 + b_1)W_2 + b_2 \]
+
+Kiến trúc của BERT bao gồm nhiều khối encoder chồng lên nhau. Nếu $L$ là số khối encoder, $H$ là kích thước của véc-tơ embedding, $A$ là số self-attention head trong lớp Multi-Head Attention, BERT đề nghị hai kích thước mô hình
+chính~\cite{devlinBERTPretrainingDeep2019}:
+\begin{itemize}
+	\item \textbf{BERT\textsubscript{BASE}} (L=12, H=768, A=12, 110 triệu tham số).
+	\item \textbf{BERT\textsubscript{LARGE}} (L=24, H=1024, A=16, 340 triệu tham số).
+\end{itemize}
+
+Ngoài ra còn các mô hình pre-train mở rộng của BERT như \textbf{BERT Multilingual} (hỗ trợ đa ngôn ngữ) hay \textbf{DistilBERT}~\cite{sanhDistilBERTDistilledVersion2020} (mô hình nhẹ và nhanh hơn BERT) và RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019} (mô hình khai thác tối ưu phương thức huấn luyện của BERT), v.v.
+
+\subsection{Mô hình BERT cho tiếng Việt: PhoBERT}
+PhoBERT~\cite{nguyenPhoBERTPretrainedLanguage2020} (hay Phở BERT) được cho là đạt hiệu quả cao hơn so với mô hình BERT Mutilingual trong các tác vụ xử lý ngôn ngữ tiếng Việt. PhoBERT được thiết kế dựa trên RoBERTa~\cite{liuRoBERTaRobustlyOptimized2019}. RoBERTa là nghiên cứu mô phỏng (replication study) của mô hình BERT, các tham số của RoBERTa và các kích thước tập huấn luyện được đánh giá (evaluate) một cách kỹ lưỡng hơn. Các nhà nghiên cứu phía sau RoBERTa cảm thấy BERT chưa được huấn luyện để sử dụng hết khả năng của nó (undertrained)~\cite{liuRoBERTaRobustlyOptimized2019}, và đã đề nghị một công thức mới để huấn luyện BERT. Các thay đổi bao gồm~\cite{liuRoBERTaRobustlyOptimized2019}: \textbf{(1)} huấn luyện mô hình lâu hơn, với kích thước batch lớn hơn và dữ liệu nhiều hơn; \textbf{(2)} không sử dụng Next Sentence Prediction để huấn luyện; \textbf{(3)} huấn luyện trên các câu dài hơn; và \textbf{(4)} liên tục thay đổi cơ chế ẩn dấu (mask) token trong quá trình huấn luyện.
+
+\section{Thuật toán gom cụm k-means}
+Gom cụm là phương pháp học máy không giám sát dùng để chia các điểm dữ liệu thành các nhóm khác nhau. Mục tiêu của gom cụm là các điểm dữ liệu ở trong cùng một cụm có đặc tính giống nhau, và các điểm ở các cụm khác nhau thì có đặc tính khác nhau.
+
+\textit{k-means} là một thuật toán gom cụm với tham số $k$ cụm được người dùng chọn trước khi thực hiện thuật toán. Thuật toán được tóm tắt lại như sau (Thuật toán~\ref{alg:kmeans}):
+\begin{algorithm}
+    \caption{Thuật toán k-means}\label{alg:kmeans}
+    \begin{algorithmic}[1]
+\State Chọn k điểm bất kỳ làm center cho k cụm.
+\State Gán các điểm dữ liệu vào center gần nó nhất sử dụng khoảng cách Euclidean.
+\State Nếu việc gán dữ liệu không thay đổi so với vòng lặp trước, dừng thuật toán.
+\State Cập nhật center của từng cụm bằng cách tính trung bình các điểm dữ liệu thuộc cụm đó.
+\State Quay lại bước 2.
+    \end{algorithmic}
+\end{algorithm}
+
+Việc chọn ngẫu nhiên $k$ center làm kết quả của kmeans không ổn định. \textit{k-means++}~\cite{arthurKmeansAdvantagesCareful2007} khắc phục vấn đề này bằng cách chọn các center ban đầu một cách hợp lý hơn (Thuật toán~\ref{alg:kmeans++}):
+\begin{algorithm}
+    \caption{Thuật toán k-means++. $D(x)$ là khoảng cách giữa điểm $x$ và center gần nhất trong số các center đã được tìm thấy.}\label{alg:kmeans++}
+    \begin{algorithmic}[1]
+    \State Chọn ngẫu nhiên một điểm $c_1$ làm center đầu tiên.
+    \State Chọn center $c_i$ tiếp theo, $c_i = x'$ với xác suất \(\frac{D\left(x^{\prime}\right)^{2}}{\sum_{x \in \mathcal{X}} D(x)^{2}}\).
+    \State Quay lại bước 2 cho tới khi tìm được đủ k center.
+    \State Tiến hành gom cụm theo thuật toán k-means với các center đã chọn.
+    \end{algorithmic}
+\end{algorithm}
+
+Nhờ cách lựa chọn hợp lý các center ban đầu, \textit{k-means++} có tốc độ và độ chính xác cao hơn \textit{k-means} thông thường~\cite{arthurKmeansAdvantagesCareful2007}.
+
+\section{Mô hình chủ đề kết hợp LDA và PhoBERT}
+\label{chap:lda_phobert}
+Mô hình LDA kết hợp PhoBERT~\cite{lamGomCumVan2021} (Hình~\ref{fig:lda_bert_architect}) cơ bản là sợ kết hợp giữa véc-tơ chủ đề của LDA và véc-tơ sentence embedding của PhoBERT với mục đích làm tăng hiệu quả cho gom cụm. Mô hình sử dụng véc-tơ xác suất được LDA sinh ra để xác định các chủ đề chính yếu, sau đó được kết hợp với véc-tơ sentence embedding của PhoBERT để khai thác ngữ nghĩa, qua đó tạo ra không gian véc-tơ mới. Không gian véc-tơ này sẽ được đi qua Autoencoder để giảm chiều, mục đích là để loại bỏ các đặc trưng nhiễu và chỉ tập trung vào các đặc trưng quan trọng, và vừa có thể giảm chi phí và thời gian tính toán. Cuối cùng, các véc-tơ này sẽ được đi qua bộ phân cụm \textit{k}-means++ để phân thành \textit{k} chủ đề.
+
+\image[0.7]{img/main-architect/proposed-architect.pdf}{Minh hoạ kiến trúc mô hình được đề xuất.}{fig:lda_bert_architect}
+
+Mô hình LDA nhận đầu vào là danh sách các \textit{token} để xây dựng kho từ vựng (vocabulary), các túi từ bao gồm mỗi từ gán với mỗi id và tần suất của từ đó. LDA huấn luyện với tham số $k$ với $k$ là số chủ đề mà mô hình sẽ cố gắng phân tách. Đầu ra của LDA là một ma trận $N \times k$ với $N$ là số văn bản đầu vào. Ma trận này là các véc-tơ phân phối xác suất chủ đề trên từng \acrshort{document} (Listing~\ref{code:documenttopicprobability}).
+\begin{listing}[H]
+    \begin{minted}
+        [
+        frame=lines,
+        framesep=2mm,
+        baselinestretch=1.2,
+        fontsize=\footnotesize,
+        linenos,
+        breaklines
+        ]
+        {python}
+    # Phân phối chủ đề của document1. Topic0 là chủ đề nổi trội cho document này.
+    document1 = 0.45 * topic0 + 0.12 * topic1 + 0.02 * topic2 ...
+    
+    # Phân phối chủ đề của document2. Topic1 là chủ đề nổi trội cho document này.
+    document2 = 0.04 * topic0 + 0.65 * topic1 + 0.2 * topic2 ...
+    ...
+    \end{minted}
+    \caption{Phân phối xác suất của chủ đề của từng \acrshort{document}.}
+    \label{code:documenttopicprobability}
+\end{listing}
+
+Mô hình sử dụng PhoBERT đã được huấn luyện sẵn, từ đó chỉ cần đưa dữ liệu đầu vào, PhoBERT sẽ cho ra véc-tơ sentence embedding mà ta sẽ dùng để khai thác ngữ nghĩa của văn bản. Véc-tơ sentence embedding này nằm ở lớp ẩn (hidden layer) thứ 13, có chiều là $N \times 768$ với N là chiều dài tối đa của câu đầu vào (256 từ). Để tính véc-tơ sentence embedding của văn bản, ta tìm véc tơ trung bình cộng của $N$ véc-tơ đầu ra.
+
+Sau khi có véc-tơ xác suất chủ đề của LDA và véc-tơ sentence embedding của PhoBERT, ta nối hai véc-tơ này lại với nhau đối với từng văn bản. Có một trọng số gắn liền với véc-tơ của LDA là $\gamma$ để điều chỉnh mức độ ảnh hưởng của PhoBERT: $vec\_lda * \gamma + vec\_phobert$ ($\gamma$ càng lớn thì PhoBERT càng có ít sự đóng góp và ngược lại). Véc-tơ mới sẽ có chiều $k + 768$. Khối Autoencoder được sử dụng để giảm chiều cho véc-tơ này. Mục tiêu của Autoencoder là sao chép dữ liệu đầu vào và cố gắng tái hiện lại dữ liệu đó ở đầu ra. Quá trình được thực hiện bằng cách nén đầu vào thành một không gian tiềm ẩn (latent space representation). Mục tiêu của khối Autoencoder là loại bỏ các đặc trưng thừa và nhiễu, chỉ giữ lại những đặc trưng quan trọng, đồng thời làm giảm thời gian tính toán khi làm đầu vào cho các mô hình sau.
+
+Sau khi véc-tơ kết hợp được đi qua khối Autoencoder để huấn luyện với lớp giữa 64 nơ-ron và lớp cuối 32 nơ-ron, ta lấy véc-tơ kết quả của lớp cuối (encoded data) để sử dụng cho việc phân cụm.
+
+Mô hình sử dụng thuật toán k-means++ để gom cụm các véc-tơ 32 chiều của khối Autoencoder. Sau khi gom cụm k-means++ với $k$ cụm (giá trị $k$ cụm này phải bằng với giá trị $k$ chủ đề ở mô hình LDA), các véc-tơ (đại diện cho các văn bản) trong cùng một cụm sẽ được cho là cùng chủ đề.
+
+% \section{Các phương pháp trích xuất đặc trưng từ văn bản}
+% \subsection{Term frequency–inverse document frequency (tf-idf)}
+% Tf-idf là phương pháp để đánh giá mức độ quan trọng của một từ trong văn bản
+% \subsection{Yet Another Keyword Extractor (YAKE)}
+
+\section{Tổng kết chương~\ref{chap:knowledgebase}}
+Chương~\ref{chap:knowledgebase} trình bày hai phương pháp cơ bản để phát hiện chủ đề trong tập văn bản, qua đó đi sâu hơn vào các mô hình và kĩ thuật quan trọng làm cơ sở cho nghiên cứu, bao gồm các mô hình phát hiện chủ đề và các kỹ thuật phân tích ngữ nghĩa. Về cơ bản, mỗi mô hình đều có ưu điểm và nhược điểm riêng. Trong phát hiện xu hướng, các mô hình chủ đề đã phần nào giải quyết sự tương quan về nghĩa giữa các từ, tuy nhiên nó là mô hình túi từ (không có thứ tự) nên các đặc trưng về cú pháp hay ngữ nghĩa vẫn chưa được khai thác. Các mô hình ngữ nghĩa, tuy có khả năng gom cụm chủ đề thấp, nhưng có thể phân tích ngữ cảnh và đánh giá sự ảnh hưởng của các từ trong câu với nhau.
+
+Các mô hình trên chủ yếu tận dụng phương pháp \textit{feature-pivot}, tức là khai thác đặc trưng của văn bản để gom cụm chủ đề. Vì giới hạn thời gian, nhóm chưa có khả năng nghiên cứu sâu các kỹ thuật thuộc về phương pháp \textit{document-pivot}, là các kỹ thuật tuy đơn giản nhưng có tốc độ cao và dễ dàng tùy biến cho phù hợp với mục đích và nhu cầu của hệ thống.

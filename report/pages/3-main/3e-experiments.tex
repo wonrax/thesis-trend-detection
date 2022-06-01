@@ -1,0 +1,272 @@
+\chapter{Thực nghiệm và đánh giá}
+\label{chap:experiments}
+
+
+\section{Phát hiện xu hướng}
+Ở chương này, nhóm tiến hành thử nghiệm hệ thống với nhiều mô hình chủ đề khác nhau và đánh giá để chọn ra mô hình phù hợp nhất.
+
+\subsection{Các thang đo}
+
+\subsubsection{Coherence}
+Độ đo Coherence dùng để đánh giá tính \textit{mạch lạc} cho các mô hình chủ đề. Một chủ đề được coi là \textit{mạch lạc} nếu top-N từ của chủ đề đều liên quan với nhau. Nhóm chọn độ đo Coherence $C_V$ vì độ đo này có mối tương quan gần nhất với cảm nhận của con người~\cite{syedFullTextAbstractExamining2017}. $C_V$ bao gồm 4 giai đoạn:
+\begin{enumerate}
+    \item Ghép cặp mỗi từ trong top-N từ của chủ đề với các từ trong top-N. Ví dụ với $W = \{w_1, w_2, w_3\}$ là top 3 từ của chủ đề, thì một cặp $S_i$ có thể là $(W'= w_1),(W^∗ = w_1, w_2, w_3)$.
+    \item Tính xác suất xảy ra $p(w_i)$ và xác suất xảy ra đồng thời $p(w_i, w_j)$.
+    \item Với mỗi $S_i = (W', W^∗)$, tính $\phi$ là giá trị thể hiện cho sự tương đồng giữa $W'$ và $W^*$ trong $W$.
+    $$
+    \vec{v}\left(W^{\prime}\right)=\left\{\sum_{w_{i} \in W^{\prime}} \operatorname{NPMI}\left(w_{i}, w_{j}\right)^{\gamma}\right\}_{j=1, \ldots,|W|}
+    $$
+    $$
+    \operatorname{NPMI}\left(w_{i}, w_{j}\right)^{\gamma}=\left(\frac{\log \frac{P\left(w_{i}, w_{j}\right)+\epsilon}{P\left(w_{i}\right) \cdot P\left(w_{j}\right)}}{-\log \left(P\left(w_{i}, w_{j}\right)+\epsilon\right)}\right)^{\gamma}
+    $$
+    $$
+    \phi_{S_{i}}(\vec{u}, \vec{w})=\frac{\sum_{i=1}^{|W|} u_{i} \cdot w_{i}}{\|\vec{u}\|_{2} \cdot\|\vec{w}\|_{2}}
+    $$
+    \item Giá trị Coherence $C_V$ được lấy bằng giá trị trung bình của tất cả các giá trị $\phi$.
+\end{enumerate}
+
+Coherence $C_V$ có giá trị từ $0-1$, $C_V$ càng gần $1$ thì các chủ đề càng mạch lạc và ngược lại.
+
+\subsubsection{Silhoutte Coefficient}
+Độ đo Silhouette được dùng để đánh giá kết quả của các thuật toán gom cụm. Silhouette phản ánh tính nhất quán giữa các cụm. Với $a(i)$ là giá trị trung bình khoảng cách giữa điểm $i$ với các điểm khác ở cùng một cụm, $b(i)$ là khoảng cách từ điểm $i$ tới cụm gần nhất (neighbor cluster), giá trị Silhouette được tính bằng công thức:
+$$
+s(i)= \begin{cases}1-a(i) / b(i), & \text { nếu } a(i)<b(i) \\ 0, & \text { nếu } a(i)=b(i) \\ b(i) / a(i)-1, & \text { nếu } a(i)>b(i)\end{cases}
+$$
+
+Silhouette Coefficient là giá trị trung bình lớn nhất của $s(i)$ trên toàn bộ tập dữ liệu:
+$$
+S C=\max _{\kappa} \tilde{\mathcal{S}}(\kappa)
+$$
+
+Thang đo Silhouette có giá trị từ -1 tới 1, giá trị Silhouette càng cao thì độ nhất quán của các cụm càng lớn.
+
+\subsection{Kết quả gom cụm chủ đề sử dụng mô hình kết hợp LDA và PhoBERT}
+Kết quả gom cụm chủ đề sử dụng mô hình kết hợp LDA và PhoBERT được thể hiện ở hình~\ref{table:lda-phobert-result}. Nhóm nhận thấy với giá trị \textit{k} càng lớn thì điểm Coherence càng tăng, tuy nhiên \text{k} lớn sẽ giảm hiệu suất gom cụm đi đáng kể. Điều này có thể ám chỉ tập dữ liệu có thể chia ra được thành nhiều chủ đề hơn, tuy nhiên, vì cách kết hợp véc-tơ LDA và PhoBERT chưa hợp lý nên điểm số gom cụm giảm xuống đáng kể khi $k$ càng lớn.
+
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{lllllll}
+        \hline
+        \textbf{k}          & \textit{5} & \textit{6} & \textit{7} & \textit{10} & \textit{13} & \textit{20} \\ \hline
+        \textbf{Coherence $C_V$}  & 0.4679     & 0.4804     & 0.5073     & 0.4915      & 0.5009      & 0.5058      \\
+        \textbf{Silhouette Coefficient} & 0.4036     & 0.3744     & 0.3914     & 0.3124      & 0.2927      & 0.1921     
+    \end{tabular}
+    \caption{Kết quả các thang đo Silhouette và Coherence với các \textit{k}
+    khác nhau trên tập dữ liệu 12595 bài báo Tuổi Trẻ ở danh mục Sức khỏe/Y tế.}
+    \label{table:lda-phobert-result}
+\end{table}
+
+Hơn nữa, việc áp dụng \acrshort{LDA} cho dữ liệu trực tuyến mang lại nhiều thách thức vì mô hình đòi hỏi phải chọn được tham số $k$ phù hợp. Ta có thể lập trình để mô hình thử nhiều giá trị $k$ và chọn ra $k$ tốt nhất. Tuy nhiên phương pháp này tốn nhiều thời gian và chi phí tính toán.
+
+\subsection{Gom cụm chủ đề sử dụng HDP}
+\label{hdp_experiments}
+Vì tính chất của dữ liệu trực tuyến là luôn thay đổi và khó lường, nhóm chọn thử nghiệm với \acrshort{HDP} để mô hình các chủ đề trong tập dữ liệu. \acrshort{HDP} áp dụng xác suất tiên nghiệm cho cả tham số $k$ chủ đề, nên số $k$ này sẽ luôn được thay đổi cho phù hợp với tập dữ liệu trong quá trình huấn luyện. Sau khi phân tích chủ đề, nhóm thực hiện gom cụm \textit{k-means++} với số $k$ lấy từ trực tiếp từ kết quả mô hình \acrshort{HDP}. Nhóm sử dụng HDP hiện thực bởi \textit{tomotopy}~\footnote{\url{https://github.com/bab2min/tomotopy}}.
+
+Nhìn chung, HDP cho ra kết quả khá tốt cho cả thang đo \textit{coherence} và \textit{silhouette} (bảng~\ref{table:hdp-result}). Riêng trường hợp \textit{silhouette} đạt đến $0.9991$, nhóm nhận thấy đa số các véc-tơ phân phối chủ đề của mỗi document là véc-tơ one-hot (one-hot vector), tức là mỗi document chỉ thuộc về một chủ đề duy nhất. Điều này cho thấy HDP khá tự tin về khả năng gán chủ đề~\footnote{\url{https://github.com/bab2min/tomotopy/issues/49##issuecomment-631787144}}.
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{llll}
+    \hline
+    \textbf{Số lượng document}  & 300    & 1601   & 9378   \\ \hline
+    \textbf{Số topic phát hiện} & 147    & 237    & 279    \\
+    \textbf{Coherence $C_V$}          & 0.9631 & 0.9597 & 0.9073 \\
+    \textbf{Silhouette Coefficient}         & 0.7267 & 0.9656 & 0.9991
+    \end{tabular}
+    \caption{Kết quả các thang đo Silhouette và Coherence sử dụng HDP với số lượng \acrshort{document} khác nhau. Các \acrshort{document} được sample ngẫu nhiên từ tập dữ liệu thu thập được.}
+    \label{table:hdp-result}
+\end{table}
+
+Thử nghiệm trên 300 bài viết trong danh mục Thời sự, HDP phát hiện được 90 chủ đề với $coherence=0.9035$ và $silhouette=0.9200$. Bảng~\ref{table:top-topics} thể hiện 5 chủ đề có tần suất xuất hiện cao nhất, tương ứng là 5 từ có phân phối xác suất lớn nhất trong chủ đề. Bảng~\ref{table:articles-per-cluster} thể hiện 3 trên 90 cụm được gom bởi \textit{k-means++}. Các bài viết trong cụm 1 và 2 đều nói về chung một chủ đề, tuy nhiên ở cụm 3 (chủ đề về \textit{COVID-19}, \textit{ca nhiễm}) có tồn tại hai bài viết nhiễu về chủ đề \textit{Chánh án TP.HCM}. Điều này có thể là do: (1) gom cụm chưa tốt (cả hai chủ đề đều có liên quan tới \textit{TP.HCM}) hoặc; (2) HDP gán các từ mặc dù khác nghĩa nhau (hoặc không có liên quan với nhau) cho cùng một chủ đề. Lý do thứ hai là một trong những nhược điểm của các mô hình chủ đề.
+
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Topic ID} & \textbf{Từ chủ đề}            \\ \hline
+    38       & cao\_tốc, cháy, trung\_lương, hcm, chở \\ \hline
+    4        & yên\_tử, vực, rơi, chùa, quảng\_ninh   \\ \hline
+    10       & kỳ, lễ, nghỉ, đường, 1/5               \\ \hline
+    34       & cá, việt\_nam, trung\_quốc, biển, cấm  \\ \hline
+    145      & ca, tp., hcm, covid-19, tử\_vong       \\ \hline
+    \end{tabular}
+    \caption{Top 5 chủ đề tương ứng với 5 từ quan trọng nhất trên 300 bài viết danh mục Thời sự.}
+    \label{table:top-topics}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+    \small
+\begin{tabular}{|c|l|}
+\hline
+\multicolumn{1}{|l|}{\textbf{Cụm}} & \textbf{Tiêu đề các bài viết thuộc về cụm}                                         \\ \hline
+\multirow{7}{*}{1}                 & Vụ cháy trên cao tốc TPHCM - Trung Lương "đốt" hơn 2 tỷ đồng, đường hư hỏng        \\
+                                   & Ôtô cháy ở cao tốc Trung Lương gây thiệt hại hai tỷ đồng                           \\
+                                   & Cháy xe chở dầu trên cao tốc TP.HCM - Trung Lương, giao thông tê liệt              \\
+                                   & Cháy xe chở dầu, lửa lan ra hàng trăm mét trên cao tốc TP.HCM - Trung Lương        \\
+                                   & Ôtô chở nhớt cháy lan trăm mét cao tốc Trung Lương                                 \\
+                                   & Hàng nghìn ôtô ùn tắc trên cao tốc TP.HCM - Trung Lương do vụ cháy xe              \\
+                                   & Cháy dữ dội như "bức tường khói lửa" trên cao tốc TPHCM - Trung Lương              \\ \hline
+\multirow{6}{*}{2}                 & Vì sao suốt nhiều ngày không nghe được tiếng kêu cứu dưới vực sâu Yên Tử?          \\
+                                   & Sống sót kỳ diệu sau 7 ngày rơi xuống vực sâu ở Yên Tử chỉ bằng ít nước và cơm nắm \\
+                                   & Sống sót sau bảy ngày rơi xuống vực ở Yên Tử                                       \\
+                                   & Người phụ nữ rơi xuống vực 7 ngày ở Yên Tử: 'Tôi không bịa chuyện để câu like'     \\
+                                   & Nghe tin vợ 7 ngày dưới vực sâu Yên Tử, chồng bàng hoàng tưởng "dàn dựng"          \\
+                                   & Người phụ nữ rơi xuống vực 7 ngày ở Yên Tử: Bới rác tìm nước uống                  \\ \hline
+\multirow{7}{*}{3}                 & Tin COVID-19 chiều 5-5: Ca nhiễm mới tăng trở lại, nhiều thêm 1.200 ca             \\
+                                   & Ngày 3.5 không ghi nhận ca mắc Covid-19 tử vong                                    \\
+                                   & \textbf{Nhân sự mới TAND TP.HCM: Ông Đỗ Quốc Đạt được điều động làm Chánh tòa Kinh tế}      \\
+                                   & Điều gì giúp TP.HCM gần 1 tháng qua không có ca tử vong do Covid-19?               \\
+                                   & \textbf{TP.HCM: Ông Vũ Thanh Lâm được điều động giữ chức Chánh án TAND H.Bình Chánh}        \\
+                                   & Sốt xuất huyết phức tạp, các bệnh viện TP.HCM đồng loạt triển khai tập huấn        \\
+                                   & Tin COVID-19 chiều 4-5: Cả nước 3.088 ca mới, tăng cả số mắc và số tử vong         \\ \hline
+\end{tabular}
+    \caption{Các bài viết thuộc về cùng một cụm sau khi gom cụm bằng k-means++.}
+    \label{table:articles-per-cluster}
+\end{table}
+
+\subsection{Gom cụm chủ đề sử dụng HDP và PhoBERT}
+Dựa trên kết quả của \acrshort{HDP}, nhóm muốn nâng cao độ chính xác cho mô hình bằng cách áp dụng kết hợp thêm PhoBERT. Cách kết hợp tương tự như chương~\ref{chap:lda_phobert}, nhóm thay thế khối LDA bằng HDP, thay thế PhoBERT bằng Sentence-BERT~\cite{reimersSentenceBERTSentenceEmbeddings2019}. Sentence-BERT là mô hình dựa trên BERT được huấn luyện riêng cho các tác vụ phân tích ngữ nghĩa, được cho là phù hợp hơn BERT để gom cụm~\cite{reimersSentenceBERTSentenceEmbeddings2019}. Với Sentence-BERT cho tiếng Việt, nhóm sử dụng mô hình huấn luyện sẵn dựa trên PhoBERT của \textit{vovanphuc}~\footnote{\url{https://github.com/vovanphuc/SimeCSE_Vietnamese}}. Tham số $k$ ở giai đoạn gom cụm \textit{k-means++} được lấy từ kết quả của \acrshort{HDP}.
+
+Tuy nhiên, kết quả của mô hình kết hợp trên khá tệ so với phương pháp chỉ sử dụng mỗi HDP. Nguyên nhân của sự sụt giảm độ hiệu quả có thể là:
+\begin{itemize}
+    \item Kết quả của mô hình \acrshort{HDP} đã khá tốt. Việc nối véc-tơ ngữ nghĩa nếu không phù hợp sẽ chỉ làm giảm sự hiệu quả giai đoạn gom cụm.
+    \item Việc sử dụng Autoencoder giúp làm giảm chiều và giữ lại đặc trưng quan trọng, tuy nhiên ở trường hợp này, các đặc trưng của HDP có thể đã bị mất đi trong lúc huấn luyện Autoencoder.
+\end{itemize}
+
+\section{Phân tích cảm xúc (sentiment analysis)}
+Ở chương này, nhóm tiến hành thử nghiệm các mô hình phân tích cảm xúc trên văn bản để áp dụng vào hệ thống. Một phản hồi của người dùng trên một bài báo điện tử có thể được phân loại thành Tích cực (Positive), Tiêu cực (Negative) hoặc Trung lập (Neutral).
+
+\subsection{Tập dữ liệu}
+Dữ liệu dùng để đánh giá thái độ đối với các bài báo điện tử là các bình luận ở trên chính các bài viết đó. Còn về dữ liệu dùng để huấn luyện cho các mô hình, nhóm nhận thấy tiếng Việt không có nhiều tập dữ liệu mở phục vụ cho tác vụ này. Vì vậy nhóm phải sử dụng dữ liệu đánh giá sản phẩm trên các trang thương mại điện tử~\footnote{\url{https://www.kaggle.com/datasets/linhlpv/vietnamese-sentiment-analyst}}. Tập dữ liệu này gồm hơn 30.000 đánh giá (review) gồm nội dung đánh giá (bằng chữ) và số sao (rating, bằng số). Các đánh giá có số sao từ 4-5 được gán nhãn là Tích cực, 1-2 sao tương ứng với nhãn Tiêu cực và 3 sao tương ứng với nhãn Trung lập (bảng~\ref{table:sentiment-data-sample}).
+
+\begin{table}[ht!]
+    \centering
+    \small
+    \begin{tabular}{|p{0.5\linewidth}|l|l|}
+    \hline
+    \textbf{Nội dung}                                                                            & \textbf{Rating (sao)} & \textbf{Nhãn} \\ \hline
+    Shop phục vụ rất tốt.                                                                        & 5                     & Tích cực            \\ \hline
+    Với giá này thì sản phẩm tạm ổn chưa đc gọi là đẹp lắm. & 3                     & Trung lập            \\ \hline
+    Giao hàng khá chậm.                                                                          & 2                     & Tiêu cực            \\ \hline
+    \end{tabular}
+    \caption{3 sample của tập dữ liệu huấn luyện phân tích cảm xúc là các đánh giá của người dùng trên các trang thương mại điện tử.}
+    \label{table:sentiment-data-sample}
+\end{table}
+
+Với dữ liệu trên, nhóm sử dụng ba phương pháp để thực hiện tác vụ phân tích cảm xúc: (1) Mạng nơ-ron ANN, (2) \acrfull{SVM} và (3) PhoBERT Classification. Dữ liệu được chia thành 70\% cho mục đích huấn luyện, 20\% cho test và 10\% cho validation. Ngoài ra, nhóm còn gán nhãn thêm 100 bình luận trên các trang báo điện tử để đánh giá hiệu năng thực của mô hình khi áp dụng vào dữ liệu hoàn toàn khác với dữ liệu huấn luyện (bảng~\ref{table:train-target-comparison}).
+
+\begin{table}[ht!]
+    \centering
+    \small
+    \begin{tabular}{|p{0.4\linewidth}|p{0.4\linewidth}|l|}
+    \hline
+    \textbf{Dữ liệu huấn luyện (training data)}                                                  & \textbf{Dữ liệu đích (target data)}                                                                                        & \textbf{Nhãn} \\ \hline
+    Shop phục vụ rất tốt.                                                                        & Một tin cực vui cho các đối tượng có bệnh nền nặng, k phù hợp để tiêm vaccine covid. Giờ là có thêm kháng thể đơn dòng rồi & Tích cực      \\ \hline
+    Với giá này thì sản phẩm tạm ổn chưa đc gọi là đẹp lắm. & Xin hỏi các BS tôi tiêm vắc xin covid mũi 3 cách đây 2 tuần thì đến khi nào có thể tiêm tiếp được Evusheld?                & Trung lập     \\ \hline
+    Giao hàng khá chậm.                                                                          & Đọc bài mà cáu hết cả người, nhà có trẻ mà lơ đáng thế, ko hiểu kiểu gì nữa                                                & Tiêu cực      \\ \hline
+    \end{tabular}
+    \caption{So sánh giữa tập dữ liệu huấn luyện và tập dữ liệu đích. Tập dữ liệu huấn luyện thường có nội dung ngắn, chứa nhiều từ khóa cảm xúc. Tập dữ liệu đích thường dài và lan man hơn.}
+    \label{table:train-target-comparison}
+\end{table}
+
+Về công đoạn tiền xử lý dữ liệu, ngoài phân đoạn từ và loại bỏ stop-word như đã đề cập ở chương~\ref{chap:inputdata}, nhóm còn thay thế teencode và các từ viết tắt thành các từ phổ thông (ví dụ như \textit{ko} và \textit{k} đều được thay thế bởi \textit{không}). Việc này giúp giảm nhiễu ở tập dữ liệu huấn luyện do các đánh giá của người dùng thường không được viết theo cách trang trọng như các bài báo.
+
+\subsection{Mạng nơ-ron đơn giản}
+Với mô hình này, nhóm sử dụng \acrshort{tf-idf} để trích xuất đặc trưng trước khi đưa vào mô hình. Độ dài tối đa của véc-tơ đặc trưng là 5000 nếu kho từ vựng (vocabulary) vượt quá 5000. Mạng nơ-ron gồm 4 lớp dense (fully connected layer), xen giữa là các lớp dropout để tránh overfit (Listing~\ref{code:sentiment-neuron-net}) dựa trên mô hình của \textit{linhlpv}~\footnote{\url{https://www.kaggle.com/code/linhlpv/vietnamese-sentiment-analyst-base}}. Mô hình được huấn luyện sử dụng Adam optimization~\cite{kingmaAdamMethodStochastic2017} cho tới khi hội tụ (early stopping) hoặc tối đa là 25 epochs.
+
+\begin{listing}[H]
+    \begin{minted}
+        [
+        frame=lines,
+        framesep=2mm,
+        baselinestretch=1.2,
+        fontsize=\footnotesize,
+        ]
+        {text}
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense (Dense)                (None, 1000)              4456000   
+_________________________________________________________________
+dropout (Dropout)            (None, 1000)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 500)               500500    
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 500)               0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 300)               150300    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 300)               0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 3)                 903       
+=================================================================
+Total params: 5,107,703
+Trainable params: 5,107,703
+Non-trainable params: 0 
+    \end{minted}
+    \caption{Kiến trúc mạng nơ-ron dùng để phân tích cảm xúc.}
+    \label{code:sentiment-neuron-net}
+\end{listing}
+
+\subsection{Support-Vector Machine (SVM)}
+\acrshort{SVM} cũng là một thuật toán phân lớp. Ý tưởng của Kernel SVM là tìm một phép biến đổi sao cho dữ liệu ban đầu là không phân biệt tuyến tính được biến sang không gian mới. Ở không gian mới này, dữ liệu trở nên phân biệt tuyến tính~\footnote{\url{https://machinelearningcoban.com/2017/04/22/kernelsmv}}. Khi đó, ta chỉ cần tìm một (hoặc nhiều các) mặt phẳng để phân chia các điểm dữ liệu.
+
+Nhóm sử dụng kernel RBF (Radial Basic Function) cho SVM. Dữ liệu đầu vào cũng được trích xuất đặc trưng bởi \acrshort{tf-idf}. Ngoài ra, nhóm còn thử nghiệm thêm với đầu vào với đặc trưng được trích xuất bởi \textit{word2vec} (là phương pháp sinh word embedding được huấn luyện bởi mạng nơ-ron), sử dụng mô hình huấn luyện sẵn \textit{word2vecVN}~\footnote{\url{https://github.com/sonvx/word2vecVN}}.
+
+Đối với \textit{word2vec}, véc-tơ thể hiện cho văn bản là trung bình các véc-tơ word embedding cho tất cả các từ trong văn bản.
+
+
+\subsection{PhoBERT Classification}
+PhoBERT là mô hình huấn luyện sẵn có thể được sử dụng vào nhiều mục đích trong xử lý ngôn ngữ tự nhiên. Để sử dụng PhoBERT cho các tác vụ đặc thù, ta có thể thêm các lớp phân loại vào cuối mô hình rồi huấn luyện lại một phần hoặc toàn bộ các tham số.
+
+Để phân loại cảm xúc, nhóm thêm một lớp phân loại vào cuối PhoBERT, sau đó huấn luyện lại toàn bộ mô hình. Tổng cộng số tham số cần huấn luyện của mô hình lúc này là 135,000,579 triệu tham số. Mô hình được huấn luyện qua tổng cộng 5 epochs, mất khoảng 6 giờ với GPU T4 trên nền tảng Google Colab~\footnote{\url{https://colab.research.google.com}}.
+
+\subsection{Kết quả}
+Bảng~\ref{table:sentiment-models-evaluation} thể hiện kết quả từng mô hình được khảo sát, bao gồm các thang đo \textit{Precision}, \textit{Recall} và \textit{F1}. Các giá trị này đều là giá trị trung bình có trọng số (weighted average) của 3 nhãn Tích cực, Tiêu cực và Trung lập.
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{l|rrr|rrr|}
+\cline{2-7}
+                                                      & \multicolumn{3}{c|}{\textbf{Test set}}                                                         & \multicolumn{3}{c|}{\textbf{100 bình luận}}                                                    \\ \cline{2-7} 
+                                                      & \multicolumn{1}{r|}{\textbf{Precision}} & \multicolumn{1}{r|}{\textbf{Recall}} & \textbf{F1}   & \multicolumn{1}{r|}{\textbf{Precision}} & \multicolumn{1}{r|}{\textbf{Recall}} & \textbf{F1}   \\ \hline
+\multicolumn{1}{|l|}{\textbf{Mạng nơ-ron đơn giản}}   & \multicolumn{1}{r|}{0.45}               & \multicolumn{1}{r|}{0.50}            & 0.49          & \multicolumn{1}{r|}{0.31}               & \multicolumn{1}{r|}{0.37}            & 0.34          \\ \hline
+\multicolumn{1}{|l|}{\textbf{SVM-tf-idf}}             & \multicolumn{1}{r|}{0.72}               & \multicolumn{1}{r|}{0.76}            & 0.72          & \multicolumn{1}{r|}{0.42}               & \multicolumn{1}{r|}{0.26}            & 0.20          \\ \hline
+\multicolumn{1}{|l|}{\textbf{SVM-word2vec}}           & \multicolumn{1}{r|}{0.71}               & \multicolumn{1}{r|}{0.74}            & 0.70          & \multicolumn{1}{r|}{0.1}                & \multicolumn{1}{r|}{0.28}            & 0.15          \\ \hline
+\multicolumn{1}{|l|}{\textbf{PhoBERT Classification}} & \multicolumn{1}{r|}{\textbf{0.79}}      & \multicolumn{1}{r|}{\textbf{0.82}}   & \textbf{0.79} & \multicolumn{1}{r|}{\textbf{0.77}}      & \multicolumn{1}{r|}{\textbf{0.65}}   & \textbf{0.65} \\ \hline
+\end{tabular}
+    \caption{Đánh giá mức độ hiệu quả của các mô hình. Tất cả các thang đo đều là trung bình có trọng số (weighted average, tức là có cân nhắc tới tỉ lệ của các nhãn).}
+    \label{table:sentiment-models-evaluation}
+\end{table}
+
+Kết quả cho thấy PhoBERT đạt hiệu năng cao nhất trên tập dữ liệu test (là tập dữ liệu cùng loại với tập dữ liệu huấn luyện). Cả hai phương pháp sử dụng SVM cũng cho ra kết quả khá tốt. Mạng nơ-ron đơn giản chỉ đạt mức trung bình.
+
+Với tập dữ liệu bình luận trên các báo điện tử, là tập dữ liệu dùng để đánh giá khả năng của mô hình trên thực tế, hiệu năng các mô hình đều giảm. Cả hai phương pháp sử dụng SVM đều có tính chính xác giảm đi nhiều nhất và trở thành mô hình có hiệu năng thấp nhất. Kết quả cũng cho thấy PhoBERT hoàn toàn vượt trội so với các mô hình còn lại trong việc thích ứng với tập dữ liệu mới và khác biệt.
+
+\textbf{Nhận xét}:
+\begin{itemize}
+    \item So với các đánh giá ngắn gọn, các bình luận thường dài hơn nên dễ gây nhiễu cho SVM hơn.
+    \item SVM không cân nhắc thứ tự các từ trong câu, nên sẽ không phát hiện được các cụm từ phủ định (ví dụ như \textit{đẹp} (tích cực) và \textit{không đẹp} (tiêu cực)).
+    \item SVM không có khả năng nhấn mạnh các từ cảm xúc như \textit{tuyệt vời}, \textit{xấu}, \textit{chúc mừng} trong khi chúng đóng vai trò rất quan trọng trong câu.
+    \item PhoBERT xem một số từ sẽ có trọng lượng lớn hơn các từ còn lại trong câu nhờ cơ chế \textit{self-attention} (ví dụ như các từ mang nhiều tính cảm xúc) nên nhiễu sẽ không ảnh hưởng nhiều tới hiệu năng của mô hình. Tuy nhiên, ở các câu mang tính mỉa mai (sarcasm) hay các câu không có nhiều từ nặng tính cảm xúc, PhoBERT vẫn gặp khó khăn trong việc phân loại chúng một cách chính xác.
+\end{itemize}
+
+
+\section{Triển khai và đánh giá hệ thống}
+Với kết quả thực nghiệm thu được, nhóm chọn \acrshort{HDP} làm mô hình phát hiện xu hướng và PhoBERT Classification làm mô hình phân tích cảm xúc.
+
+Qua quá trình quan sát hệ thống, đi kèm là việc tinh chỉnh các thuật toán đã đề cập ở trên để hệ thống hoạt động một cách hiệu quả nhất, nhóm nhận thấy hệ thống phát hiện xu hướng có các đặc điểm sau:
+\begin{itemize}
+    \item Ở từng danh mục với số bài viết rơi vào khoảng 300, các chủ đề hệ thống phát hiện được khá hợp lý. Chỉ có một vài trường hợp nhiễu hoặc gán chủ đề sai như đề cập ở chương~\ref{hdp_experiments} đều đã được xử lý bởi thuật toán~\ref{alg:article-score} để đẩy xuống cuối cùng.
+    \item Tuy nhiên ở danh mục \textit{Mới nhất} (bao gồm tất cả các bài viết của các danh mục còn lại) với số bài viết rơi vào khoảng 1500 bài, các trường hợp nhiễu xảy ra thường xuyên hơn. Hơn nữa, định nghĩa \textit{chủ đề} của \acrshort{HDP} cũng thay đổi theo số lượng bài viết. Ví dụ như ở danh mục \textit{Thời sự}, \acrshort{HDP} có khả năng tách hai chủ đề \textit{``Trộm nắp chắn rác trên cầu Thủ Thiêm 2''} và \textit{``Bốc đầu trên cầu Thủ Thiêm 2 để câu like''}, tuy nhiên ở danh mục \textit{Mới nhất}, hai chủ đề này lại được gộp thành một. Tùy vào yêu cầu và mục đích riêng của từng hệ thống mà hành vi này của \acrshort{HDP} có thể trở thành đặc tính tốt hoặc xấu.
+\end{itemize}
+
+\section{Tổng kết chương~\ref{chap:experiments}}
+Chương~\ref{chap:experiments} đã trình bày các thực nghiệm và kết quả của thực nghiệm sử dụng các kiến thức được đề cập ở chương~\ref{chap:knowledgebase} để phát hiện chủ đề trên tập văn bản và phân tích cảm xúc của một văn bản.
+
+Kết quả cho thấy mô hình \acrshort{LDA} chỉ phù hợp khi ta chọn được tham số có kết quả tốt nhất. Để áp dụng mô hình chủ đề cho luồng dữ liệu trực tuyến (data stream), ta cần sử dụng \acrshort{HDP} với khả năng tự điều chỉnh tham số, đáp ứng với tập dữ liệu bất kỳ. Tuy nhiên điều này không có nghĩa \acrshort{LDA} sẽ bị thay thế bởi \acrshort{HDP}. Trong một số tác vụ nhất định, chẳng hạn như phân tích xu hướng trong lịch sử, ta vẫn có thể sử dụng \acrshort{LDA} để tùy chỉnh mức độ bao hàm của chủ đề (i.e. $k$ càng nhỏ thì chủ đề càng rộng, mức độ bao hàm càng cao và ngược lại). Khi kết hợp mô hình chủ đề với các phương pháp phân tích ngữ nghĩa, không phải lúc nào cũng cho ra kết quả tốt hơn mà thậm chí còn làm giảm đi hiệu năng của mô hình cũ. Vì thời gian có giới hạn nên nghiên cứu này không thể thực hiện nhiều thử nghiệm hơn cho nhiều cách kết hợp với nhiều tham số khác nhau, nhưng đây chắc chắn là một chủ đề thú vị để tiếp tục nghiên cứu.
+
+Ngoài ra, các thực nghiệm cũng mới chỉ thực hiện trên các phương pháp \textit{feature-pivot} mà chưa cân nhắc tới các phương pháp \textit{document-pivot}. Phương pháp \textit{document-pivot} tuy đơn giản nhưng lại có tốc độ, phù hợp với lượng dữ liệu khổng lồ và liên tục. Quan trọng hơn, ta vẫn có thể kết hợp hai phương pháp này lại để đạt được kết quả tốt nhất.
+
+Về phân tích cảm xúc/thái độ, tuy bị giới hạn bởi tài nguyên và dữ liệu cho tiếng Việt nhưng bằng cách áp dụng các mô hình state-of-the-art, ta vẫn có thể đạt được kết quả chấp nhận được. Mặt khác, việc phân tích cảm xúc dựa trên bình luận vẫn còn mang tính địa phương (local), tức là chưa hề xét tới ngữ cảnh (context) ở đây là bài báo. Khi lấy đi ngữ cảnh, một số bình luận có thể mang tính tiêu cực nhưng khi xét đến ngữ cảnh bài viết, các bình luận đó hóa ra có thể là tích cực. Vấn đề này cũng mở ra các cơ hội cho nghiên cứu, đặc biệt là cho ngôn ngữ tiếng Việt.

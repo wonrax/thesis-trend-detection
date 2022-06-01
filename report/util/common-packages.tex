@@ -1,4 +1,4 @@
-\documentclass[12pt, a4paper]{report}
+\documentclass[11pt, a4paper, twoside]{report}
 \usepackage[
 	a4paper,
 	% total={5.5in,9in},
@@ -12,8 +12,10 @@
 % package for including graphics with figure-environment
 \usepackage{graphicx}
 
+\usepackage{float} % figure positioning
+
 % Handle section anchors and links
-\usepackage[unicode]{hyperref}  
+\usepackage[unicode]{hyperref}
 
 % Package for code listing
 \usepackage{minted}
@@ -27,7 +29,7 @@
 			citecolor=black,
 			filecolor=black,
 			linkcolor=black,
-			urlcolor=black}
+			urlcolor=blue}
 
 % package for bibliography
 \usepackage[numbers,sort&compress]{natbib}

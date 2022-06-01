@@ -2,17 +2,17 @@
 
 % Remove hyphenation warning.
 \usepackage[vietnamese=nohyphenation]{hyphsubst}
+\usepackage[vietnamese]{babel}
 
 \ifPDFTeX
 	\usepackage[utf8]{inputenc}
-	\usepackage[vietnamese]{babel}
 \else
 	% Other engines (e.g. XeTeX or LuaTeX)
 
 	\usepackage[vietnamese]{babel}
 	\usepackage{fontspec}
 	\usepackage{unicode-math}
-	\setmonofont{Inconsolata}
+	\setmonofont{Cascadia Code}
 	
 % 	Requires the following font files
 	\setmainfont{texgyrepagella-regular}[

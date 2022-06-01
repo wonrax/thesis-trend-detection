@@ -1,0 +1,36 @@
+\chapter{Tổng kết}
+
+Chương này sẽ tổng kết lại tất cả các nội dung đã trình bày, ưu điểm và nhược điểm của luận văn. Qua đó đề xuất cách khắc phục cũng như hướng nghiên cứu mới cho đề tài.
+
+\section{Kết quả của luận văn}
+
+Sau quá trình thực hiện ĐCLV và LVTN, nhóm đã đạt được các kết quả như sau:
+\begin{itemize}
+    \item[-] Xây dựng công cụ thu thập dữ liệu các bài viết và bình luận từ các trang báo điện tử có mức độ phổ biến tại Việt Nam như VnExpress, Tuổi Trẻ, Dân Trí,...
+    \item[-] Tìm hiểu được các phương thức phát hiện xu hướng, nghiên cứu, thử nghiệm và đánh giá cách thức phát hiện xu hướng sử dụng các mô hình chủ đề.
+    \item[-] Nghiên cứu, thử nghiệm và đánh giá các phương pháp phân tích cảm xúc trên văn bản.
+    \item[-] Xây dựng và triển khai hệ thống phát hiện chủ đề và phân tích xu hướng với dữ liệu trực tuyến, có khả năng tự đáp ứng với luồng dữ liệu mới. Các xu hướng cũng được biểu diễn trực quan cho người dùng.
+\end{itemize}
+
+\noindent Bên cạnh các kết quả đã đạt được, luận văn vẫn còn tồn tại một số hạn chế sau:
+\begin{itemize}
+    \item[-] Một số chủ đề do hệ thống phát hiện được vẫn còn tồn tại nhiễu do hạn chế của mô hình chủ đề khi gán sai các từ không liên quan với nhau.
+    \item[-] Luận văn chưa xét đến sự hình thành và phát triển chủ đề theo thời gian. Những chủ đề nào có tốc độ phát triển nhanh thì nên có khả năng là xu hướng cao hơn các chủ đề còn lại.
+    \item[-] Luận văn chỉ mới dừng lại ở phân tích thái độ của riêng bình luận mà chưa xét tới ngữ cảnh bài viết.
+\end{itemize}
+
+\noindent\textbf{Ý nghĩa, đóng góp của luận văn:}
+\begin{itemize}
+    \item[-] Luận văn đã tìm hiểu, thực nghiệm các nghiên cứu về xử lý ngôn ngữ tự nhiên cho tiếng Việt nói chung và cho phát hiện xu hướng nói riêng.
+    \item[-] Luận văn đóng góp thêm một mô hình huấn luyện sẵn dùng để phân tích cảm xúc trên văn bản tiếng Việt dựa trên PhoBERT được upload lên Huggingface~\footnote{\url{https://huggingface.co/wonrax/phobert-base-vietnamese-sentiment}}.
+    \item[-] Đóng góp phiên bản chỉnh sửa của YAKE cho phù hợp với tác vụ xử lý ngôn ngữ tự nhiên tiếng Việt~\footnote{\url{https://github.com/wonrax/yake-vietnamese}}.
+\end{itemize}
+
+\section{Đề xuất hướng nghiên cứu}
+Dựa trên các hạn chế của luận văn, nhóm đề xuất các hướng nghiên cứu tiếp theo như sau:
+\begin{itemize}
+    \item[-] Xu hướng thường gắn liền với các sự kiện, các nhân vật hay địa điểm, nên ta cần một cơ chế phát hiện chủ đề nào đó ưu tiên các tên riêng hơn các từ thông thường. Chẳng hạn như ta không nên gom \textit{Đua xe trái phép trên đường Phạm Văn Đồng} và \textit{Đường đua xe F1 ở Hà Nội} thành cùng một chủ đề.
+    \item[-] Giảm thiểu mặt hạn chế của mô hình chủ đề bằng cách kết hợp với các phương pháp khác hoặc thực hiện hậu xử lý (post-processing) để loại bỏ nhiễu. Một cách kết hợp có thể là: Sử dụng phương pháp \textit{document-pivot} (được đề cập ở chương~\ref{chap:document-pivot}) để gom cụm văn bản trên sự tương đồng về từ, sau đó với mỗi cụm, sử dụng mô hình chủ đề để phát hiện ra các chủ đề sâu hơn về nghĩa.
+    \item[-] Cân nhắc tới sự phát triển theo thời gian của một chủ đề để dự đoán khả năng trở thành xu hướng của chủ đề đó.
+    \item[-] Tìm hiểu các nghiên cứu phân tích cảm xúc có xét đến ngữ cảnh và áp dụng cho tiếng Việt.
+\end{itemize}

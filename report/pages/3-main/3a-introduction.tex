@@ -2,21 +2,35 @@
 \label{sec:introduction}
 
 \section{Đặt vấn đề}
-Với sự bùng nổ của dữ liệu điện tử, đặc biệt là dữ liệu dạng văn bản trong thời đại internet, chúng đem lại nhiều cơ hội và thách thức cho việc nghiên cứu và phân tích dữ liệu. Liệu con người có bị chìm trong lượng thông tin khổng lồ như vậy không? Liệu chúng ta có cách nào đó sử dụng sức mạnh tính toán của máy tính, tự động hoá công việc phân tích các dữ liệu để đưa ra các thông tin cần thiết và hữu ích? Bên cạnh đó, sự phát triển của mạng xã hội trong thập kỷ 21 đã dần hình thành nên các hành vi tâm lý của người dùng. Đặc biệt trong số đó là hội chứng sợ bỏ lỡ (fear of missing out, hay FOMO), là cảm giác bứt rứt hoặc ám ảnh rằng bản thân đang bỏ lỡ những việc mà những người cùng trang lứa có thể làm được hoặc làm tốt hơn~\cite{jwtintelligenceFearMissingOut2015}. Chính vì các hành vi tâm lý này, các mạng xã hội, cụ thể là các nhà khoa học dữ liệu đã tận dụng dữ liệu để giúp người dùng có thể tìm kiếm thông tin một cách nhanh chóng và hiệu quả.  Đơn cử là mạng xã hội Twitter với tính năng phát hiện Xu hướng (Trending now), hay Đang xảy ra (What's Happening) giúp họ trở thành mạng xã hội phổ biến để cập nhật tin tức từ chính trị, xã hội đến đời sống cá nhân của những người nổi tiếng.
+Với sự bùng nổ của dữ liệu điện tử, đặc biệt là dữ liệu dạng văn bản trong thời đại Internet, chúng đem lại nhiều cơ hội và thách thức cho việc nghiên cứu và phân tích dữ liệu. Liệu con người có bị chìm trong lượng thông tin khổng lồ như vậy không? Liệu chúng ta có cách nào đó sử dụng sức mạnh tính toán của máy tính, tự động hoá công việc phân tích các dữ liệu để đưa ra các thông tin cần thiết và hữu ích? Bên cạnh đó, sự phát triển của mạng xã hội trong thập kỷ 21 đã dần hình thành nên các hành vi tâm lý của người dùng. Đặc biệt trong số đó là hội chứng sợ bỏ lỡ (fear of missing out, hay FOMO), là cảm giác bứt rứt hoặc ám ảnh rằng bản thân đang bỏ lỡ những việc mà những người khác có thể làm được hoặc làm tốt hơn~\cite{jwtintelligenceFearMissingOut2015}. Chính vì các hành vi tâm lý này, các mạng xã hội, cụ thể là các nhà khoa học dữ liệu đã tận dụng dữ liệu để giúp người dùng có thể tìm kiếm thông tin một cách nhanh chóng và hiệu quả. Đơn cử là mạng xã hội Twitter với tính năng phát hiện Xu hướng (Trending now), hay Đang xảy ra (What's Happening) giúp họ trở thành mạng xã hội phổ biến để cập nhật tin tức từ chính trị, xã hội đến đời sống cá nhân của những người nổi tiếng.
 
-Nhờ vậy, các phương pháp phát hiện chủ đề/xu hướng đều có công dụng to lớn cho các nhà báo, các kênh tin tức hay các nhà nghiên cứu mạng xã hội~\cite{madaniRealtimeTrendingTopics2015}. Chúng không những giúp họ tìm kiếm các thông tin nổi bật và được quan tâm trong thời gian thực, mà còn hỗ trợ phân tích các hành vi, quá trình phát triển của một chủ đề giữa các cộng đồng khác nhau.
+Nhờ vậy, các phương pháp phát hiện chủ đề/xu hướng đều có công dụng to lớn cho các nhà báo, các kênh tin tức hay các nhà nghiên cứu mạng xã hội~\cite{madaniRealtimeTrendingTopics2015}. Chúng không những giúp họ tìm kiếm các thông tin nổi bật và được quan tâm trong thời gian thực, mà còn hỗ trợ phân tích các hành vi, quá trình phát triển của một chủ đề tới các cộng đồng khác nhau.
 
-Để phát hiện sự thay đổi của các đề tài đang nổi bật trong đại chúng, về cơ bản ta cần phát hiện được chủ đề của các văn bản và tìm cách biến chúng thành các thể hiện con người có thể hiểu được. Tiếp theo ta cần phân tích mức độ phổ biến của các chủ đề, hay phạm vi mà chủ đề đó đang được phát triển để quyết định xem các chủ đề đó có đáng được quan tâm hay không.
-
-Trong thời gian gần đây, vấn đề nổi trội nhất nói chung và cho lĩnh vực y tế nói riêng là đại dịch COVID-19. Nếu ta phân tích và phát hiện được các vấn đề nóng, chẳng hạn như các biến thể, vắc-xin hay các cách phòng chống bệnh dịch, điều này sẽ có ứng dụng lớn trong việc ý thức cho người dân các biện pháp bảo vệ bản thân, gia đình và xã hội trước các vấn đề về y tế.
+Để phát hiện sự thay đổi của các đề tài đang nổi bật trong đại chúng, về cơ bản ta cần phát hiện được chủ đề của các văn bản và tìm cách biến chúng thành các thể hiện con người có thể diễn giải nhanh được. Tiếp theo ta cần phân tích mức độ phổ biến của các chủ đề, hay phạm vi mà chủ đề đó đang được phát triển để quyết định xem các chủ đề đó có đáng được quan tâm hay không.
 
 Cho đến hiện tại, đã xuất hiện nhiều mô hình phát hiện chủ đề và phân tích xu hướng dùng để phát hiện các đề tài đang nổi bật. Tuy nhiên, tuỳ vào nhiều yếu tố như ngôn ngữ hay văn hoá, cùng với sự phong phú của dữ liệu, ta cần vận dụng hợp lý các kỹ thuật và sử dụng công nghệ phù hợp để đảm bảo cho sự chính xác của nghiên cứu.
 
-\section{Mục tiêu}
-Mục tiêu của báo cáo này là tìm hiểu các cách thức phát hiện xu hướng, các mô hình phát hiện chủ đề, các phương pháp phân tích ngữ nghĩa trong văn bản, các kỹ thuật gom cụm và giảm chiều dữ liệu. Sau đó thu thập dữ liệu và tiến hành thực nghiệm bằng các kiến thức đã nghiên cứu để phân loại chủ đề.
+\section{Lý do chọn đề tài}
+Nghiên cứu và phát hiện xu hướng là một đề tài mới và chưa được nghiên cứu nhiều đối với ngôn ngữ tiếng Việt. Việc nghiên cứu xu hướng đem lại lợi ích cho nhiều lĩnh vực khác nhau, nổi bật là ứng dụng trong việc phân tích yêu cầu của khách hàng, nhu cầu cập nhật tin tức hằng ngày của người dùng, nhu cầu tìm kiếm thông tin, các vấn đề đang nóng hổi để đầu tư tài chính v.v.. Nhóm không chỉ muốn dừng lại ở mức lý thuyết (ví dụ như \cite{dinhImprovingSocialTrend2021}) mà dựa trên cơ sở đó để triển khai hệ thống, xây dựng giao diện để biểu diễn trực quan các dữ liệu đã phân tích được cho người dùng trên thời gian thực.
 
-Các mục tiêu trên sẽ được thực hiện bằng các phương pháp:
+Qua việc áp dụng các nghiên cứu, các kĩ thuật của thế giới vào văn hóa và ngôn ngữ tiếng Việt, nhóm mong muốn có thể khuyến khích và tạo nền tảng cho các nghiên cứu khác trong tương lai và phát triển các tác vụ trong xử lý ngôn ngữ tự nhiên tiếng Việt.
+
+\section{Mục tiêu và phạm vi của đề tài}
 \begin{itemize}
-	\item \textbf{Nghiên cứu lý thuyết}: Tổng hợp các kiến thức liên quan từ các bài báo khoa học, luận văn, các nghiên cứu và bài viết từ Internet.
-	\item \textbf{Nghiên cứu thực nghiệm}: Thu thập, xử lý dữ liệu, thực nghiệm các mô hình đã được nghiên cứu trên tập dữ liệu đã lấy. Đánh giá kết quả đạt được và rút ra các ưu điểm, nhược điểm, đồng thời đề xuất hướng nghiên cứu tiếp theo cho đề tài.
+    \item Xây dựng công cụ thu thập dữ liệu từ các trang báo điện tử phổ biến như Tuổi Trẻ, VnExpress, Dân Trí, Báo Mới v.v. và từ nhiều nguồn báo khác.
+    \item Tìm hiểu, nghiên cứu các phương pháp phát hiện chủ đề.
+    \item Nghiên cứu các mô hình chủ đề, các kỹ thuật phân tích ngữ nghĩa trong xử lý ngôn ngữ tự nhiên.
+    \item Phân tích xu hướng từ các chủ đề phát hiện được.
+    \item Tìm hiểu, nghiên cứu các phương pháp phân tích cảm xúc/thái độ của văn bản.
+    \item Xây dựng hệ thống phát hiện chủ đề và phân tích xu hướng với dữ liệu trực tuyến.
+    \item Biểu diễn các chủ đề một cách trực quan cho người dùng.
+\end{itemize}
+
+\section{Cấu trúc đề tài}
+\begin{itemize}
+    \item \textbf{Chương 1: Giới thiệu về đề tài} - Đặt vấn đề, chỉ ra lý do cho sự cần thiết của các phương pháp phát hiện chủ đề và phân tích xu hướng. Qua đó nêu mục tiêu và phạm vi của đề tài.
+    \item \textbf{Chương 2: Kiến thức nền tảng} - Trình bày các kiến thức quan trọng mà nhóm đã tìm hiểu được để trực tiếp phục vụ cho việc hiện thực các mục tiêu đề ra.
+    \item \textbf{Chương 3: Hệ thống phát hiện xu hướng} - Đề xuất kiến trúc của hệ thống phát hiện xu hướng. Đây là nền tảng cho việc đánh giá mức độ hiệu quả của các mô hình đã nghiên cứu.
+    \item \textbf{Chương 4: Thực nghiệm và đánh giá} - Đánh giá hệ thống bằng cách thay thế và sử dụng nhiều mô hình khác nhau. Chỉ ra các ưu điểm, nhược điểm của từng mô hình để chọn ra mô hình tốt nhất.
+    \item \textbf{Chương 5: Tổng kết} - Tổng kết các mục tiêu đã đạt được, các ưu điểm và hạn chế của luận văn. Qua đó đề xuất hướng nghiên cứu tiếp theo cho luận văn.
 \end{itemize}

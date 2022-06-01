@@ -1,0 +1,274 @@
+\chapter{Hệ thống phát hiện xu hướng}
+\label{chap:thesystem}
+Chương này sẽ đề cập tới hệ thống phát hiện xu hướng được nhóm đề xuất dựa trên các kiến thức nền tảng đã được trình bày.
+
+\section{Tập dữ liệu}
+\subsection{Dữ liệu đầu vào}
+Xác định dữ liệu đầu vào là một công đoạn quan trọng trong việc lựa chọn và đánh giá khả năng của các mô hình trong hệ thống. Để phát hiện xu hướng, nội dung từ người dùng ở trên các trang mạng xã hội là phù hợp nhất vì có chúng số lượng khổng lồ và trải dài xuyên suốt, liên tục. Facebook~\footnote{\url{https://www.facebook.com}} hiện tại là mạng xã hội phổ biến nhất ở Việt Nam~\footnote{\url{https://www.statista.com/statistics/941843/vietnam-leading-social-media-platforms}}, tuy nhiên để truy xuất dữ liệu người dùng, đặc biệt là dữ liệu thời gian thực (data stream) là khá khó khăn do chính sách chia sẻ dữ liệu nghiêm ngặt của nền tảng này. Twitter có \acrshort{API} (\acrlong{API}) hỗ trợ lập trình viên truy xuất dữ liệu, nhưng Twitter chỉ phổ biến ở một nhóm nhỏ người dùng ở Việt Nam, cho nên việc thu thập và nghiên cứu xu hướng trên dữ liệu Twitter tiếng Việt là không hợp lý.
+
+Nhóm quyết định chọn thu thập dữ liệu từ các trang báo điện tử vì các lý do sau:
+\begin{itemize}
+    \item Đa số các trang báo điện tử là các website tĩnh (static website) để phục vụ mục đích SEO (Search Engine Optimization). Vì vậy nên để lấy thông tin (chẳng hạn như lấy nội dung, tiêu đề của một bài báo điện tử) từ website thì ta chỉ cần gửi request tới URL và trích xuất nội dung từ response. Việc này giúp ta tránh phải sử dụng các công cụ thực thi Javascript và giả lập trình duyệt thường rất nặng và chậm.
+    \item Các bài báo đa số đều sử dụng ngôn ngữ trang trọng, không có lỗi chính tả do được kiểm tra kỹ càng trước khi xuất bản, không sử dụng teencode v.v.. Cho nên việc tiền xử lý dữ liệu được giảm nhẹ đáng kể.
+    \item Thường các bài báo vừa được đăng tải sẽ có nhiều lượt tiếp cận hơn và có khả năng trở thành xu hướng cao hơn một bài đăng ngẫu nhiên từ một người lạ mặt trên Facebook. Vì vậy nên các xu hướng do mô hình phát hiện được sẽ chính xác hơn. Bên cạnh đó các bài viết này cũng có thể có các bình luận thể hiện suy nghĩ của người đọc, giúp phân tích được xu hướngthái độ của cộng đồng về các bài viết.
+    \item Đa số các trang báo điện tử cho phép tải/cào (crawl/scrape) dữ liệu (Listing ~\ref{code:robotstxt}). 
+\end{itemize}
+
+\begin{listing}[H]
+    \begin{minted}
+        [
+        frame=lines,
+        framesep=2mm,
+        baselinestretch=1.2,
+        fontsize=\footnotesize,
+        linenos
+        ]{text}
+    User-agent: *
+    Allow: /
+    \end{minted}
+    \caption{File robots.txt của website báo điện tử Tuổi Trẻ cho phép robot truy cập vào dữ liệu trên toàn bộ trang web.}
+    \label{code:robotstxt}
+\end{listing}
+
+\subsection{Tiền xử lý dữ liệu}
+\label{chap:inputdata}
+Phân đoạn từ là một giai đoạn quan trọng đối với hầu hết các tác vụ xử lý ngôn ngữ tự nhiên trong tiếng Việt. Từ phức trong tiếng Việt có thể có nghĩa khác hoàn toàn so với các từ đơn kết hợp tạo nên nó, ví dụ như \textit{đào} và \textit{tạo} trong \textit{đào tạo} đều có nghĩa khác nhau khi đứng riêng. Dữ liệu vào sẽ được xử lý với VnCoreNLP để phân đoạn từ và loại bỏ stop-word, từ không mang nhiều tính phân loại. Giai đoạn xử lý stop-word và lựa chọn từ loại là rất quan trọng đối với các mô hình chủ đề như LDA và HDP vì chúng trực tiếp ảnh hưởng đến chất lượng của kết quả đầu ra. Riêng các mô hình ngữ nghĩa như PhoBERT, vì mô hình có cơ chế attention nên đã có thể tự nhận biết mức độ quan trọng của các từ trong câu, ta có thể giữ nguyên toàn bộ câu mà không cần loại bỏ stop-word (Listing~\ref{code:vncorenlp}). Việc lựa chọn hay loại bỏ các POS tag nhất định (ví dụ như danh từ, số, tên riêng, v.v.) cũng là một tham số ảnh hưởng trực tiếp tới kết quả của mô hình.
+\begin{listing}[H]
+    \begin{minted}
+        [
+        frame=lines,
+        framesep=2mm,
+        baselinestretch=1.2,
+        fontsize=\footnotesize,
+        linenos,
+        breaklines
+        ]
+        {python}
+    raw_text = "Câu chuyện của chị Trần Nga, một bệnh nhân, hôm qua 12-10 đi khám"
+    
+    # Danh sách từ hoặc cụm từ được phân đoạn đã loại bỏ stop-word, chỉ giữ lại các từ loại quan trọng như động từ, danh từ, tính từ, tên riêng v.v..
+    token_list = ['câu_chuyện', 'Trần_Nga', 'bệnh_nhân', 'hôm_qua', 'đi', 'khám']
+    
+    # Cũng được hình thành từ giai đoạn phân đoạn từ, nhưng được giữ lại stop-word và các từ không có trong bộ từ vựng VnCoreNLP. Dùng để làm đầu vào cho PhoBERT.
+    sentence = "Câu_chuyện của chị Trần_Nga , một bệnh_nhân , hôm_qua 12-10 đi khám"
+    \end{minted}
+    \caption{Mẫu kết quả xử lý phân đoạn từ và loại bỏ stop-word sử dụng VnCoreNLP.}
+    \label{code:vncorenlp}
+\end{listing}
+
+\section{Các thành phần của hệ thống}
+
+Với các kiến thức nền tảng đã trình bày ở chương~\ref{chap:knowledgebase}, nhóm đề xuất hệ thống phát hiện xu hướng có kiến trúc như hình~\ref{fig:system-overview}.
+
+\image[0.8]{img/system/system-overview.pdf}{Minh hoạ tổng quan kiến trúc hệ thống phát hiện chủ đề.}{fig:system-overview}
+
+Mục tiêu của hệ thống là phát hiện các chủ đề nổi bật ở từng danh mục theo từng khoảng thời gian và hiển thị trực quan cho người dùng. Vì vậy, hệ thống này phải có khả năng đáp ứng trên hầu hết các tập dữ liệu thuộc các danh mục khác nhau và có nhiều kích thước khác nhau. Khi đó, hệ thống sẽ không cần tới sự can thiệp của con người để điều chỉnh các tham số trong quá trình vận hành. Bên cạnh đó, với mỗi bài viết, hệ thống thực hiện phân tích cảm xúc của các bình luận để thể hiện thái độ của người dùng đối với chủ đề.
+
+\subsection{Khối phát hiện xu hướng}
+Khối phát hiện xu hướng (hình~\ref{fig:trend-detection-module}) có các nhiệm vụ sau:
+
+\begin{sidewaysfigure}
+    \includegraphics[width=0.9\textwidth]{img/system/trend-detection-detail.pdf}
+    \caption{Minh họa chi tiết khối phát hiện xu hướng.}
+    \label{fig:trend-detection-module}
+\end{sidewaysfigure}
+
+\begin{enumerate}
+    \item Cào dữ liệu mới nhất, trích xuất nội dung từ các bài viết, bao gồm: tiêu đề bài viết, đoạn trích (tóm tắt) bài viết, nội dung bài viết, số lượt thích (nếu có), ngày xuất bản và các bình luận ở mỗi bài viết. Mỗi bình luận bao gồm: nội dung bình luận, số lượt thích (nếu có). Mô-đun cào dữ liệu có nhiệm vụ cào các bài viết ở từng danh mục (ví dụ như \textit{Sức khỏe}, \textit{Thể thao}, v.v.) từ nhiều tờ báo điện tử khác nhau và lưu trữ vào database (MongoDB).
+    \item Sau khi cào dữ liệu, truy vấn MongoDB để lấy ra các bài viết trong vòng 36 giờ gần đây (hay nói cách khác, \textit{sliding time window} là 36 giờ). Thực hiện các tác vụ tiền xử lý trên đoạn trích và nội dung bài viết.
+    \item Sử dụng đoạn trích của các bài viết để làm đầu vào cho mô hình phát hiện chủ đề, do đoạn trích đã chứa đủ thông tin cần thiết cho một bài viết và giúp cải thiện đáng kể thời gian mô hình huấn luyện. Sử dụng véc-tơ phân phối chủ đề của từng bài viết để \textit{k-means++} gom cụm thành các chủ đề.
+    \item Khi đã có được các chủ đề và các bài viết tương ứng với chủ đề, lọc các chủ đề có số lượng bài viết ít hơn $round(\log_{3}n)$ với $round()$ là hàm làm tròn tới số nguyên gần nhất và $n$ là tổng số bài viết của tất cả các cụm. Các chủ đề được lọc là các chủ đề có số lượng bài viết không đáng kể và không cần phải tốn chi phí để phân tích. Tiến hành phân tích từng chủ đề còn lại với các bước sau:
+    \begin{enumerate}
+        \item Phân tích thái độ/cảm xúc của tất cả bình luận thuộc về các bài viết của chủ đề. Một bình luận có thể thuộc về một trong 4 nhãn: Tích cực, Tiêu cực, Trung lập hoặc Không chắc (là trường hợp mô hình không tự tin với dự đoán).
+        \item Tính tỉ lệ thái độ của các bình luận trong một bài viết kết hợp với trọng số là số lượt thích của mỗi bình luận (ví dụ: bài viết 1: 56\% Tích cực, 23\% Tiêu cực, 12\% Trung lập và 9\% Không chắc).
+        \item Với mỗi bài viết, trích xuất 10 từ khóa quan trọng nhất trên nội dung chính sử dụng YAKE~\cite{camposYAKEKeywordExtraction2020}.
+        \item Đếm tổng số các từ khóa, chọn ra 10 từ khóa phổ biến nhất làm đại diện cho chủ đề đang xét.
+        \item Tính điểm cho mỗi bài viết sử dụng thuật toán~\ref{alg:article-score} do nhóm đề xuất. Sắp xếp thứ tự cho các bài viết trong chủ đề sử dụng điểm số đã tính được. Thuật toán này cân nhắc sự liên quan của bài viết đối với chủ đề (mục đích là để đẩy các bài viết nhiễu do gom cụm sai xuống dưới cùng), kết hợp với thời gian (bài viết mới sẽ được ưu tiên hơn) và số lượt tương tác của người dùng.
+    \end{enumerate}
+    \item Tính điểm cho mỗi chủ đề sử dụng thuật toán~\ref{alg:topic-score} do nhóm đề xuất. Sử dụng các điểm số này để sắp xếp thứ tự cho các chủ đề. Thuật toán này cân nhắc cả số lượng bài viết lẫn thời gian các bài viết được đăng tải để xếp thứ hạng cho các chủ đề. Chủ đề có thứ hạng càng cao thì càng nổi bật (xu hướng).
+    \item Lưu các chủ đề đã được phân tích vào MongoDB.
+    \item Thực thi từ bước 2-6 cho tất cả các danh mục.
+\end{enumerate}
+
+\begin{algorithm}[ht!]
+    \caption{Thuật toán tính điểm cho bài viết trong một chủ đề (dùng để sắp xếp thứ tự của các bài viết trong chủ đề)}\label{alg:article-score}
+    \begin{algorithmic}[1]
+\Require article\_keywords: Các từ khóa của bài viết
+\Require topic\_keywords: 10 từ khóa phổ biến nhất đại diện cho chủ đề mà bài viết thuộc về
+\Require likes: số lượt thích của bài viết
+\Require comments: số bình luận của bài viết
+\Require relative\_hours: số giờ kể từ thời điểm bài viết được đăng cho tới thời điểm hiện tại
+\Ensure score: điểm số của bài viết
+\State score = 0
+\For{$k \in$ article\_keywords}
+    \If{$k \in$ topic\_keywords}
+        score = score + 10
+    \EndIf
+\EndFor
+\State score = score * $\sqrt{likes + 2 \cdot comments + 1}$
+\State score = score + $2 \div \log_{e}(0.01 \cdot relative\_hours + 1.05)$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[ht!]
+    \caption{Thuật toán tính điểm cho một chủ để (dùng để sắp xếp thứ tự của các chủ đề)}\label{alg:topic-score}
+    \begin{algorithmic}[1]
+\Require num\_articles: số bài viết thuộc chủ đề
+\Require relative\_hours: số giờ kể từ thời điểm các bài viết được đăng (lấy trung bình) cho tới thời điểm hiện tại.
+\Ensure score: điểm số của chủ đề
+\State score = 0
+\State score = score + $\sqrt{num\_articles}$
+\State time\_score = $2 \div \log_{e}(0.01 \cdot relative\_hours + 1.05)$
+\State score = score + $\sqrt{num\_articles} \cdot time\_score$
+    \end{algorithmic}
+\end{algorithm}
+
+Công thức $2 \div \log_{e}(0.01 \cdot relative\_hours + 1.05)$ là hàm tính điểm theo thời gian được thể hiện ở hình~\ref{fig:time-ranking-function}. Trục $x$ thể hiện cho $relative\_hours$ (là số giờ kể từ thời điểm bài viết (hoặc chủ đề) được đăng), trục $y$ thể hiện cho số điểm (score) tương ứng với $x$. Với $\alpha=0.1$, công thức ưu tiên cho điểm các bài viết được đăng tải trong 5 giờ gần đây. Thay đổi giá trị $\alpha$ để thay đổi độ \textit{trơn} của đồ thị. Qua thử nghiệm, nhóm chọn $\alpha=0.01$. Việc sử dụng căn bậc hai ở $\sqrt{num\_articles}$ để ta vẫn có thể cân nhắc số lượng bài viết nhưng giảm độ ảnh hưởng của yếu tố này khi nó tăng nhanh. Tương tự cho công thức $\sqrt{likes + 2 \cdot comments + 1}$, ta tăng mức độ ảnh hưởng của số lượt bình luận và cộng 1 để tránh trường hợp cả $likes$ và $comments$ đều bằng $0$. Công thức $\sqrt{num\_articles} \cdot time\_score$ giúp cân bằng cả thời gian lẫn số lượng bài viết, tức là nếu chủ đề mới nhưng ít bài viết thì vẫn không thể là xu hướng, hoặc số chủ đề lượng bài viết nhiều nhưng đã rất cũ thì cũng không nên là xu hướng.
+
+\image[0.75]{img/time-function.pdf}{Minh họa công thức $2 \div \log_{e}(0.01 \cdot relative\_hours + 1.05)$}{fig:time-ranking-function}
+
+Khối phát hiện xu hướng sẽ được thực thi định kỳ và liên tục. Cụ thể, cứ sau mỗi 2 giờ, khối này sẽ thực thi từ bước 1-7, ngoại trừ khung giờ 20h-6h vì thời điểm này ít có bài viết mới.
+
+\subsection{MongoDB}
+MongoDB là cơ sở dữ liệu NoSQL dạng document (document-oriented database). Hình~\ref{fig:mongo-schema} thể hiện lược đồ cấu trúc và quan hệ giữa các document của hệ thống trong MongoDB.
+\image[0.75]{img/system/mongodbschema.pdf}{Lược đồ cấu trúc các document trong MongoDB. Màu đỏ là các khóa của document. Ngoài khóa do nhóm tự định nghĩa, mặc định mọi document đều có khóa $\_id$ do MongoDB tạo và quản lý.}{fig:mongo-schema}
+
+Bảng~\ref{table:schema-article}, \ref{table:schema-comment}, \ref{table:schema-category-analysis}, \ref{table:schema-topic-analysis}, \ref{table:schema-article-analysis}, \ref{table:schema-comment-analysis} mô tả chi tiết cấu trúc các document trong MongoDB.
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{|llp{0.6\linewidth}|}
+\hline
+\multicolumn{3}{|l|}{\textbf{Article}}                                                                                                                                                                                                       \\ \hline
+\multicolumn{1}{|l|}{\textbf{Trường}} & \multicolumn{1}{l|}{\textbf{Kiểu dữ liệu}} & \textbf{Mô   tả}                                                                                                                                        \\ \hline
+\multicolumn{1}{|l|}{id\_source}      & \multicolumn{1}{l|}{string}                & ID   của bài viết ở trang báo. Khác với \_id của document.                                                                                              \\ \hline
+\multicolumn{1}{|l|}{source}          & \multicolumn{1}{l|}{string}                & Tên   trang báo (ví dụ: "VnExpress", "Tuổi Trẻ"). Trường này   kết hợp với trường id\_source dùng để làm primary key để tránh lưu trữ trùng   bài viết. \\ \hline
+\multicolumn{1}{|l|}{title}           & \multicolumn{1}{l|}{string}                & Tiêu   đề bài viết.                                                                                                                                     \\ \hline
+\multicolumn{1}{|l|}{excerpt}         & \multicolumn{1}{l|}{string}                & Đoạn   trích (tóm tắt) bài viết.                                                                                                                        \\ \hline
+\multicolumn{1}{|l|}{url}             & \multicolumn{1}{l|}{string}                & Đường   dẫn tới bài viết.                                                                                                                               \\ \hline
+\multicolumn{1}{|l|}{category}        & \multicolumn{1}{l|}{string}                & Danh   mục bài viết thuộc về (ví dụ: "SUC\_KHOE", "THE\_GIOI").                                                                                         \\ \hline
+\multicolumn{1}{|l|}{date}            & \multicolumn{1}{l|}{datetime}              & Ngày   giờ bài viết được xuất bản.                                                                                                                      \\ \hline
+\multicolumn{1}{|l|}{authors}         & \multicolumn{1}{l|}{list{[}string{]}}      & Danh   sách các tác giả của bài viết.                                                                                                                   \\ \hline
+\multicolumn{1}{|l|}{content}         & \multicolumn{1}{l|}{string}                & Nội   dung bài viết.                                                                                                                                    \\ \hline
+\multicolumn{1}{|l|}{img\_url}        & \multicolumn{1}{l|}{string}                & Đường   dẫn tới hình ảnh đại diện cho bài viết (thumbnail).                                                                                             \\ \hline
+\multicolumn{1}{|l|}{tags}            & \multicolumn{1}{l|}{list{[}string{]}}      & Các   từ khóa do tác giả đặt cho bài viết.                                                                                                              \\ \hline
+\multicolumn{1}{|l|}{comments}        & \multicolumn{1}{l|}{list{[}Comment{]}}     & Các   bình luận trên bài viết.                                                                                                                          \\ \hline
+\multicolumn{1}{|l|}{likes}           & \multicolumn{1}{l|}{int32}                 & Số   lượt thích bài viết.                                                                                                                               \\ \hline
+\end{tabular}
+    \caption{Mô tả document Article.}
+    \label{table:schema-article}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{|llp{0.6\linewidth}|}
+\hline
+\multicolumn{3}{|l|}{\textbf{Comment}}                                                                                                         \\ \hline
+\multicolumn{1}{|l|}{\textbf{Trường}} & \multicolumn{1}{l|}{\textbf{Kiểu dữ liệu}} & \textbf{Mô   tả}                                          \\ \hline
+\multicolumn{1}{|l|}{id\_source}      & \multicolumn{1}{l|}{string}                & ID   của comment ở trang báo. Khác với \_id của document. \\ \hline
+\multicolumn{1}{|l|}{author}          & \multicolumn{1}{l|}{string}                & Tên   tác giả của bình luận.                              \\ \hline
+\multicolumn{1}{|l|}{content}         & \multicolumn{1}{l|}{string}                & Nội   dung bình luận.                                     \\ \hline
+\multicolumn{1}{|l|}{date}            & \multicolumn{1}{l|}{datetime}              & Thời   điểm bình luận được đăng.                          \\ \hline
+\multicolumn{1}{|l|}{likes}           & \multicolumn{1}{l|}{int32}                 & Số   lượt thích của bình luận.                            \\ \hline
+\multicolumn{1}{|l|}{replies}         & \multicolumn{1}{l|}{list{[}Comment{]}}     & Các   trả lời cho bình luận.                              \\ \hline
+\end{tabular}
+    \caption{Mô tả document Comment.}
+    \label{table:schema-comment}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{|llp{0.5\linewidth}|}
+\hline
+\multicolumn{3}{|l|}{\textbf{Category Analysis}}                                                                                                                            \\ \hline
+\multicolumn{1}{|l|}{\textbf{Trường}} & \multicolumn{1}{l|}{\textbf{Kiểu dữ liệu}}    & \textbf{Mô   tả}                                                                    \\ \hline
+\multicolumn{1}{|l|}{topics}          & \multicolumn{1}{l|}{list{[}Topic Analysis{]}} & Danh   sách các chủ đề được cho là xu hướng. Đã được sắp xếp theo mức độ liên quan. \\ \hline
+\multicolumn{1}{|l|}{category}        & \multicolumn{1}{l|}{string}                   & Danh   mục của các xu hướng (ví dụ: "SUC\_KHOE", "THE\_GIOI").                      \\ \hline
+\multicolumn{1}{|l|}{creation\_date}  & \multicolumn{1}{l|}{datetime}                 & Thời   điểm tạo document.                                                           \\ \hline
+\multicolumn{1}{|l|}{metrics}         & \multicolumn{1}{l|}{Metrics}                  & Lưu   lại các số liệu trong quá trình chạy khối phân tích xu hướng.                 \\ \hline
+\end{tabular}
+    \caption{Mô tả document Category Analysis.}
+    \label{table:schema-category-analysis}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{|llp{0.5\linewidth}|}
+\hline
+\multicolumn{3}{|l|}{\textbf{Metrics}}                                                                                                \\ \hline
+\multicolumn{1}{|l|}{\textbf{Trường}}         & \multicolumn{1}{l|}{\textbf{Kiểu dữ liệu}} & \textbf{Mô   tả}                         \\ \hline
+\multicolumn{1}{|l|}{silhouette\_coefficient} & \multicolumn{1}{l|}{double}                & Điểm   silhouette của lần phân tích này. \\ \hline
+\multicolumn{1}{|l|}{topic\_coherence}        & \multicolumn{1}{l|}{double}                & Điểm   coherence của lần phân tích này.  \\ \hline
+\end{tabular}
+    \caption{Mô tả document Metrics.}
+    \label{table:schema-metrics}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{|llp{0.54\linewidth}|}
+\hline
+\multicolumn{3}{|l|}{\textbf{Topic Analysis}}                                                                                                                                             \\ \hline
+\multicolumn{1}{|l|}{\textbf{Trường}} & \multicolumn{1}{l|}{\textbf{Kiểu dữ liệu}}        & \textbf{Mô   tả}                                                                              \\ \hline
+\multicolumn{1}{|l|}{articles}        & \multicolumn{1}{l|}{list{[}Article   Analysis{]}} & Danh   sách tất cả các phân tích cho các bài viết thuộc về chủ đề này. Đã được sắp xếp theo mức độ   liên quan. \\ \hline
+\multicolumn{1}{|l|}{keywords}        & \multicolumn{1}{l|}{list{[}string{]}}             & Danh   sách các từ khóa phổ biến nhất được tổng hợp từ các từ khóa ở mỗi bài viết.            \\ \hline
+\end{tabular}
+    \caption{Mô tả document Topic Analysis.}
+    \label{table:schema-topic-analysis}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{|llp{0.35\linewidth}|}
+\hline
+\multicolumn{3}{|l|}{\textbf{Article Analysis}}                                                                                                            \\ \hline
+\multicolumn{1}{|l|}{\textbf{Trường}}         & \multicolumn{1}{l|}{\textbf{Kiểu dữ liệu}}        & \textbf{Mô   tả}                                       \\ \hline
+\multicolumn{1}{|l|}{original\_article}       & \multicolumn{1}{l|}{Article}                      & Trỏ   đến document Article gốc.                        \\ \hline
+\multicolumn{1}{|l|}{keywords}                & \multicolumn{1}{l|}{list{[}string{]}}             & Danh   sách các từ khóa được trích xuất sử dụng YAKE.  \\ \hline
+\multicolumn{1}{|l|}{average\_positive\_rate} & \multicolumn{1}{l|}{double}                       & Tỉ   lệ thái độ phản hồi tích cực của các bình luận trên bài viết này.   \\ \hline
+\multicolumn{1}{|l|}{average\_negative\_rate} & \multicolumn{1}{l|}{double}                       & Tỉ   lệ thái độ phản hồi tiêu cực của các bình luận trên bài viết này.   \\ \hline
+\multicolumn{1}{|l|}{average\_neutral\_rate}  & \multicolumn{1}{l|}{double}                       & Tỉ   lệ thái độ phản hồi trung lập của các bình luận trên bài viết này.  \\ \hline
+\multicolumn{1}{|l|}{comments}                & \multicolumn{1}{l|}{list{[}Comment   Analysis{]}} & Danh   sách phân tích các bình luận trên bài viết này. \\ \hline
+\end{tabular}
+    \caption{Mô tả document Article Analysis.}
+    \label{table:schema-article-analysis}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+\begin{tabular}{|llp{0.4\linewidth}|}
+\hline
+\multicolumn{3}{|l|}{\textbf{Comment Analysis}}                                                                                                                                                            \\ \hline
+\multicolumn{1}{|l|}{\textbf{Trường}}   & \multicolumn{1}{l|}{\textbf{Kiểu dữ liệu}}        & \textbf{Mô   tả}                                                                                             \\ \hline
+\multicolumn{1}{|l|}{original\_comment} & \multicolumn{1}{l|}{Article}                      & Trỏ   đến document Comment gốc.                                                                              \\ \hline
+\multicolumn{1}{|l|}{sentiment}         & \multicolumn{1}{l|}{string}                       & Thái   độ của bình luận này. Thuộc về một trong 4 giá trị: {[}Tích cực, Tiêu cực,   Trung lập, Không chắc{]} \\ \hline
+\multicolumn{1}{|l|}{replies}           & \multicolumn{1}{l|}{list{[}Comment   Analysis{]}} & Danh   sách phân tích các phản hồi cho bình luận này.                                                        \\ \hline
+\end{tabular}
+    \caption{Mô tả document Comment Analysis.}
+    \label{table:schema-comment-analysis}
+\end{table}
+
+\subsection{Backend}
+Backend đóng vai trò là trung gian để truy vấn dữ liệu và gửi cho Frontend hiển thị. Nhóm sử dụng Flask~\footnote{\url{https://flask.palletsprojects.com}} để hiện thực Backend vì Flask đòi hỏi ít thời gian để set-up một server sẵn sàng cho production.
+
+Nhiệm vụ của Backend chỉ đơn giản là truy vấn các phân tích xu hướng gần đây nhất và trả về cho Frontend. Giữa Frontend và Backend, nhóm sử dụng giao thức REST để trao đổi dữ liệu.
+
+\subsection{Frontend}
+Để hiển thị nội dung trực quan các chủ đề đang là xu hướng, nhóm sử dụng React~\footnote{\url{https://reactjs.org}} là một thư viện Javascript phổ biến dùng để xây dựng giao diện website.
+
+Hình~\ref{fig:frontend-screenshot} là website nhóm đã xây dựng. Website hiện thị các chủ đề cho từng danh mục. Mỗi chủ đề được biểu diễn bởi một thẻ (hình~\ref{fig:frontend-topic-card}) bao gồm bài viết tiêu điểm, các từ khóa đại diện cho chủ đề và 2 bài viết liên quan. Người dùng có thể nhấn \textit{Xem tất cả} để xem tất cả các bài viết thuộc chủ đề này.
+
+\image[0.7]{img/frontend/screenshot-overview.png}{Ảnh chụp màn hình website thể hiện các chủ đề đang nổi bật (là xu hướng).}{fig:frontend-screenshot}
+
+\image[0.3]{img/frontend/topic-card.png}{Mỗi chủ đề được biểu diễn bởi một thẻ chủ đề bao gồm bài viết tiêu điểm, các từ khóa phổ biến đại diện cho chủ đề và 2 bài viết liên quan.}{fig:frontend-topic-card}
+
+Dưới mỗi bài viết đều hiển thị thái độ phản hổi của các bình luận (nếu có), người dùng có thể hover để xem chi tiết các tỉ lệ về thái độ của phản hồi (hình~\ref{fig:frontend-sentiment-chip}).
+
+\image[0.4]{img/frontend/sentiment-chips.png}{Tỉ lệ về thái độ của các phản hồi trong một bài viết.}{fig:frontend-sentiment-chip}
+
+\section{Triển khai hệ thống}
+Hình~\ref{fig:system-deploy} minh họa tổng quan phương thức triển khai hệ thống trên hai server. Khối phát hiện xu hướng cần được đặt ở một server riêng vì sử dụng nhiều tài nguyên như CPU và RAM. MongoDB và Backend được đặt chung trên một server để tăng tốc độ truy vấn, tránh overhead bởi network. Frontend chỉ đơn giản là serve static files nên cũng có thể đặt chung với Backend và MongoDB.
+
+MongoDB được triển khai trong môi trường Docker~\footnote{\url{https://www.docker.com/}} container. Các kết nối đến Backend và serve static files cho Frontend đều được quản lý bởi NGINX proxy~\footnote{\url{https://www.nginx.com/}}. Khối phát hiện xu hướng được triển khai theo dạng job và được quản lý bởi \textit{cron} (hay \textit{cron job}).
+
+\image[0.6]{img/system/system-deploy.pdf}{Minh họa tổng quan về triển khai hệ thống trên hai server.}{fig:system-deploy}

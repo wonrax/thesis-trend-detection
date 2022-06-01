@@ -14,11 +14,26 @@
 
 \usepackage{tikz} % Page border for title page
 
+% Algorithms and pseudocode
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{Thuật toán}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+% table
+\usepackage{multirow}
+
+% For rotating figures, tables, etc.
+%  including their captions
+\usepackage{rotating}
+
 \usepackage[acronym]{glossaries}
 \input{glossaries.tex}
 \makeglossaries
 \renewcommand{\acronymname}{Danh mục viết tắt}
 
+\selectlanguage{vietnamese}
 \begin{document}
 
 % ========= TITLE ========= %
@@ -32,6 +47,12 @@
 \tableofcontents
 \clearpage
 
+\listoftables
+\thispagestyle{empty}
+
+\listoffigures
+\thispagestyle{empty}
+
 % ========= Glossaries ========= %
 \printglossary[type=\acronymtype]
 \clearpage
@@ -40,7 +61,7 @@
 \include{pages/3-main/main.tex}
 
 % ========= BIBLIOGRAPHY ========= %
-% \nocite{*} % TODO IMPORTANT Comment this when publishing
+\nocite{*} % TODO IMPORTANT Comment this when publishing
 \include{pages/4-bibliography.tex}
 
 \end{document}
